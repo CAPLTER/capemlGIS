@@ -44,6 +44,7 @@
 #'
 #' @import dplyr
 #' @import raster
+#' @import tibble
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr write_csv
 #'

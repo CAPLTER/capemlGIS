@@ -22,16 +22,18 @@ create_spatialRaster(
 
 \item{description}{Description of the raster.}
 
-\item{epsgProjection}{EPSG numeric code of raster's coordinate reference system}
+\item{epsgProjection}{EPSG numeric code of raster coordinate reference system}
 
-\item{emlProjection}{EML-compliant refence to raster's coordinate reference system}
+\item{emlProjection}{EML-compliant reference to raster coordinate reference
+system}
 
 \item{rasterValueDescription}{Description of raster values}
 
 \item{rasterValueUnits}{Raster value units}
 
 \item{zipFiles}{Logical indicating whether spatial raster entity should be
-constructed from a single raster file (FALSE, default) or entire directory (TRUE)}
+constructed from a single raster file (FALSE, default) or entire directory
+(TRUE)}
 
 \item{geoDescription}{A textual description of the geographic study area of
 the raster. "CAP LTER study area" is the default.}
@@ -72,22 +74,25 @@ create_spatialRaster will look for a project id in the working
   exist.
 }
 \examples{
+\dontrun{
 
-# rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
-# imagery. NAIP NDVI data are presented as a series of tiles each representing
-# a portion of the overall central Arizona coverage area. The relative position
-# of this tile to the entire coverage area is detailed in the files
-# NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
+rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
+imagery. NAIP NDVI data are presented as a series of tiles each representing
+a portion of the overall central Arizona coverage area. The relative position
+of this tile to the entire coverage area is detailed in the files
+NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
 
-# geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
-# region"
+geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
+region"
 
-# NAIP_NDVI_2015_SV <- create_spatialRaster(rasterFile = '~/Desktop/NAIP_NDVI_2015.tiff',
-#                                           description = rasterDesc,
-#                                           epsgProjection = 4326,
-#                                           rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
-#                                           rasterValueUnits = 'dimensionless',
-#                                           geoDescription = geoDesc,
-#                                           projectNaming = FALSE)
+NAIP_NDVI_2015_SV <- create_spatialRaster(
+   rasterFile = '~/path-to-file/NAIP_NDVI_2015.tiff',
+   description = rasterDesc,
+   epsgProjection = 4326,
+   rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
+   rasterValueUnits = 'dimensionless',
+   geoDescription = geoDesc,
+   projectNaming = FALSE)
+}
 
 }
