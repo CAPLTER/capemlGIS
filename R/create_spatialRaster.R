@@ -16,14 +16,16 @@
 #'
 #' @param rasterFile Quoted full path to raster file.
 #' @param description Description of the raster.
-#' @param epsgProjection EPSG numeric code of raster's coordinate reference system
-#' @param emlProjection EML-compliant refence to raster's coordinate reference system
+#' @param epsgProjection EPSG numeric code of raster coordinate reference system
+#' @param emlProjection EML-compliant reference to raster coordinate reference
+#'   system
 #' @param rasterValueDescription Description of raster values
 #' @param rasterValueUnits Raster value units
 #' @param geoDescription A textual description of the geographic study area of
 #'   the raster. "CAP LTER study area" is the default.
 #' @param zipFiles Logical indicating whether spatial raster entity should be
-#'   constructed from a single raster file (FALSE, default) or entire directory (TRUE)
+#'   constructed from a single raster file (FALSE, default) or entire directory
+#'   (TRUE)
 #' @param baseURL The base path of the web-accessible location of the data file;
 #'   the name of the resulting file will be passed to the base path to generate
 #'   a web-resolvable file path. This parameter is required with the default set
@@ -47,23 +49,26 @@
 #'   multiple files are aggregated).
 #'
 #' @examples
+#' \dontrun{
 #'
-#' # rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
-#' # imagery. NAIP NDVI data are presented as a series of tiles each representing
-#' # a portion of the overall central Arizona coverage area. The relative position
-#' # of this tile to the entire coverage area is detailed in the files
-#' # NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
+#' rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
+#' imagery. NAIP NDVI data are presented as a series of tiles each representing
+#' a portion of the overall central Arizona coverage area. The relative position
+#' of this tile to the entire coverage area is detailed in the files
+#' NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
 #'
-#' # geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
-#' # region"
+#' geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
+#' region"
 #'
-#' # NAIP_NDVI_2015_SV <- create_spatialRaster(rasterFile = '~/Desktop/NAIP_NDVI_2015.tiff',
-#' #                                           description = rasterDesc,
-#' #                                           epsgProjection = 4326,
-#' #                                           rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
-#' #                                           rasterValueUnits = 'dimensionless',
-#' #                                           geoDescription = geoDesc,
-#' #                                           projectNaming = FALSE)
+#' NAIP_NDVI_2015_SV <- create_spatialRaster(
+#'    rasterFile = '~/path-to-file/NAIP_NDVI_2015.tiff',
+#'    description = rasterDesc,
+#'    epsgProjection = 4326,
+#'    rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
+#'    rasterValueUnits = 'dimensionless',
+#'    geoDescription = geoDesc,
+#'    projectNaming = FALSE)
+#' }
 #'
 #' @export
 
@@ -130,7 +135,7 @@ create_spatialRaster <- function(rasterFile,
     rasterFactors <- read_csv(rasterFactorsFileName,
                               col_types = cols()) # to suppress tibble output
 
-    attr_list <- set_attributes(attributes = rasterAttributes, factors = rasterFactors, col_classes = "factor")
+    attr_list <- EML::set_attributes(attributes = rasterAttributes, factors = rasterFactors, col_classes = "factor")
 
     # condition: factors not present (presuming that vars are not categorical)
   } else {
@@ -182,7 +187,7 @@ create_spatialRaster <- function(rasterFile,
 
     } # close raster value number type
 
-    attr_list <- set_attributes(attributes = rasterAttributes, col_classes = "numeric")
+    attr_list <- EML::set_attributes(attributes = rasterAttributes, col_classes = "numeric")
 
   } # close condition: factors not present
 
@@ -261,11 +266,11 @@ create_spatialRaster <- function(rasterFile,
   # coverage ----------------------------------------------------------------
 
   rasterGeographicDescription <- geoDescription
-  spatialCoverage <- set_coverage(geographicDescription = rasterGeographicDescription,
-                                  west = raster::extent(rasterObject)@xmin,
-                                  east = raster::extent(rasterObject)@xmax,
-                                  north = raster::extent(rasterObject)@ymax,
-                                  south = raster::extent(rasterObject)@ymin)
+  spatialCoverage <- EML::set_coverage(geographicDescription = rasterGeographicDescription,
+                                       west = raster::extent(rasterObject)@xmin,
+                                       east = raster::extent(rasterObject)@xmax,
+                                       north = raster::extent(rasterObject)@ymax,
+                                       south = raster::extent(rasterObject)@ymin)
 
 
   # create spatial raster entity --------------------------------------------

@@ -47,7 +47,7 @@ create_spatialVector creates a EML spatialVector object from a
   csv file generated from the write_attributes function -
   create_spatialVector will look for a file in the working directory with a
   name of type spatialEntityName_attrs.csv. Because all attributes written to
-  a kml (the output of create_spatialVector  are of type character, factors
+  a kml (the output of create_spatialVector are of type character, factors
   are not considered in this workflow). Note that this functionality is
   predicated on the existence of a file containing metadata about the
   attributes, that that file is in the working directory, and that the file
@@ -58,12 +58,13 @@ create_spatialVector creates a EML spatialVector object from a
   with project id + base file name + file extension (kml in this case).
 }
 \note{
-create_spatialVector will look for a project id in the working environment;
-  this parameter is not passed to the function and it must exist.
+create_spatialVector will look for a project id in the working
+  environment; this parameter is not passed to the function and it must
+  exist.
 
-create_dataTable currently accepts an argument for a base url path to
-  which the new file name will be appended so as to be a web-resolvable file;
-  the package defaults to a URL specific to the CAP LTER.
+create_spatialVector currently accepts an argument for a base url path
+  to which the new file name will be appended so as to be a web-resolvable
+  file; the package defaults to a URL specific to the CAP LTER.
 
 Because file name metadata is incorporated into the kml generated from
   the sf::st_write function, including the md5 hash of the object in the file
@@ -73,43 +74,45 @@ Because file name metadata is incorporated into the kml generated from
 All vector objects are transformed to epsg 4326 (WGS 1984)
 }
 \examples{
+\dontrun{
 
 # read the vector using the sf package
-# NAIP_grid_map <- read_sf(dsn = 'NAIP_GRID.kml')
+NAIP_grid_map <- read_sf(dsn = 'NAIP_GRID.kml')
 
-# assign Name to the column that is the site identifier (Name in this example);
-# strip irrelevant or unpopulated columns and remove geometry to write
-# attribute tabls
-# NAIP_grid_map <- NAIP_grid_map \%>\%
-#   select(Name) \%>\%
-#   st_drop_geometry()
+# assign Name to the column that is the site identifier (Name in this
+example); strip irrelevant or un-populated columns and remove geometry to
+write # attribute table
+NAIP_grid_map <- NAIP_grid_map \%>\%
+  select(Name) \%>\%
+  st_drop_geometry()
 
-# write the atttributes to a csv template and add metadata - this file will be
+# write the attributes to a csv template and add metadata - this file will be
 # read when the EML object is build
-# write_attributes(NAIP_grid_map)
+write_attributes(NAIP_grid_map)
 
 # reimport kml to write spatial vector object
 
-# colsToKeep <- read_sf(dsn = "NAIP_GRID.kml") \%>\%
-#   discard(~all(is.na(.x))) \%>\%
-#   map_df(~.x) \%>\%
-#   colnames()
+colsToKeep <- read_sf(dsn = "NAIP_GRID.kml") \%>\%
+  discard(~all(is.na(.x))) \%>\%
+  map_df(~.x) \%>\%
+  colnames()
 
-# NAIP_grid_map <- read_sf(dsn = "NAIP_GRID.kml") \%>\%
-#   dplyr::select(one_of(colsToKeep))
+NAIP_grid_map <- read_sf(dsn = "NAIP_GRID.kml") \%>\%
+  dplyr::select(one_of(colsToKeep))
 
-# NAIP_grid_map_desc <- "NAIP NDVI data are presented as a series of tiles each
-# representing a portion of the overall central Arizona coverage area. The
-# relative position of tiles to the entire coverage area is detailed in this
-# file as a kml as well as the files NAIP_GRID.png and NAIP_GRID.pdf included
-# with this data set. Tiles are identified with a 20-digit signature (format:
-# xxxxxxxxxx-xxxxxxxxxx)."
+NAIP_grid_map_desc <- "NAIP NDVI data are presented as a series of tiles each
+representing a portion of the overall central Arizona coverage area. The
+relative position of tiles to the entire coverage area is detailed in this
+file as a kml as well as the files NAIP_GRID.png and NAIP_GRID.pdf included
+with this data set. Tiles are identified with a 20-digit signature (format:
+xxxxxxxxxx-xxxxxxxxxx)."
 
-# NAIP_grid_map_SV <- create_spatialVector(svname = NAIP_grid_map,
-#                                          description = NAIP_grid_map_desc,
-#                                          projectNaming = FALSE)
+NAIP_grid_map_SV <- create_spatialVector(svname = NAIP_grid_map,
+                                         description = NAIP_grid_map_desc,
+                                         projectNaming = FALSE)
 
 # The resulting spatialVector entity can be added to a EML dataset
-# dataset <- EML::eml$dataset(spatialVector = NAIP_grid_map_SV)
+dataset <- EML::eml$dataset(spatialVector = NAIP_grid_map_SV)
+}
 
 }

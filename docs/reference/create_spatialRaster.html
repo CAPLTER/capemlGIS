@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>create_spatialRaster — create_spatialRaster • capeml</title>
+<title>create_spatialRaster — create_spatialRaster • capemlGIS</title>
 
 
 <!-- jquery -->
@@ -72,7 +72,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">capeml</a>
+        <a class="navbar-link" href="../index.html">capemlGIS</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
       </span>
     </div>
@@ -152,11 +152,12 @@
     </tr>
     <tr>
       <th>epsgProjection</th>
-      <td><p>EPSG numeric code of raster's coordinate reference system</p></td>
+      <td><p>EPSG numeric code of raster coordinate reference system</p></td>
     </tr>
     <tr>
       <th>emlProjection</th>
-      <td><p>EML-compliant refence to raster's coordinate reference system</p></td>
+      <td><p>EML-compliant reference to raster coordinate reference
+system</p></td>
     </tr>
     <tr>
       <th>rasterValueDescription</th>
@@ -169,7 +170,8 @@
     <tr>
       <th>zipFiles</th>
       <td><p>Logical indicating whether spatial raster entity should be
-constructed from a single raster file (FALSE, default) or entire directory (TRUE)</p></td>
+constructed from a single raster file (FALSE, default) or entire directory
+(TRUE)</p></td>
     </tr>
     <tr>
       <th>geoDescription</th>
@@ -215,25 +217,26 @@ is set to FALSE.</p></td>
   exist.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-# rasterDesc &lt;- 'NDVI for the central Arizona region derived from 2015 NAIP
-# imagery. NAIP NDVI data are presented as a series of tiles each representing
-# a portion of the overall central Arizona coverage area. The relative position
-# of this tile to the entire coverage area is detailed in the files
-# NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 
-# geoDesc &lt;- "one in a series of tiles covering the central-Arizona Phoenix
-# region"
+<span class='no'>rasterDesc</span> <span class='kw'>&lt;-</span> <span class='st'>'NDVI for the central Arizona region derived from 2015 NAIP
+imagery. NAIP NDVI data are presented as a series of tiles each representing
+a portion of the overall central Arizona coverage area. The relative position
+of this tile to the entire coverage area is detailed in the files
+NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'</span>
 
-# NAIP_NDVI_2015_SV &lt;- create_spatialRaster(rasterFile = '~/Desktop/NAIP_NDVI_2015.tiff',
-#                                           description = rasterDesc,
-#                                           epsgProjection = 4326,
-#                                           rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
-#                                           rasterValueUnits = 'dimensionless',
-#                                           geoDescription = geoDesc,
-#                                           projectNaming = FALSE)
+<span class='no'>geoDesc</span> <span class='kw'>&lt;-</span> <span class='st'>"one in a series of tiles covering the central-Arizona Phoenix
+region"</span>
 
-</div></pre>
+<span class='no'>NAIP_NDVI_2015_SV</span> <span class='kw'>&lt;-</span> <span class='fu'>create_spatialRaster</span>(
+   <span class='kw'>rasterFile</span> <span class='kw'>=</span> <span class='st'>'~/path-to-file/NAIP_NDVI_2015.tiff'</span>,
+   <span class='kw'>description</span> <span class='kw'>=</span> <span class='no'>rasterDesc</span>,
+   <span class='kw'>epsgProjection</span> <span class='kw'>=</span> <span class='fl'>4326</span>,
+   <span class='kw'>rasterValueDescription</span> <span class='kw'>=</span> <span class='st'>'Normalized Difference Vegetation Index (NDVI)'</span>,
+   <span class='kw'>rasterValueUnits</span> <span class='kw'>=</span> <span class='st'>'dimensionless'</span>,
+   <span class='kw'>geoDescription</span> <span class='kw'>=</span> <span class='no'>geoDesc</span>,
+   <span class='kw'>projectNaming</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
