@@ -19,6 +19,16 @@ package:
 devtools::install_github("CAPLTER/capemlGIS")
 ```
 
+### getting started
+
+Creating a EML dataset starts with the
+[CAPLTER/capeml](https://github.com/CAPLTER/capeml) package, `capemlGIS`
+is designed only to facilitate creating EML entities of type
+`spatialRaster` and `spatialVector`. Users should please start with the
+`capeml` workflow, including creating a `config.yaml` file that will
+feature project details that `spatialRaster` and `spatialVector` require
+for processing.
+
 ### options
 
 #### EML
@@ -37,8 +47,8 @@ object (e.g., site\_map.kml) is renamed with the additional metadata and
 this object name is referenced in the EML metadata. The exception to
 this approach are spatialVectors where the hash of the file/object is
 not included in the new object name. Note that the project-id is not
-passed to any of the functions, and must exist in the working R
-environment (as `projectid`).
+passed to any of the functions, and must exist in `config.yaml` (as
+`projectid`).
 
 Project-naming functionality can be turned off by setting the
 `projectNaming` option in `create_spatialRaster()` to FALSE. When set to
@@ -60,4 +70,45 @@ is included in the EML.
     - see
     [vignette](https://caplter.github.io/capeml/articles/create_spatialRaster.html)
     for more detail
-  - `create_spatialVector()` creates a EML entity of type spatialRaster
+  - `create_spatialVector()` creates a EML entity of type
+    `spatialVector`. Output includes:
+      - EML entity of type `spatialVector` that can be added to a EML
+        dataset
+      - input data written to a kml file with project naming (if
+        selected). Note that regardless of source type, all spatial
+        vector input data are converted to type kml.
+
+### overview: create a spatialVector
+
+**example: myvector**
+
+``` r
+# load spatial vector object
+myvector <- read_sf(
+  dsn = "vector_file_directory",
+  layer = "vector_file_layer_name"
+)
+
+# drop geometry before writing attributes
+myvector <- myvector %>%
+  st_drop_geometry()
+
+# assign Name to the site identifier variable
+myvector <- myvector %>%
+  mutate(Name = site_identifer)
+
+write_attributes(myvector)
+
+# re-load spatial vector object
+myvector <- read_sf(
+  dsn = "vector_file_directory",
+  layer = "vector_file_layer_name"
+)
+
+myvector_desc <- "desc"
+
+myvector_SV <- create_spatialVector(
+  svname = myvector,
+  description = myvector_desc
+)
+```

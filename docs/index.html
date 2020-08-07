@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -91,6 +91,11 @@
 <p>Install from GitHub (after installing the <a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a> package:</p>
 <div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"CAPLTER/capemlGIS"</span>)</pre></div>
 </div>
+<div id="getting-started" class="section level3">
+<h3 class="hasAnchor">
+<a href="#getting-started" class="anchor"></a>getting started</h3>
+<p>Creating a EML dataset starts with the <a href="https://github.com/CAPLTER/capeml">CAPLTER/capeml</a> package, <code>capemlGIS</code> is designed only to facilitate creating EML entities of type <code>spatialRaster</code> and <code>spatialVector</code>. Users should please start with the <code>capeml</code> workflow, including creating a <code>config.yaml</code> file that will feature project details that <code>spatialRaster</code> and <code>spatialVector</code> require for processing.</p>
+</div>
 <div id="options" class="section level3">
 <h3 class="hasAnchor">
 <a href="#options" class="anchor"></a>options</h3>
@@ -102,8 +107,8 @@
 <div id="project-naming" class="section level4">
 <h4 class="hasAnchor">
 <a href="#project-naming" class="anchor"></a>project naming</h4>
-<p>Most EML-generating functions in the capemlGIS package will create both physical objects and EML references to those objects with the format: <code>project-id</code>_<code>object-name</code>_<code>object-hash</code>.<code>file-extension</code> (e.g., <em>664_site_map_5fb7b8d53d48010eab1a2e73db7f1941.kml</em>). The target object (e.g., site_map.kml) is renamed with the additional metadata and this object name is referenced in the EML metadata. The exception to this approach are spatialVectors where the hash of the file/object is not included in the new object name. Note that the project-id is not passed to any of the functions, and must exist in the working R environment (as <code>projectid</code>).</p>
-<p>Project-naming functionality can be turned off by setting the <code>projectNaming</code> option in <code>create_spatialRaster()</code> to FALSE. When set to FALSE, the object name is not changed, and the file name of the object is included in the EML.</p>
+<p>Most EML-generating functions in the capemlGIS package will create both physical objects and EML references to those objects with the format: <code>project-id</code>_<code>object-name</code>_<code>object-hash</code>.<code>file-extension</code> (e.g., <em>664_site_map_5fb7b8d53d48010eab1a2e73db7f1941.kml</em>). The target object (e.g., site_map.kml) is renamed with the additional metadata and this object name is referenced in the EML metadata. The exception to this approach are spatialVectors where the hash of the file/object is not included in the new object name. Note that the project-id is not passed to any of the functions, and must exist in <code>config.yaml</code> (as <code>projectid</code>).</p>
+<p>Project-naming functionality can be turned off by setting the <code>projectNaming</code> option in <code><a href="reference/create_spatialRaster.html">create_spatialRaster()</a></code> to FALSE. When set to FALSE, the object name is not changed, and the file name of the object is included in the EML.</p>
 </div>
 </div>
 <div id="tools-to-generate-entity-metadata" class="section level3">
@@ -113,7 +118,7 @@
 <li>
 <code>write_attributes()</code> creates a template as a csv file for supplying attribute metadata for a spatial vector object that resides in the R environment</li>
 <li>
-<code>write_raster_factors()</code> creates a template as a csv file for supplying code definition metadata for spatial rasters if raster values are categorical</li>
+<code><a href="reference/write_raster_factors.html">write_raster_factors()</a></code> creates a template as a csv file for supplying code definition metadata for spatial rasters if raster values are categorical</li>
 </ul>
 </div>
 <div id="tools-to-create-eml-entities" class="section level3">
@@ -121,14 +126,52 @@
 <a href="#tools-to-create-eml-entities" class="anchor"></a>tools to create EML entities</h3>
 <ul>
 <li>
-<code>create_spatialRaster()</code> creates a EML entity of type spatialRaster
+<code><a href="reference/create_spatialRaster.html">create_spatialRaster()</a></code> creates a EML entity of type spatialRaster
 <ul>
 <li>see <a href="https://caplter.github.io/capeml/articles/create_spatialRaster.html">vignette</a> for more detail</li>
 </ul>
 </li>
 <li>
-<code>create_spatialVector()</code> creates a EML entity of type spatialRaster</li>
+<code><a href="reference/create_spatialVector.html">create_spatialVector()</a></code> creates a EML entity of type <code>spatialVector</code>. Output includes:
+<ul>
+<li>EML entity of type <code>spatialVector</code> that can be added to a EML dataset</li>
+<li>input data written to a kml file with project naming (if selected). Note that regardless of source type, all spatial vector input data are converted to type kml.</li>
 </ul>
+</li>
+</ul>
+</div>
+<div id="overview-create-a-spatialvector" class="section level3">
+<h3 class="hasAnchor">
+<a href="#overview-create-a-spatialvector" class="anchor"></a>overview: create a spatialVector</h3>
+<p><strong>example: myvector</strong></p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="co"># load spatial vector object</span>
+<span class="no">myvector</span> <span class="kw">&lt;-</span> <span class="fu">read_sf</span>(
+  <span class="kw">dsn</span> <span class="kw">=</span> <span class="st">"vector_file_directory"</span>,
+  <span class="kw">layer</span> <span class="kw">=</span> <span class="st">"vector_file_layer_name"</span>
+)
+
+<span class="co"># drop geometry before writing attributes</span>
+<span class="no">myvector</span> <span class="kw">&lt;-</span> <span class="no">myvector</span> <span class="kw">%&gt;%</span>
+  <span class="fu">st_drop_geometry</span>()
+
+<span class="co"># assign Name to the site identifier variable</span>
+<span class="no">myvector</span> <span class="kw">&lt;-</span> <span class="no">myvector</span> <span class="kw">%&gt;%</span>
+  <span class="fu">mutate</span>(<span class="kw">Name</span> <span class="kw">=</span> <span class="no">site_identifer</span>)
+
+<span class="fu">write_attributes</span>(<span class="no">myvector</span>)
+
+<span class="co"># re-load spatial vector object</span>
+<span class="no">myvector</span> <span class="kw">&lt;-</span> <span class="fu">read_sf</span>(
+  <span class="kw">dsn</span> <span class="kw">=</span> <span class="st">"vector_file_directory"</span>,
+  <span class="kw">layer</span> <span class="kw">=</span> <span class="st">"vector_file_layer_name"</span>
+)
+
+<span class="no">myvector_desc</span> <span class="kw">&lt;-</span> <span class="st">"desc"</span>
+
+<span class="no">myvector_SV</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/create_spatialVector.html">create_spatialVector</a></span>(
+  <span class="kw">svname</span> <span class="kw">=</span> <span class="no">myvector</span>,
+  <span class="kw">description</span> <span class="kw">=</span> <span class="no">myvector_desc</span>
+)</pre></div>
 </div>
 </div>
   </div>
