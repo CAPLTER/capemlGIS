@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -75,7 +75,7 @@
       <h1 data-toc-skip>create_spatialRaster</h1>
                         <h4 class="author">S. Earl</h4>
             
-            <h4 class="date">2020-06-03</h4>
+            <h4 class="date">2020-08-07</h4>
       
       
       <div class="hidden name"><code>create_spatialRaster.Rmd</code></div>
@@ -88,7 +88,7 @@
 <h4 class="hasAnchor">
 <a href="#overview" class="anchor"></a>overview</h4>
 <p>The capeml package provides the user considerable flexibility to process spatial raster data and generate EML spatial raster metadata. Notably, the package allows for processing an individual raster file (e.g., xxx.tiff) or a raster file with supporting metadata (e.g., as xml or otherwise) in a zipped directory. In the case of multiple files, all files in the parent directory where the raster file is located are aggregated into a single compressed (zipped) file. If projectNaming is enabled (default), the resulting entity is renamed with the project id + base file name + md5sum + file extension (zip in the case when multiple files are aggregated).</p>
-<p>The <code>create_spatialRaster()</code> function takes ten arguments, including:</p>
+<p>The <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function takes ten arguments, including:</p>
 <ul>
 <li>
 <code>rasterFile</code> (required) Quoted full path to raster file.</li>
@@ -127,7 +127,7 @@
 <div id="categorical-raster-values" class="section level4">
 <h4 class="hasAnchor">
 <a href="#categorical-raster-values" class="anchor"></a>categorical raster values</h4>
-<p>If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the <code>write_raster_factors()</code> function.</p>
+<p>If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</p>
 <p><em>Raster categorical values metadata example</em></p>
 <table class="table">
 <thead><tr class="header">
@@ -185,7 +185,7 @@
 <div id="calling-the-function" class="section level3">
 <h3 class="hasAnchor">
 <a href="#calling-the-function" class="anchor"></a>calling the function</h3>
-<p>Call the <code>create_spatialRaster()</code> function to generate the EML to describe the raster. Arguments include the quoted full or relative path to the raster file (or files), the quoted full or relative path and name of the raster metadata file, and the quoted full or relative path and name of the raster value categories (if needed). Output of the function yields EML that can be incorporated into the metadata for a data set.</p>
+<p>Call the <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function to generate the EML to describe the raster. Arguments include the quoted full or relative path to the raster file (or files), the quoted full or relative path and name of the raster metadata file, and the quoted full or relative path and name of the raster value categories (if needed). Output of the function yields EML that can be incorporated into the metadata for a data set.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">rasterDesc</span> <span class="kw">&lt;-</span> <span class="st">'NDVI for the central Arizona region derived from 2015 NAIP
 imagery. NAIP NDVI data are presented as a series of tiles each representing
 a portion of the overall central Arizona coverage area. The relative position
@@ -195,7 +195,7 @@ NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'</s
 <span class="no">geoDesc</span> <span class="kw">&lt;-</span> <span class="st">"one in a series of tiles covering the central-Arizona Phoenix
 region"</span>
 
-<span class="no">NAIP_NDVI_2015_SV</span> <span class="kw">&lt;-</span> <span class="fu">create_spatialRaster</span>(<span class="kw">rasterFile</span> <span class="kw">=</span> <span class="st">'~/Desktop/NAIP_NDVI_2015.tiff'</span>,
+<span class="no">NAIP_NDVI_2015_SV</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/create_spatialRaster.html">create_spatialRaster</a></span>(<span class="kw">rasterFile</span> <span class="kw">=</span> <span class="st">'~/Desktop/NAIP_NDVI_2015.tiff'</span>,
                                           <span class="kw">description</span> <span class="kw">=</span> <span class="no">rasterDesc</span>,
                                           <span class="kw">epsgProjection</span> <span class="kw">=</span> <span class="fl">4326</span>,
                                           <span class="kw">rasterValueDescription</span> <span class="kw">=</span> <span class="st">'Normalized Difference Vegetation Index (NDVI)'</span>,
