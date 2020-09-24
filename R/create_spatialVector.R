@@ -30,19 +30,25 @@
 #'  spatialVector objects.
 #' @note All vector objects are transformed to epsg 4326 (WGS 1984)
 #'
-#' @param svname The unquoted name of the spatial data object in the R
-#'   environment.
-#' @param description A quoted description of the spatial object that will
-#'   populate the entityDescription element of the EML document.
-#' @param geoDescription A textual description of the geographic study area of
-#'   the vector. "CAP LTER study area" is the default.
-#' @param baseURL (optional) The base path of the web-accessible location of the
-#'   data file; the name of the resulting file will be passed to the base path
-#'   to generate a web-resolvable file path.
-#' @param projectNaming Logical indicating if the raster file should be renamed
-#'   per the style used by the CAP LTER (default) with the project id + base
-#'   file name + md5sum + file extension. The passed file or directory name will
-#'   be used if this parameter is set to FALSE.
+#' @param svname
+#'  The unquoted name of the spatial data object in the R environment.
+#' @param description
+#'  (character) Description of the vector resource.
+#' @param geoDescription
+#'  (character) A textual description of the geographic study area of the
+#'  vector. This parameter allows the user to overwrite the
+#'  geographicDesciption value provided in the project config.yaml.
+#' @param baseURL
+#'  (character) The base path of the web-accessible location of the data file;
+#'  the name of the resulting file will be passed to the base path to generate
+#'  a web-resolvable file path. This parameter is required with the default set
+#'  to the CAP LTER file path
+#' @param projectNaming
+#'  (logical) Logical indicating if the vector file (or parent directory if
+#'  zipFiles == TRUE) should be renamed per the style used by the CAP LTER
+#'  (default) with the project id + base file name + md5sum + file extension.
+#'  The passed file or directory name will be used if this parameter is set to
+#'  FALSE.
 #'
 #' @import EML
 #' @import dplyr
@@ -51,8 +57,8 @@
 #' @importFrom readr read_csv
 #'
 #' @return EML spatialVector object is returned. Additionally, the spatial data
-#'   entity is written to file as type kml, and renamed with the project id +
-#'   base file name + file extension (kml in this case).
+#'  entity is written to file as type kml, and renamed with the project id +
+#'  base file name + file extension (kml in this case).
 #'
 #' @examples
 #' \dontrun{
@@ -98,17 +104,20 @@
 #'
 #' @export
 
-create_spatialVector <- function(svname,
-                                 description,
-                                 geoDescription = "CAP LTER study area",
-                                 baseURL = "https://data.gios.asu.edu/datasets/cap/",
-                                 projectNaming = TRUE) {
+create_spatialVector <- function(
+  svname,
+  description,
+  geoDescription,
+  baseURL = "https://data.gios.asu.edu/datasets/cap/",
+  projectNaming = TRUE) {
 
   # required parameters -----------------------------------------------------
 
   # do not proceed if a description is not provided
   if (missing("description")) {
+
     stop("please provide a description for this vector")
+
   }
 
 
@@ -124,7 +133,9 @@ create_spatialVector <- function(svname,
 
     # retrieve package number from config.yaml
     if (!file.exists("config.yaml")) {
+
       stop("config.yaml not found")
+
     }
 
     packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
@@ -144,22 +155,46 @@ create_spatialVector <- function(svname,
 
   # geographic coverage -----------------------------------------------------
 
-  vectorGeographicDescription <- geoDescription
-  spatialCoverage <- EML::set_coverage(geographicDescription = vectorGeographicDescription,
-                                       west = st_bbox(svname)[['xmin']],
-                                       east = st_bbox(svname)[['xmax']],
-                                       north = st_bbox(svname)[['ymax']],
-                                       south = st_bbox(svname)[['ymin']])
+  if (missing("geoDescription")) {
 
+    # retrieve geographic description from config.yaml
+    if (!file.exists("config.yaml")) {
+
+      stop("could not locate geographic description, config.yaml not found")
+
+    }
+
+    geoDesc <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+
+    if (is.na(geoDesc) | is.null(geoDesc) | geoDesc == "") {
+
+      warning("geographic description provided in config.yaml is empty")
+
+    }
+
+  } else {
+
+    geoDesc <- geoDescription
+
+  }
+
+  spatialCoverage <- EML::set_coverage(
+    geographicDescription = geoDesc,
+    west = st_bbox(svname)[['xmin']],
+    east = st_bbox(svname)[['xmax']],
+    north = st_bbox(svname)[['ymax']],
+    south = st_bbox(svname)[['ymin']]
+  )
 
 
   # write to kml ------------------------------------------------------------
 
-  sf::st_write(obj = svname,
-               dsn = fname,
-               driver = "kml",
-               delete_layer = TRUE,
-               delete_dsn = TRUE)
+  sf::st_write(
+    obj = svname,
+    dsn = fname,
+    driver = "kml",
+    delete_layer = TRUE,
+    delete_dsn = TRUE)
 
 
   # attributes --------------------------------------------------------------
@@ -179,8 +214,33 @@ create_spatialVector <- function(svname,
 
   # set physical ------------------------------------------------------------
 
-  spatialVectorPhysical <- EML::set_physical(objectName = fname,
-                                             url = paste0(baseURL, fname))
+  # distribution
+  fileDistribution <- EML::eml$distribution(
+    EML::eml$online(url = paste0(baseURL, fname))
+  )
+
+  # data format
+  fileDataFormat <- EML::eml$dataFormat(
+    externallyDefinedFormat = EML::eml$externallyDefinedFormat(
+      formatName = "application/vnd.google-earth.kml+xml")
+  )
+
+  # file size
+  fileSize <- EML::eml$size(unit = "byte")
+  fileSize$size <- deparse(file.size(fname))
+
+  # authentication
+  fileAuthentication <- EML::eml$authentication(method = "MD5")
+  fileAuthentication$authentication <- md5sum(fname)
+
+  # construct physical
+  spatialVectorPhysical <- EML::eml$physical(
+    objectName = fname,
+    authentication = fileAuthentication,
+    size = fileSize,
+    dataFormat = fileDataFormat,
+    distribution = fileDistribution
+  )
 
 
   # create spatialVector entity ---------------------------------------------
@@ -210,6 +270,7 @@ create_spatialVector <- function(svname,
   } else {
 
     stop("undetermined geometry")
+
   }
 
   newSV$geometry <- objectGeometry
@@ -218,15 +279,17 @@ create_spatialVector <- function(svname,
   # add spatial reference  --------------------------------------------------
 
   epsg4326 <- EML::eml$spatialReference(
-    horizCoordSysName = 'GCS_WGS_1984'
+    horizCoordSysName = "GCS_WGS_1984"
   )
 
   newSV$spatialReference <- epsg4326
 
+  # closing message ---------------------------------------------------------
+
+  message("spatialVector created")
 
   # return spatial vector object --------------------------------------------
 
   return(newSV)
-
 
 } # close create_spatialVector
