@@ -4,84 +4,91 @@
 #'   spatialRaster
 #'
 #' @details a spatialRaster entity is created from a single data file (e.g.,
-#'   CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
-#'   CAP_1985.img.aux.xml). In the case of multiple files, all files in the
-#'   parent directory where the raster file is located are aggregated into a
-#'   single compressed (zipped) file. In all cases, the resulting entity is
-#'   renamed with the project id + base file name + md5sum + file extension (zip
-#'   in the case when multiple files are aggregated).
-#' @note create_spatialRaster will look for a project id in the working
-#'   environment; this parameter is not passed to the function and it must
-#'   exist.
+#'  CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
+#'  CAP_1985.img.aux.xml). In the case of multiple files, all files in the
+#'  parent directory where the raster file is located are aggregated into a
+#'  single compressed (zipped) file. In all cases, the resulting entity is
+#'  renamed with the project id + base file name + md5sum + file extension (zip
+#'  in the case when multiple files are aggregated).
+#' @note create_spatialRaster will look for a package number in config.yaml;
+#'  congig.yaml::packageNum must exist in the project directory.
 #'
-#' @param rasterFile Quoted full path to raster file.
-#' @param description Description of the raster.
-#' @param epsgProjection EPSG numeric code of raster coordinate reference system
-#' @param emlProjection EML-compliant reference to raster coordinate reference
-#'   system
-#' @param rasterValueDescription Description of raster values
-#' @param rasterValueUnits Raster value units
-#' @param geoDescription A textual description of the geographic study area of
-#'   the raster. "CAP LTER study area" is the default.
-#' @param zipFiles Logical indicating whether spatial raster entity should be
-#'   constructed from a single raster file (FALSE, default) or entire directory
-#'   (TRUE)
-#' @param baseURL The base path of the web-accessible location of the data file;
-#'   the name of the resulting file will be passed to the base path to generate
-#'   a web-resolvable file path. This parameter is required with the default set
-#'   to the CAP LTER file path
-#' @param projectNaming Logical indicating if the raster file (or parent
-#'   directory if zipFiles == TRUE) should be renamed per the style used by the
-#'   CAP LTER (default) with the project id + base file name + md5sum + file
-#'   extension. The passed file or directory name will be used if this parameter
-#'   is set to FALSE.
+#' @param rasterFile
+#'  (character) Quoted full path to raster file.
+#' @param description
+#'  (character) Description of the raster.
+#' @param epsgProjection
+#'  (integer) EPSG numeric code of raster coordinate reference system
+#' @param rasterValueDescription
+#'  (character) Description of raster values
+#' @param rasterValueUnits
+#'  (character) Raster value units
+#' @param geoDescription
+#'  (character) A textual description of the geographic study area of the
+#'  raster. This parameter allows the user to overwrite the
+#'  geographicDesciption value provided in the project config.yaml.
+#' @param zipFiles
+#'  (logical) Logical indicating whether spatial raster entity should be
+#'  constructed from a single raster file (FALSE, default) or entire directory
+#'  (TRUE)
+#' @param baseURL
+#'  (character) The base path of the web-accessible location of the data file;
+#'  the name of the resulting file will be passed to the base path to generate
+#'  a web-resolvable file path. This parameter is required with the default set
+#'  to the CAP LTER file path
+#' @param projectNaming
+#'  (logical) Logical indicating if the raster file (or parent directory if
+#'  zipFiles == TRUE) should be renamed per the style used by the CAP LTER
+#'  (default) with the project id + base file name + md5sum + file extension.
+#'  The passed file or directory name will be used if this parameter is set to
+#'  FALSE.
 #'
 #' @import EML
 #' @import dplyr
 #' @import raster
-#' @importFrom readr read_csv
 #' @importFrom tools md5sum file_ext
-#' @importFrom utils file_test
+#' @importFrom utils read.csv
+#' @importFrom yaml yaml.load_file
 #'
 #' @return EML spatial data object is returned. Additionally, if projectNaming
-#'   is set to TRUE (default) the spatial data file is renamed with the project
-#'   id + base file name + md5sum + file extension (zip in the case when
-#'   multiple files are aggregated).
+#'  is set to TRUE (default) the spatial data file is renamed with the project
+#'  id + base file name + md5sum + file extension (zip in the case when
+#'  multiple files are aggregated).
 #'
 #' @examples
 #' \dontrun{
 #'
-#' rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
+#' rasterDesc <- "NDVI for the central Arizona region derived from 2015 NAIP
 #' imagery. NAIP NDVI data are presented as a series of tiles each representing
 #' a portion of the overall central Arizona coverage area. The relative position
 #' of this tile to the entire coverage area is detailed in the files
-#' NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
+#' NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
 #'
 #' geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
 #' region"
 #'
 #' NAIP_NDVI_2015_SV <- create_spatialRaster(
-#'    rasterFile = '~/path-to-file/NAIP_NDVI_2015.tiff',
+#'    rasterFile = "path-to-file/NAIP_NDVI_2015.tiff",
 #'    description = rasterDesc,
 #'    epsgProjection = 4326,
-#'    rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
-#'    rasterValueUnits = 'dimensionless',
+#'    rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
+#'    rasterValueUnits = "dimensionless",
 #'    geoDescription = geoDesc,
 #'    projectNaming = FALSE)
 #' }
 #'
 #' @export
 
-create_spatialRaster <- function(rasterFile,
-                                 description,
-                                 epsgProjection,
-                                 emlProjection,
-                                 rasterValueDescription,
-                                 rasterValueUnits,
-                                 zipFiles = FALSE,
-                                 geoDescription = "CAP LTER study area",
-                                 baseURL = "https://data.gios.asu.edu/datasets/cap/",
-                                 projectNaming = TRUE) {
+create_spatialRaster <- function(
+  rasterFile,
+  description,
+  epsgProjection,
+  rasterValueDescription,
+  rasterValueUnits,
+  zipFiles = FALSE,
+  geoDescription,
+  baseURL = "https://data.gios.asu.edu/datasets/cap/",
+  projectNaming = TRUE) {
 
 
   # set options -------------------------------------------------------------
@@ -91,19 +98,24 @@ create_spatialRaster <- function(rasterFile,
 
   # required parameters -----------------------------------------------------
 
-  # do not proceed if the project id has not been identified in the working env
-  if (projectNaming == TRUE & !exists('projectid')) { stop("missing project id") }
-
   # do not proceed if a description is not provided
-  if (missing('description')) { stop("please provide a description for this raster") }
+  if (missing("description")) {
 
-  # do not proceed if a description of the rater values is not provided
-  if (missing('rasterValueDescription')) { stop("please provide a desription of the raster cell values") }
+    stop("please provide a description for this raster")
+
+  }
+
+  # do not proceed if a description of the raster values is not provided
+  if (missing("rasterValueDescription")) {
+
+    stop("please provide a desription of the raster cell values")
+
+  }
 
   # do not proceed if a epsg of EML-compliant projection is not provided
-  if (missing('epsgProjection') & missing('emlProjection')) {
+  if (missing("epsgProjection")) {
 
-    stop("please provide a EPSG -or- EML-compliant projection for this raster")
+    stop("please provide a EPSG projection for this raster")
 
   }
 
@@ -132,16 +144,19 @@ create_spatialRaster <- function(rasterFile,
       attributeDefinition = rasterValueDescription
     )
 
-    rasterFactors <- read_csv(rasterFactorsFileName,
-                              col_types = cols()) # to suppress tibble output
+    rasterFactors <- utils::read.csv(rasterFactorsFileName)
 
-    attr_list <- EML::set_attributes(attributes = rasterAttributes, factors = rasterFactors, col_classes = "factor")
+    attr_list <- EML::set_attributes(
+      attributes = rasterAttributes,
+      factors = rasterFactors,
+      col_classes = "factor"
+    )
 
     # condition: factors not present (presuming that vars are not categorical)
   } else {
 
     # do not proceed if the units for the rater values is not provided
-    if (missing('rasterValueUnits')) { stop("please provide units for the raster cell values") }
+    if (missing("rasterValueUnits")) { stop("please provide units for the raster cell values") }
 
     # build base attributes data frame
     rasterAttributes <- data.frame(
@@ -187,90 +202,85 @@ create_spatialRaster <- function(rasterFile,
 
     } # close raster value number type
 
-    attr_list <- EML::set_attributes(attributes = rasterAttributes, col_classes = "numeric")
+    attr_list <- EML::set_attributes(
+      attributes = rasterAttributes,
+      col_classes = "numeric"
+    )
 
   } # close condition: factors not present
 
 
   # add additionalInfo - projections ----------------------------------------
 
-  if (missing(epsgProjection)) {
-
-    if (emlProjection == "NAD_1983_UTM_Zone_12N") {
-
-      epsgProjection <- 26912
-
-    } else if (emlProjection == "NAD_1927_UTM_Zone_12N") {
-
-      epsgProjection <- 26712
-
-    } else if (emlProjection == "GCS_WGS_1984") {
-
-      epsgProjection <- 4326
-
-    } else if (emlProjection == "WGS_1984_UTM_Zone_12N") {
-
-      epsgProjection <- 32612
-
-    } else {
-
-      projections <- list(
-        section = list(
-          paste0("<title>raster derived coordinate reference system</title>\n<para>", as.character(crs(rasterObject)), "</para>")
-        )
-      )
-
-    }
-
-  } else {
-
-    projections <- list(
-      section = list(
-        paste0("<title>user provided coordinate reference system</title>\n<para>", epsgProjection,"</para>"),
-        paste0("<title>raster derived coordinate reference system</title>\n<para>", as.character(crs(rasterObject)), "</para>")
-      )
+  projections <- list(
+    section = list(
+      paste0("<title>user-provided coordinate reference system</title>\n<para>", epsgProjection, "</para>"),
+      paste0("<title>raster-derived coordinate reference system</title>\n<para>", as.character(crs(rasterObject)), "</para>")
     )
+  )
 
-  }
-
+  message(
+    paste0("user-provided CRS: ", epsgProjection, "\n"),
+    paste0("raster-derived CRS: ", as.character(crs(rasterObject)))
+  )
 
   # identify EML-compliant spatial reference --------------------------------
 
-  if (missing(emlProjection)) {
+  if (epsgProjection == 26912) {
 
-    if (epsgProjection == 26912) {
+    emlProjection <- "NAD_1983_UTM_Zone_12N"
 
-      emlProjection <- "NAD_1983_UTM_Zone_12N"
+  } else if (epsgProjection == 26712) {
 
-    } else if (epsgProjection == 26712) {
+    emlProjection <- "NAD_1927_UTM_Zone_12N"
 
-      emlProjection <- "NAD_1927_UTM_Zone_12N"
+  } else if (epsgProjection == 4326) {
 
-    } else if (epsgProjection == 4326) {
+    emlProjection <- "GCS_WGS_1984"
 
-      emlProjection <- "GCS_WGS_1984"
+  } else if (epsgProjection == 32612) {
 
-    } else if (epsgProjection == 32612) {
+    emlProjection <- "WGS_1984_UTM_Zone_12N"
 
-      emlProjection <- "WGS_1984_UTM_Zone_12N"
+  } else {
 
-    } else {
-
-      stop("cannot identify EML-compliant projection, contact package developer")
-
-    }
+    stop("cannot identify EML-compliant projection, contact package developer")
 
   }
 
 
   # coverage ----------------------------------------------------------------
 
-  rasterGeographicDescription <- geoDescription
-  spatialCoverage <- EML::set_coverage(geographicDescription = rasterGeographicDescription,
-                                       west = raster::extent(rasterObject)@xmin,
-                                       east = raster::extent(rasterObject)@xmax,
-                                       north = raster::extent(rasterObject)@ymax,
-                                       south = raster::extent(rasterObject)@ymin)
+  if (missing("geoDescription")) {
+
+    # retrieve geographic description from config.yaml
+    if (!file.exists("config.yaml")) {
+
+      stop("could not locate geographic description, config.yaml not found")
+
+    }
+
+    geoDesc <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+
+    if (is.na(geoDesc) | is.null(geoDesc) | geoDesc == "") {
+
+      warning("geographic description provided in config.yaml is empty")
+
+    }
+
+  } else {
+
+    geoDesc <- geoDescription
+
+  }
+
+  rasterSpatialCoverage  <- EML::set_coverage(
+    geographicDescription = geoDesc,
+    west = raster::extent(rasterObject)@xmin,
+    east = raster::extent(rasterObject)@xmax,
+    north = raster::extent(rasterObject)@ymax,
+    south = raster::extent(rasterObject)@ymin
+  )
 
 
   # create spatial raster entity --------------------------------------------
@@ -296,7 +306,7 @@ create_spatialRaster <- function(rasterFile,
 
     # set file format
     fileDataFormat <- EML::eml$dataFormat(
-      externallyDefinedFormat = EML::eml$externallyDefinedFormat(formatName = "zip")
+      externallyDefinedFormat = EML::eml$externallyDefinedFormat(formatName = "application/zip")
     )
 
     if (projectNaming == TRUE) {
@@ -304,10 +314,20 @@ create_spatialRaster <- function(rasterFile,
       # if using project naming, add project-name specific elements to
       # spatialRaster entity
 
-      if (!exists('projectid')) { stop("missing project id") }
+      # retrieve package number from config.yaml
+      if (!file.exists("config.yaml")) {
+        stop("config.yaml not found")
+      }
+
+      packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
 
       # rename zipped dir with md5sum
-      zipHashName <- paste0(projectid, "_", file_path_sans_ext(basename(zippedDirName)), "_", md5sum(zippedDirName), ".zip")
+      zipHashName <- paste0(
+        packageNum, "_",
+        file_path_sans_ext(basename(zippedDirName)), "_",
+        md5sum(zippedDirName),
+        ".zip"
+      )
       zipHashDirName <- paste0(dirname(directoryName), "/", zipHashName)
       renameShell <- paste0("mv ", zippedDirName, " ", zipHashDirName)
       system(renameShell)
@@ -330,7 +350,7 @@ create_spatialRaster <- function(rasterFile,
         entityName = zipHashName,
         entityDescription = description,
         physical = spatialRasterPhysical,
-        coverage = spatialCoverage,
+        #         coverage = spatialCoverage,
         additionalInfo = projections,
         attributeList = attr_list,
         spatialReference = EML::eml$spatialReference(
@@ -373,7 +393,7 @@ create_spatialRaster <- function(rasterFile,
         entityName = zipBaseName,
         entityDescription = description,
         physical = spatialRasterPhysical,
-        coverage = spatialCoverage,
+        #         coverage = spatialCoverage,
         additionalInfo = projections,
         attributeList = attr_list,
         spatialReference = EML::eml$spatialReference(
@@ -422,11 +442,26 @@ create_spatialRaster <- function(rasterFile,
       # if using project naming, add project-name specific elements to
       # spatialRaster entity
 
-      newRasterName <- paste0(projectid, "_", file_path_sans_ext(rasterBaseName), "_", md5sum(rasterFile), ".", file_ext(rasterFile))
+      # retrieve package number from config.yaml
+      if (!file.exists("config.yaml")) {
+        stop("config.yaml not found")
+      }
+
+      packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
+
+      newRasterName <- paste0(
+        packageNum, "_",
+        file_path_sans_ext(rasterBaseName), "_",
+        md5sum(rasterFile), ".",
+        file_ext(rasterFile)
+      )
+
       newRasterNameDir <- paste0(directoryNameFull, "/", newRasterName)
 
-      file.copy(from = rasterFile,
-                to = newRasterNameDir)
+      file.copy(
+        from = rasterFile,
+        to = newRasterNameDir
+      )
 
       # set distribution
       fileDistribution <- EML::eml$distribution(
@@ -447,7 +482,7 @@ create_spatialRaster <- function(rasterFile,
         entityName = newRasterName,
         entityDescription = description,
         physical = spatialRasterPhysical,
-        coverage = spatialCoverage,
+        #         coverage = spatialCoverage,
         additionalInfo = projections,
         attributeList = attr_list,
         spatialReference = EML::eml$spatialReference(
@@ -467,6 +502,7 @@ create_spatialRaster <- function(rasterFile,
       )
 
       # close projectNaming == TRUE
+
     } else {
 
       # if not using not project naming, add source-name specific elements to
@@ -491,7 +527,7 @@ create_spatialRaster <- function(rasterFile,
         entityName = rasterBaseName,
         entityDescription = description,
         physical = spatialRasterPhysical,
-        coverage = spatialCoverage,
+        #         coverage = spatialCoverage,
         additionalInfo = projections,
         attributeList = attr_list,
         spatialReference = EML::eml$spatialReference(
@@ -514,9 +550,30 @@ create_spatialRaster <- function(rasterFile,
 
   } # if working with a raster file (i.e., not zipping a directory)
 
+
+  # add (spatial) coverage --------------------------------------------------
+
+  # EML requires that geographic extents are provided as decimal degrees.
+  # Because it is impractical to project some rasters, if the projection of a
+  # raster is in units of meters, a spatial coverage is not constructed.
+
+  if (abs(raster::extent(rasterObject)@xmin) > 180) {
+
+    warning("projection in meters, coverage not constructed")
+
+  } else {
+
+    newSR$coverage$spatialCoverage <- rasterSpatialCoverage
+
+  }
+
+
+  # closing message ---------------------------------------------------------
+
+  message("spatialRaster created")
+
   # return spatial raster object --------------------------------------------
 
   return(newSR)
-
 
 } # close create_spatialRaster
