@@ -128,7 +128,7 @@
   permissible by EML.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_emlProjection</span>(<span class='no'>spatialDataEntity</span>)</pre>
+    <pre class="usage"><span class='fu'>get_emlProjection</span><span class='op'>(</span><span class='va'>spatialDataEntity</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,11 +158,13 @@ raster (for rasters) or rgdal (for vectors) packages</p></td>
   transverse mercator.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>vectorData</span> <span class='kw'>&lt;-</span> <span class='fu'>readOGR</span>(<span class='kw'>dsn</span><span class='kw'>=</span><span class='st'>"/GISfiles/WatershedShapefile/"</span>, <span class='kw'>layer</span><span class='kw'>=</span><span class='st'>"AZwatersheds_prj"</span>)
-<span class='no'>rasterdata</span> <span class='kw'>&lt;-</span> <span class='fu'>raster</span>(<span class='st'>"CAP_1985.img"</span>)
-<span class='no'>emlCompliantProjection</span> <span class='kw'>&lt;-</span> <span class='fu'>get_emlProjection</span>(<span class='no'>rasterdata</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>vectorData</span> <span class='op'>&lt;-</span> <span class='fu'>readOGR</span><span class='op'>(</span>dsn<span class='op'>=</span><span class='st'>"/GISfiles/WatershedShapefile/"</span>, layer<span class='op'>=</span><span class='st'>"AZwatersheds_prj"</span><span class='op'>)</span>
+<span class='va'>rasterdata</span> <span class='op'>&lt;-</span> <span class='fu'>raster</span><span class='op'>(</span><span class='st'>"CAP_1985.img"</span><span class='op'>)</span>
+<span class='va'>emlCompliantProjection</span> <span class='op'>&lt;-</span> <span class='fu'>get_emlProjection</span><span class='op'>(</span><span class='va'>rasterdata</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -178,7 +180,7 @@ raster (for rasters) or rgdal (for vectors) packages</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

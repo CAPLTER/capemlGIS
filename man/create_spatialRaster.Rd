@@ -8,12 +8,10 @@ create_spatialRaster(
   rasterFile,
   description,
   epsgProjection,
-  emlProjection,
   rasterValueDescription,
   rasterValueUnits,
   zipFiles = FALSE,
- 
-    geoDescription = "CAP LTER study area: greater Phoenix, AZ metropolitan area and surrounding Sonoran desert region",
+  geoDescription,
   baseURL = "https://data.gios.asu.edu/datasets/cap/",
   projectNaming = TRUE
 )
@@ -25,8 +23,6 @@ create_spatialRaster(
 
 \item{epsgProjection}{(integer) EPSG numeric code of raster coordinate reference system}
 
-\item{emlProjection}{EML-compliant reference to raster coordinate reference system}
-
 \item{rasterValueDescription}{(character) Description of raster values}
 
 \item{rasterValueUnits}{(character) Raster value units}
@@ -36,7 +32,8 @@ constructed from a single raster file (FALSE, default) or entire directory
 (TRUE)}
 
 \item{geoDescription}{(character) A textual description of the geographic study area of the
-raster defaults to CAP LTER default language.}
+raster. This parameter allows the user to overwrite the
+geographicDesciption value provided in the project config.yaml.}
 
 \item{baseURL}{(character) The base path of the web-accessible location of the data file;
 the name of the resulting file will be passed to the base path to generate
@@ -61,34 +58,35 @@ create_spatialRaster generates a EML entity of type
 }
 \details{
 a spatialRaster entity is created from a single data file (e.g.,
-  CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
-  CAP_1985.img.aux.xml). In the case of multiple files, all files in the
-  parent directory where the raster file is located are aggregated into a
-  single compressed (zipped) file. In all cases, the resulting entity is
-  renamed with the project id + base file name + md5sum + file extension
-  (zip in the case when multiple files are aggregated).
+ CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
+ CAP_1985.img.aux.xml). In the case of multiple files, all files in the
+ parent directory where the raster file is located are aggregated into a
+ single compressed (zipped) file. In all cases, the resulting entity is
+ renamed with the project id + base file name + md5sum + file extension (zip
+ in the case when multiple files are aggregated).
 }
 \note{
-create_spatialRaster will look for a package number in config.yaml.
+create_spatialRaster will look for a package number in config.yaml;
+ congig.yaml::packageNum must exist in the project directory.
 }
 \examples{
 \dontrun{
 
-rasterDesc <- 'NDVI for the central Arizona region derived from 2015 NAIP
+rasterDesc <- "NDVI for the central Arizona region derived from 2015 NAIP
 imagery. NAIP NDVI data are presented as a series of tiles each representing
 a portion of the overall central Arizona coverage area. The relative position
 of this tile to the entire coverage area is detailed in the files
-NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set.'
+NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
 
 geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
 region"
 
 NAIP_NDVI_2015_SV <- create_spatialRaster(
-   rasterFile = '~/path-to-file/NAIP_NDVI_2015.tiff',
+   rasterFile = "path-to-file/NAIP_NDVI_2015.tiff",
    description = rasterDesc,
    epsgProjection = 4326,
-   rasterValueDescription = 'Normalized Difference Vegetation Index (NDVI)',
-   rasterValueUnits = 'dimensionless',
+   rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
+   rasterValueUnits = "dimensionless",
    geoDescription = geoDesc,
    projectNaming = FALSE)
 }

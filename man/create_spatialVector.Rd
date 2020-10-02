@@ -7,34 +7,35 @@
 create_spatialVector(
   svname,
   description,
-  geoDescription = "CAP LTER study area",
+  geoDescription,
   baseURL = "https://data.gios.asu.edu/datasets/cap/",
   projectNaming = TRUE
 )
 }
 \arguments{
-\item{svname}{The unquoted name of the spatial data object in the R
-environment.}
+\item{svname}{The unquoted name of the spatial data object in the R environment.}
 
-\item{description}{A quoted description of the spatial object that will
-populate the entityDescription element of the EML document.}
+\item{description}{(character) Description of the vector resource.}
 
-\item{geoDescription}{A textual description of the geographic study area of
-the vector. "CAP LTER study area" is the default.}
+\item{geoDescription}{(character) A textual description of the geographic study area of the
+vector. This parameter allows the user to overwrite the
+geographicDesciption value provided in the project config.yaml.}
 
-\item{baseURL}{(optional) The base path of the web-accessible location of the
-data file; the name of the resulting file will be passed to the base path
-to generate a web-resolvable file path.}
+\item{baseURL}{(character) The base path of the web-accessible location of the data file;
+the name of the resulting file will be passed to the base path to generate
+a web-resolvable file path. This parameter is required with the default set
+to the CAP LTER file path}
 
-\item{projectNaming}{Logical indicating if the raster file should be renamed
-per the style used by the CAP LTER (default) with the project id + base
-file name + md5sum + file extension. The passed file or directory name will
-be used if this parameter is set to FALSE.}
+\item{projectNaming}{(logical) Logical indicating if the vector file (or parent directory if
+zipFiles == TRUE) should be renamed per the style used by the CAP LTER
+(default) with the project id + base file name + md5sum + file extension.
+The passed file or directory name will be used if this parameter is set to
+FALSE.}
 }
 \value{
 EML spatialVector object is returned. Additionally, the spatial data
-  entity is written to file as type kml, and renamed with the project id +
-  base file name + file extension (kml in this case).
+ entity is written to file as type kml, and renamed with the project id +
+ base file name + file extension (kml in this case).
 }
 \description{
 create_spatialVector generates a EML entity of type

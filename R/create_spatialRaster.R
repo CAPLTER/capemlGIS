@@ -48,7 +48,7 @@
 #' @import raster
 #' @importFrom tools md5sum file_ext
 #' @importFrom utils read.csv
-#' @importFrom yaml load_file
+#' @importFrom yaml yaml.load_file
 #'
 #' @return EML spatial data object is returned. Additionally, if projectNaming
 #'  is set to TRUE (default) the spatial data file is renamed with the project
