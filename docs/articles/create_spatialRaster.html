@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -69,13 +69,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="create_spatialRaster_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>create_spatialRaster</h1>
                         <h4 class="author">S. Earl</h4>
             
-            <h4 class="date">2020-10-02</h4>
+            <h4 class="date">2021-01-15</h4>
       
       
       <div class="hidden name"><code>create_spatialRaster.Rmd</code></div>
@@ -183,8 +183,8 @@
 <h3 class="hasAnchor">
 <a href="#calling-the-function" class="anchor"></a>calling the function</h3>
 <p>Call the <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function to generate the EML to describe the raster. Arguments include the quoted full or relative path to the raster file (or files), the quoted full or relative path and name of the raster metadata file, and the quoted full or relative path and name of the raster value categories (if needed). Output of the function yields EML that can be incorporated into the metadata for a data set.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="va">rasterDesc</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rasterDesc</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP
 imagery. NAIP NDVI data are presented as a series of tiles each representing
 a portion of the overall central Arizona coverage area. The relative position
 of this tile to the entire coverage area is detailed in the files
@@ -200,7 +200,7 @@ region"</span>
   rasterValueDescription <span class="op">=</span> <span class="st">"Normalized Difference Vegetation Index (NDVI)"</span>,
   rasterValueUnits <span class="op">=</span> <span class="st">"dimensionless"</span>,
   geoDescription <span class="op">=</span> <span class="va">geoDesc</span>,
-  projectNaming <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
+  projectNaming <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

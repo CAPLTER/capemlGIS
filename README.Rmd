@@ -2,11 +2,6 @@
 output: github_document
 ---
 
-```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
-
-library(kableExtra)
-```
-
 <!-- README.md is generated from README.Rmd. Please edit the latter. -->
 
 ## capemlGIS: tools to aid the generation of EML metadata for spatial vectors and rasters
@@ -85,34 +80,36 @@ definition metadata for spatial rasters if raster values are categorical
 
 ```{r myvector, eval=FALSE}
 
-# load spatial vector object
-myvector <- read_sf(
-  dsn = "vector_file_directory",
-  layer = "vector_file_layer_name"
+# Load spatial vector object, here reading an existing kml file but this
+# could be by constructing a spatial object in R using any means.
+msp_arthropod_locations <- sf::st_read("msp_arthropod_locations.kml")
+
+# The 'Name' attribute of a kml file describes the points so be sure that this
+# field is populated with meaninful data.
+msp_arthropod_locations <- msp_arthropod_locations %>%
+  mutate(Name = sampling_locations)
+
+# Write the attributes to a file for editing. In the case of KML files, there
+# are many fields that max exist but are not used (e.g., elevation); metadata
+# for unused fields is not required and should be removed from the attributes
+# metadata (taking advantage of the less stringent error checking by PASTA+ of
+# spatial entities)
+write_attributes(msp_arthropod_locations)
+
+# Create a description of the data entity
+msp_arthropod_locations_desc <- "Geospatial file (KML) detailing the
+locations of ground-dwelling arthropod sampling sites in the McDowell
+Sonoran Preserve, Scottsdale, Arizona. Polygons reflect the bounding box
+(minimum and maximum extents) of paired (boundary-interior) sampling
+locations. Precise sampling locations are available upon request to the CAP
+LTER Data Manager."
+
+# Generate EML object of type spatial vector, and write to file in KML format
+msp_arthropod_locations_SV <- create_spatialVector(
+  svname = msp_arthropod_locations,
+  description = msp_arthropod_locations_desc
 )
 
-# drop geometry before writing attributes
-myvector <- myvector %>%
-  st_drop_geometry()
-
-# assign Name to the site identifier variable
-myvector <- myvector %>%
-  mutate(Name = site_identifer)
-
-write_attributes(myvector)
-
-# re-load spatial vector object
-myvector <- read_sf(
-  dsn = "vector_file_directory",
-  layer = "vector_file_layer_name"
-)
-
-myvector_desc <- "desc"
-
-myvector_SV <- create_spatialVector(
-  svname = myvector,
-  description = myvector_desc
-)
-
+# The resulting spatialVector entity can be added to a EML dataset
 ```
 
