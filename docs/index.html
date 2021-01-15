@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
       </span>
     </div>
 
@@ -45,7 +45,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -77,6 +77,13 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
+<hr>
+<div id="output-github_document" class="section level2">
+<h2 class="hasAnchor">
+<a href="#output-github_document" class="anchor"></a>output: github_document</h2>
+<!-- README.md is generated from README.Rmd. Please edit the latter. -->
+</div>
 <div id="capemlgis-tools-to-aid-the-generation-of-eml-metadata-for-spatial-vectors-and-rasters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#capemlgis-tools-to-aid-the-generation-of-eml-metadata-for-spatial-vectors-and-rasters" class="anchor"></a>capemlGIS: tools to aid the generation of EML metadata for spatial vectors and rasters</h2>
@@ -89,8 +96,8 @@
 <h3 class="hasAnchor">
 <a href="#installation" class="anchor"></a>installation</h3>
 <p>Install from GitHub (after installing the <a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a> package:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CAPLTER/capemlGIS"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CAPLTER/capemlGIS"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="getting-started" class="section level3">
 <h3 class="hasAnchor">
@@ -127,11 +134,7 @@
 <a href="#tools-to-create-eml-entities" class="anchor"></a>tools to create EML entities</h3>
 <ul>
 <li>
-<code><a href="reference/create_spatialRaster.html">create_spatialRaster()</a></code> creates a EML entity of type spatialRaster
-<ul>
-<li>see <a href="https://caplter.github.io/capeml/articles/create_spatialRaster.html">vignette</a> for more detail</li>
-</ul>
-</li>
+<code><a href="reference/create_spatialRaster.html">create_spatialRaster()</a></code> creates a EML entity of type spatialRaster - see <a href="https://caplter.github.io/capeml/articles/create_spatialRaster.html">vignette</a> for more detail</li>
 <li>
 <code><a href="reference/create_spatialVector.html">create_spatialVector()</a></code> creates a EML entity of type <code>spatialVector</code>. Output includes:
 <ul>
@@ -145,37 +148,41 @@
 <h3 class="hasAnchor">
 <a href="#overview-create-a-spatialvector" class="anchor"></a>overview: create a spatialVector</h3>
 <p><strong>example: myvector</strong></p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># load spatial vector object</span>
-<span class="va">myvector</span> <span class="op">&lt;-</span> <span class="fu">read_sf</span><span class="op">(</span>
-  dsn <span class="op">=</span> <span class="st">"vector_file_directory"</span>,
-  layer <span class="op">=</span> <span class="st">"vector_file_layer_name"</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Load spatial vector object, here reading an existing kml file but this</span>
+<span class="co"># could be by constructing a spatial object in R using any means.</span>
+<span class="va">msp_arthropod_locations</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="st">"msp_arthropod_locations.kml"</span><span class="op">)</span>
+
+<span class="co"># The 'Name' attribute of a kml file describes the points so be sure that this</span>
+<span class="co"># field is populated with meaninful data.</span>
+<span class="va">msp_arthropod_locations</span> <span class="op">&lt;-</span> <span class="va">msp_arthropod_locations</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>Name <span class="op">=</span> <span class="va">sampling_locations</span><span class="op">)</span>
+
+<span class="co"># Write the attributes to a file for editing. In the case of KML files, there</span>
+<span class="co"># are many fields that max exist but are not used (e.g., elevation); metadata</span>
+<span class="co"># for unused fields is not required and should be removed from the attributes</span>
+<span class="co"># metadata (taking advantage of the less stringent error checking by PASTA+ of</span>
+<span class="co"># spatial entities)</span>
+<span class="fu">write_attributes</span><span class="op">(</span><span class="va">msp_arthropod_locations</span><span class="op">)</span>
+
+<span class="co"># Create a description of the data entity</span>
+<span class="va">msp_arthropod_locations_desc</span> <span class="op">&lt;-</span> <span class="st">"Geospatial file (KML) detailing the
+locations of ground-dwelling arthropod sampling sites in the McDowell
+Sonoran Preserve, Scottsdale, Arizona. Polygons reflect the bounding box
+(minimum and maximum extents) of paired (boundary-interior) sampling
+locations. Precise sampling locations are available upon request to the CAP
+LTER Data Manager."</span>
+
+<span class="co"># Generate EML object of type spatial vector, and write to file in KML format</span>
+<span class="va">msp_arthropod_locations_SV</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_spatialVector.html">create_spatialVector</a></span><span class="op">(</span>
+  svname <span class="op">=</span> <span class="va">msp_arthropod_locations</span>,
+  description <span class="op">=</span> <span class="va">msp_arthropod_locations_desc</span>
 <span class="op">)</span>
 
-<span class="co"># drop geometry before writing attributes</span>
-<span class="va">myvector</span> <span class="op">&lt;-</span> <span class="va">myvector</span> <span class="op">%&gt;%</span>
-  <span class="fu">st_drop_geometry</span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># assign Name to the site identifier variable</span>
-<span class="va">myvector</span> <span class="op">&lt;-</span> <span class="va">myvector</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>Name <span class="op">=</span> <span class="va">site_identifer</span><span class="op">)</span>
-
-<span class="fu">write_attributes</span><span class="op">(</span><span class="va">myvector</span><span class="op">)</span>
-
-<span class="co"># re-load spatial vector object</span>
-<span class="va">myvector</span> <span class="op">&lt;-</span> <span class="fu">read_sf</span><span class="op">(</span>
-  dsn <span class="op">=</span> <span class="st">"vector_file_directory"</span>,
-  layer <span class="op">=</span> <span class="st">"vector_file_layer_name"</span>
-<span class="op">)</span>
-
-<span class="va">myvector_desc</span> <span class="op">&lt;-</span> <span class="st">"desc"</span>
-
-<span class="va">myvector_SV</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_spatialVector.html">create_spatialVector</a></span><span class="op">(</span>
-  svname <span class="op">=</span> <span class="va">myvector</span>,
-  description <span class="op">=</span> <span class="va">myvector_desc</span>
-<span class="op">)</span></pre></div>
+<span class="co"># The resulting spatialVector entity can be added to a EML dataset</span></code></pre></div>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
