@@ -196,9 +196,13 @@ create_spatialVector <- function(
       tidyr::unnest_wider(value) %>%
       dplyr::select(-one_of("name"))
 
-  } else {
+  } else if (!file.exists(paste0(namestr, "_attrs.yaml")) && file.exists(paste0(namestr, "_attrs.csv"))) {
 
     attrs <- utils::read.csv(paste0(namestr, "_attrs.csv"))
+
+  } else {
+
+    stop(paste0("attributes file: ", namestr, "_attrs.yaml ", "not found in ", getwd()))
 
   }
 
@@ -285,9 +289,13 @@ if (grepl("polygon", sfGeometry, ignore.case = TRUE)) {
 
   objectGeometry <- "Point"
 
+} else if (grepl("linestring", sfGeometry, ignore.case = TRUE)) {
+
+  objectGeometry <- "LineString"
+
 } else {
 
-  stop("undetermined geometry")
+  stop(paste0("undetermined geometry: ", attr(svname$geometry, "class")[[1]]))
 
 }
 
