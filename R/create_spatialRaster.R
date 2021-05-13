@@ -274,13 +274,24 @@ create_spatialRaster <- function(
 
   }
 
-  rasterSpatialCoverage  <- EML::set_coverage(
+#   rasterSpatialCoverage  <- EML::set_coverage(
+#     geographicDescription = geoDesc,
+#     west = raster::extent(rasterObject)@xmin,
+#     east = raster::extent(rasterObject)@xmax,
+#     north = raster::extent(rasterObject)@ymax,
+#     south = raster::extent(rasterObject)@ymin
+#   )
+
+  rasterSpatialCoverage <- list(
     geographicDescription = geoDesc,
-    west = raster::extent(rasterObject)@xmin,
-    east = raster::extent(rasterObject)@xmax,
-    north = raster::extent(rasterObject)@ymax,
-    south = raster::extent(rasterObject)@ymin
+    boundingCoordinates = list(
+      westBoundingCoordinate = raster::extent(rasterObject)@xmin,
+      eastBoundingCoordinate = raster::extent(rasterObject)@xmax,
+      northBoundingCoordinate = raster::extent(rasterObject)@ymax,
+      southBoundingCoordinate = raster::extent(rasterObject)@ymin
+    )
   )
+
 
 
   # create spatial raster entity --------------------------------------------
@@ -563,7 +574,7 @@ create_spatialRaster <- function(
 
   } else {
 
-    newSR$coverage$spatialCoverage <- rasterSpatialCoverage
+    newSR$coverage$geographicCoverage <- rasterSpatialCoverage
 
   }
 
