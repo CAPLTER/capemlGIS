@@ -27,7 +27,8 @@ Imports:
     tools,
     capeml,
     yaml,
-    tidyr
+    tidyr,
+    xml2
 Remotes: CAPLTER/capeml
 RoxygenNote: 7.1.1
 Suggests: knitr,

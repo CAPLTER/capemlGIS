@@ -89,6 +89,7 @@
 #' )
 #'
 #' # The resulting spatialVector entity can be added to a EML dataset
+#' }
 #'
 #' @export
 
