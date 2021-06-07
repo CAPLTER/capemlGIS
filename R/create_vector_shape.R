@@ -118,7 +118,10 @@
 #'   projectNaming = TRUE,
 #'   )
 #'
-#' # The resulting spatialVector entity can be added to a EML dataset
+#' # The resulting spatialVector entity can be added to a EML dataset.
+#' # Note also in this example that we are passing additional layer options,
+#' # which ultimately feed to sf::st_write, necessary here to generate a
+#' # multi-polygon shapefile.
 #'
 #' }
 #'
@@ -190,10 +193,10 @@ create_vector_shape <- function(
 
     spatialCoverage <- EML::set_coverage(
       geographicDescription = geoDescription,
-      westBoundingCoordinate =  sf::st_bbox(vector_lat_long )[["xmin"]],
-      eastBoundingCoordinate =  sf::st_bbox(vector_lat_long )[["xmax"]],
-      northBoundingCoordinate = sf::st_bbox(vector_lat_long )[["ymax"]],
-      southBoundingCoordinate = sf::st_bbox(vector_lat_long )[["ymin"]]
+      westBoundingCoordinate =  sf::st_bbox(vector_lat_long)[["xmin"]],
+      eastBoundingCoordinate =  sf::st_bbox(vector_lat_long)[["xmax"]],
+      northBoundingCoordinate = sf::st_bbox(vector_lat_long)[["ymax"]],
+      southBoundingCoordinate = sf::st_bbox(vector_lat_long)[["ymin"]]
     )
 
 
