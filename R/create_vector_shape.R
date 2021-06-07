@@ -13,7 +13,7 @@
 #' object into the R environment or creating a spatial object with the R
 #' environment. The shapefile that is written to file is packaged within a new
 #' directory that is zipped for inclusion in a data package. Because a new
-#' spatial object is created, the data can be modified as needed.  If present,
+#' spatial object is created, the data can be modified as needed. If present,
 #' the function reads attribute and factor metadata from supporting yaml
 #' file(s) generated from the capeml::write_attributes() and
 #' capeml::write_factors() functions - create_vector_shape will look for files
@@ -59,7 +59,7 @@
 #' indicate missing values within the data.
 #'
 #' @import EML
-#' @importFrom sf st_write
+#' @importFrom sf st_write st_transform
 #' @importFrom yaml yaml.load_file
 #' @importFrom capeml read_attributes
 #' @importFrom tools md5sum
@@ -183,13 +183,31 @@ create_vector_shape <- function(
 
   }
 
-  spatialCoverage <- EML::set_coverage(
-    geographicDescription = geoDescription,
-    westBoundingCoordinate =  sf::st_bbox(vector_name)[["xmin"]],
-    eastBoundingCoordinate =  sf::st_bbox(vector_name)[["xmax"]],
-    northBoundingCoordinate = sf::st_bbox(vector_name)[["ymax"]],
-    southBoundingCoordinate = sf::st_bbox(vector_name)[["ymin"]]
-  )
+
+  if (sf::st_bbox(vector_name)[["xmin"]] < -180 | sf::st_bbox(vector_name)[["xmin"]] > 180) {
+
+    vector_lat_long <- sf::st_transform(vector_name, crs = 4326)
+
+    spatialCoverage <- EML::set_coverage(
+      geographicDescription = geoDescription,
+      westBoundingCoordinate =  sf::st_bbox(vector_lat_long )[["xmin"]],
+      eastBoundingCoordinate =  sf::st_bbox(vector_lat_long )[["xmax"]],
+      northBoundingCoordinate = sf::st_bbox(vector_lat_long )[["ymax"]],
+      southBoundingCoordinate = sf::st_bbox(vector_lat_long )[["ymin"]]
+    )
+
+
+  } else {
+
+    spatialCoverage <- EML::set_coverage(
+      geographicDescription = geoDescription,
+      westBoundingCoordinate =  sf::st_bbox(vector_name)[["xmin"]],
+      eastBoundingCoordinate =  sf::st_bbox(vector_name)[["xmax"]],
+      northBoundingCoordinate = sf::st_bbox(vector_name)[["ymax"]],
+      southBoundingCoordinate = sf::st_bbox(vector_name)[["ymin"]]
+    )
+
+  }
 
 
   # create a target directory in the working directory to house shapefiles ----
