@@ -56,7 +56,7 @@ project-id is not passed as an argument, and must exist in `config.yaml` (as
 `projectid`). 
 
 ### tools to generate entity metadata
-**note that write_attributes and write_factors are in the capeml package**
+*note that write_attributes and write_factors are in the capeml package*
 
 * `write_attributes()` creates a template as a yaml file for supplying attribute
   metadata for a spatial vector object that resides in the R environment.
@@ -66,8 +66,7 @@ project-id is not passed as an argument, and must exist in `config.yaml` (as
 * `write_raster_factors()` creates a template as a csv file for supplying code
   definition metadata for spatial rasters if raster values are categorical.
 
-### tools to create spatial data objects and corresponding EML metadata
-entities
+### tools to create spatial data objects and corresponding EML metadata entities
 
 * `create_spatialRaster` Output includes:
   + EML entity of type `spatialRaster`
@@ -158,11 +157,11 @@ ejido_titles_points_of_decree_SV <- create_vector_shape(
 The workflow for writing to kml is nearly identical to the workflow for writing
 to shapefile. Some differences include that we need (or, at least, should) have
 a Name field in the resulting kml file that serves as a unique identifier for
-each data entity, added in the workflow below as a call to `mutate.` Also, some
-parameters are different, such as unlike `create_vector_shape`, which requires
-the user to pass an EML-compliant coordinate reference system, since
-`create_vector_kml` writes to kml, the resulting CRS is always EPSG 4326 and,
-thus, is hard-coded into the function.
+each data entity - added in the workflow below as an additional line in the
+call to `mutate.` Also, some parameters are different, such as unlike
+`create_vector_shape`, which requires the user to pass an EML-compliant
+coordinate reference system, since `create_vector_kml` writes to kml, the
+resulting CRS is *always* EPSG 4326 and, thus, is hard-coded into the function.
 
 ```{r create-vector-kml, eval=FALSE}
 
