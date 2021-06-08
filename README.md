@@ -10,7 +10,7 @@ output: github_document
   
 This package extends the [CAPLTER/capeml](https://github.com/CAPLTER/capeml)
 package to facilitate the creation of EML spatialRaster and spatialVector
-metadata.
+objects and metadata.
 
 
 ### installation
@@ -42,74 +42,175 @@ switch to the previous version with `emld::eml_version("eml-2.1.1")`.
 
 #### project naming
 
-Most EML-generating functions in the capemlGIS package will create both
-physical objects and EML references to those objects with the format:
+Most EML-generating functions in the capeml and capemlGIS packages will create
+both physical objects and EML references to those objects. By default, the
+package will name output files with the format
 `project-id`\_`object-name`\_`object-hash`\.`file-extension` (e.g.,
 *664_site_map_5fb7b8d53d48010eab1a2e73db7f1941.kml*). The target object (e.g.,
-site_map.kml) is renamed with the additional metadata and this object name is
-referenced in the EML metadata. The exception to this approach are
-spatialVectors where the hash of the file/object is not included in the new
-object name. Note that the project-id is not passed to any of the functions,
-and must exist in `config.yaml` (as `projectid`).
-
-Project-naming functionality can be turned off by setting the `projectNaming`
-option in `create_spatialRaster()` to FALSE. When set to FALSE, the object name
-is not changed, and the file name of the object is included in the EML.
+site_map.png from the previous example) is renamed with the additional metadata
+and this object name is referenced in the EML metadata. Project naming can be
+disabled by setting the `projectNaming` flag to `FALSE`. When set to FALSE, the
+object name is not changed, and the name of the data object as read into the R
+environment is written to file and referenced in the EML. Note that the
+project-id is not passed as an argument, and must exist in `config.yaml` (as
+`projectid`). 
 
 ### tools to generate entity metadata
+**note that write_attributes and write_factors are in the capeml package**
 
-* `write_attributes()` creates a template as a csv file for supplying attribute
-metadata for a spatial vector object that resides in the R environment
+* `write_attributes()` creates a template as a yaml file for supplying attribute
+  metadata for a spatial vector object that resides in the R environment.
+* `write_factors()` creates a template as a yaml file for supplying code
+  definition metadata for factors in vector data object that resides in the R
+  environment.
 * `write_raster_factors()` creates a template as a csv file for supplying code
-definition metadata for spatial rasters if raster values are categorical
+  definition metadata for spatial rasters if raster values are categorical.
 
-### tools to create EML entities
+### tools to create spatial data objects and corresponding EML metadata
+entities
 
-* `create_spatialRaster()` creates a EML entity of type spatialRaster - see
-  [vignette](https://caplter.github.io/capeml/articles/create_spatialRaster.html)
-  for more detail
-* `create_spatialVector()` creates a EML entity of type `spatialVector`. Output includes:
-  + EML entity of type `spatialVector` that can be added to a EML dataset
-  + input data written to a kml file with project naming (if selected).  Note
-    that regardless of source type, all spatial vector input data are converted
-    to type kml.
+* `create_spatialRaster` Output includes:
+  + EML entity of type `spatialRaster`
+  + see
+    [vignette](https://caplter.github.io/capeml/articles/create_spatialRaster.html)
+    for more detail
+* `create_vector_kml` Output includes:
+  + EML entity of type `spatialVector` that can be added to a EML dataset.
+  + Input data written to a kml file with project naming (if selected).
+* `create_vector_shape` Output includes:
+  + EML entity of type `spatialVector` that can be added to a EML dataset.
+  + Input data **written** to a shapefile with project naming (if selected).
+    Shapefile files are written to a directory that is zipped.
+* `package_vector_shape` Output includes:
+  + EML entity of type `spatialVector` that can be added to a EML dataset.
+  + **Harvests** all relevant files that constitute a single shapefile into a
+    directory that is then zipped.
+  + `package_vector_shape` differs from the create_* series of functions in
+    that it does not write data to file but rather packages the files that
+    consititute a shapefile into a new directory that is then zipped for
+    inclusion in a data package. Use package shape if it is important that the
+    input data are not read into R or otherwise altered during the construction
+    of the dataset. A limitation of this approach is that the data cannot be
+    modified.
+
 
 ### overview: create a spatialVector
 
-**example: myvector**
+#### output to shapefile
 
 
 ```r
-# Load spatial vector object, here reading an existing kml file but this
-# could be by constructing a spatial object in R using any means.
-msp_arthropod_locations <- sf::st_read("msp_arthropod_locations.kml")
+# load spatial vector object; because create_vector_shape will generate a
+# new shapefile, we have complete flexibility over the shapefile name and
+# manipulating the data - here we are starting with an existing shapefile
+# named CORETT but will generate a shapefile with the name
+# ejido_titles_points_of_decree 
 
-# The 'Name' attribute of a kml file describes the points so be sure that this
-# field is populated with meaninful data.
-msp_arthropod_locations <- msp_arthropod_locations %>%
-  mutate(Name = sampling_locations)
-
-# Write the attributes to a file for editing. In the case of KML files, there
-# are many fields that max exist but are not used (e.g., elevation); metadata
-# for unused fields is not required and should be removed from the attributes
-# metadata (taking advantage of the less stringent error checking by PASTA+ of
-# spatial entities)
-write_attributes(msp_arthropod_locations)
-
-# Create a description of the data entity
-msp_arthropod_locations_desc <- "Geospatial file (KML) detailing the
-locations of ground-dwelling arthropod sampling sites in the McDowell
-Sonoran Preserve, Scottsdale, Arizona. Polygons reflect the bounding box
-(minimum and maximum extents) of paired (boundary-interior) sampling
-locations. Precise sampling locations are available upon request to the CAP
-LTER Data Manager."
-
-# Generate EML object of type spatial vector, and write to file in KML format
-msp_arthropod_locations_SV <- create_spatialVector(
-  svname = msp_arthropod_locations,
-  description = msp_arthropod_locations_desc
+ejido_titles_points_of_decree <- sf::read_sf(
+  dsn = "data/Regularizacion/ejidal",
+  layer = "CORETT"
+  ) %>%
+select(
+  -OBJECTID_1,
+  -FolderNumb,
+  -Surface
+  ) %>%
+mutate(
+  Id = as.character(Id),
+  across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
+  across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
+  Year = as.character(Year)
 )
 
-# The resulting spatialVector entity can be added to a EML dataset
+# write attributes (and factors if relevant)
+
+try(write_attributes(ejido_titles_points_of_decree, overwrite = FALSE))
+
+# generate a description for the data entity
+
+ejido_titles_points_of_decree_desc <- "polygons of land regularized by the
+National Agency, CORETT; polygons were georeferenced from 281 paper maps,
+consolidated into 87 unique regularization degrees of ejidos that became
+privitzed from 1987-2007; includes the area of each polygon, the date of
+regularization, the name of the ejido, the delegation, and the 'plane
+number' that could be used to find the original map file in the CORETT
+office; it only includes expropriation for the delegations Xochimilco,
+Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
+Obregon, Tlalpan, Coyoacan, and Milpa Alta"
+
+ejido_titles_points_of_decree_SV <- create_vector_shape(
+  vector_name = ejido_titles_points_of_decree,
+  description = ejido_titles_points_of_decree_desc,
+  coord_sys = "WGS_1984_UTM_Zone_55N",
+  layer_opts = "SHPT=POLYGON",
+  overwrite = TRUE,
+  projectNaming = TRUE,
+  )
+
+# The resulting spatialVector entity can be added to a EML dataset.
+# Note also in this example that we are passing additional layer options,
+# which ultimately feed to sf::st_write, necessary here to generate a
+# multi-polygon shapefile.
 ```
 
+#### output to kml
+
+The workflow for writing to kml is nearly identical to the workflow for writing
+to shapefile. Some differences include that we need (or, at least, should) have
+a Name field in the resulting kml file that serves as a unique identifier for
+each data entity, added in the workflow below as a call to `mutate.` Also, some
+parameters are different, such as unlike `create_vector_shape`, which requires
+the user to pass an EML-compliant coordinate reference system, since
+`create_vector_kml` writes to kml, the resulting CRS is always EPSG 4326 and,
+thus, is hard-coded into the function.
+
+
+```r
+# load spatial vector object; because create_vector_shape will generate a
+# new shapefile, we have complete flexibility over the shapefile name and
+# manipulating the data - here we are starting with an existing shapefile
+# named CORETT but will generate a shapefile with the name
+# ejido_titles_points_of_decree 
+
+ejido_titles_points_of_decree <- sf::read_sf(
+  dsn = "data/Regularizacion/ejidal",
+  layer = "CORETT"
+  ) %>%
+select(
+  -OBJECTID_1,
+  -FolderNumb,
+  -Surface
+  ) %>%
+mutate(
+  Id = as.character(Id),
+  Name = Id, # assign Name to the site identifier variable
+  across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
+  across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
+  Year = as.character(Year)
+)
+
+# write attributes (and factors if relevant)
+
+try(write_attributes(ejido_titles_points_of_decree, overwrite = FALSE))
+
+# generate a description for the data entity
+
+ejido_titles_points_of_decree_desc <- "polygons of land regularized by the
+National Agency, CORETT; polygons were georeferenced from 281 paper maps,
+consolidated into 87 unique regularization degrees of ejidos that became
+privitzed from 1987-2007; includes the area of each polygon, the date of
+regularization, the name of the ejido, the delegation, and the 'plane
+number' that could be used to find the original map file in the CORETT
+office; it only includes expropriation for the delegations Xochimilco,
+Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
+Obregon, Tlalpan, Coyoacan, and Milpa Alta"
+
+ejido_titles_points_of_decree_SV <- create_vector_kml(
+  vector_name = ejido_titles_points_of_decree,
+  description = ejido_titles_points_of_decree_desc,
+  overwrite = TRUE,
+  projectNaming = TRUE
+  )
+
+# The resulting spatialVector entity can be added to a EML dataset.
+```

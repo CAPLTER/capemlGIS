@@ -63,7 +63,7 @@ produce a shapefile and corresponding metadata by either loading a spatial
 object into the R environment or creating a spatial object with the R
 environment. The shapefile that is written to file is packaged within a new
 directory that is zipped for inclusion in a data package. Because a new
-spatial object is created, the data can be modified as needed.  If present,
+spatial object is created, the data can be modified as needed. If present,
 the function reads attribute and factor metadata from supporting yaml
 file(s) generated from the capeml::write_attributes() and
 capeml::write_factors() functions - create_vector_shape will look for files
@@ -132,7 +132,10 @@ ejido_titles_points_of_decree_SV <- create_vector_shape(
   projectNaming = TRUE,
   )
 
-# The resulting spatialVector entity can be added to a EML dataset
+# The resulting spatialVector entity can be added to a EML dataset.
+# Note also in this example that we are passing additional layer options,
+# which ultimately feed to sf::st_write, necessary here to generate a
+# multi-polygon shapefile.
 
 }
 
