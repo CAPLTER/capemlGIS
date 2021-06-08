@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>get_emlProjection — get_emlProjection • capemlGIS</title>
+<title>Create metadata of type spatial vector and package shapefile into a
+zipped directory — package_vector_shape • capemlGIS</title>
 
 
 <!-- jquery -->
@@ -39,10 +40,11 @@
 
 
 
-<meta property="og:title" content="get_emlProjection — get_emlProjection" />
-<meta property="og:description" content="get_emlProjection attempts to identify the projection of a
-  spatial data file, and match this to the corresponding projection ID
-  permissible by EML." />
+<meta property="og:title" content="Create metadata of type spatial vector and package shapefile into a
+zipped directory — package_vector_shape" />
+<meta property="og:description" content="package_vector_shape generates a EML entity of type
+spatialVector, and harvests all relevant files that constitute a single
+shapefile into a directory that is then zipped." />
 
 
 
@@ -117,54 +119,111 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>get_emlProjection</h1>
+    <h1>Create metadata of type spatial vector and package shapefile into a
+zipped directory</h1>
     
-    <div class="hidden name"><code>get_emlProjection.Rd</code></div>
+    <div class="hidden name"><code>package_vector_shape.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>get_emlProjection attempts to identify the projection of a
-  spatial data file, and match this to the corresponding projection ID
-  permissible by EML.</p>
+    <p>package_vector_shape generates a EML entity of type
+spatialVector, and harvests all relevant files that constitute a single
+shapefile into a directory that is then zipped.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_emlProjection</span><span class='op'>(</span><span class='va'>spatialDataEntity</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>package_vector_shape</span><span class='op'>(</span>
+  <span class='va'>dsn</span>,
+  <span class='va'>layer</span>,
+  <span class='va'>description</span>,
+  geoDescription <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>coord_sys</span>,
+  overwrite <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  missing_value_code <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>spatialDataEntity</th>
-      <td><p>a spatial data entity, often loaded into R with the
-raster (for rasters) or rgdal (for vectors) packages</p></td>
+      <th>dsn</th>
+      <td><p>(character) The quoted name of the directory where the shapefile is
+located. The trailing slash of a directory should not be included.</p></td>
+    </tr>
+    <tr>
+      <th>layer</th>
+      <td><p>(character) The quoted name of the shapefile (without a file extension).</p></td>
+    </tr>
+    <tr>
+      <th>description</th>
+      <td><p>(character) Description of the vector resource.</p></td>
+    </tr>
+    <tr>
+      <th>geoDescription</th>
+      <td><p>(character) A textual description of the geographic coverage of the vector.
+If not provided, the project-level geographic desciption in the config.yaml
+will be used.</p></td>
+    </tr>
+    <tr>
+      <th>coord_sys</th>
+      <td><p>(character) The quoted EML-compliant name of the coordinate reference
+system.</p></td>
+    </tr>
+    <tr>
+      <th>overwrite</th>
+      <td><p>(logical) A logical indicating whether to overwrite an existing directory
+bearing the same name as the shapefile.</p></td>
+    </tr>
+    <tr>
+      <th>projectNaming</th>
+      <td><p>(logical) Logical indicating if the zipped directory should be renamed per
+the style used within the capeml ecosystem (default) with the project id +
+base file name + md5sum + file extension (zip in this case). The name of the
+shapefile + file extension (zip in this case) will be used if this is set to
+FALSE. Note that this applies only to the zipped directory, the files that
+constitute the shapefile are not renamed.</p></td>
+    </tr>
+    <tr>
+      <th>missing_value_code</th>
+      <td><p>(character) Quoted character(s) of a flag, in addition to NA or NaN, used to
+indicate missing values within the data.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>if a suitable match was found, function returns an EML-compliant
-  listing of the projection of the spatial data object</p>
+    <p>An object of type EML spatialVector is returned. Additionally, all
+files that make up a single shapefile are harvested into a new directory
+that is zipped for inclusion in the data package.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>get_emlProjection is a helper function designed primarily to assist
-  the creation of EML spatial data objects. The function currently is
-  restricted to matching coordinate systems in the northern hemisphere, and
-  will not match projections of type transverse mercator. Though intended
-  primarily as a helper function, get_emlProjection can be run independently.</p>
+    <p>Unlike some other capemlGIS functions for managing vector data,
+package_vector_shape does not create a new spatial entity but rather
+collects all of the files that consititue a single shapefile, aggregates
+those files into a single directory, then zips that directory for inclusion
+in the data package. Metadata are generated on both spatial aspects of the
+data and physical aspects of the zipped directory. Because a new spatial
+object is not created, metadata must be constructed on the data as they
+exist. That is, some data operations can be performed, such as classifying a
+numerical ID field as character so that it does not require a unit, but the
+data from which the metadata are constructed should not be edited. If
+present, the function reads attribute and factor metadata from supporting
+yaml file(s) generated from the capeml::write_attributes() and
+capeml::write_factors() functions - package_vector_shape will look for files
+in the working directory with a name of type "entity name"_attrs.yaml (or
+"entity name"_attrs.csv if an older project) for attribute metadata, and
+"entity name"_factors.yaml (or "entity name"_factors.csv if an older
+project) for factor metadata. Note that this functionality is predicated on
+the existence of a file containing metadata about the attributes, that that
+file is in the working directory, and that the file matches the name of the
+spatial data entity precisely.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>get_emlProjection currently is restricted to matching coordinate
-  systems in the northern hemisphere, and will not match projections of type
-  transverse mercator.</p>
+    <p>package_vector_shape will look for a package number (packageNum) in
+config.yaml; this parameter is not passed to the function and it must exist.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>vectorData</span> <span class='op'>&lt;-</span> <span class='fu'>readOGR</span><span class='op'>(</span>dsn<span class='op'>=</span><span class='st'>"/GISfiles/WatershedShapefile/"</span>, layer<span class='op'>=</span><span class='st'>"AZwatersheds_prj"</span><span class='op'>)</span>
-<span class='va'>rasterdata</span> <span class='op'>&lt;-</span> <span class='fu'>raster</span><span class='op'>(</span><span class='st'>"CAP_1985.img"</span><span class='op'>)</span>
-<span class='va'>emlCompliantProjection</span> <span class='op'>&lt;-</span> <span class='fu'>get_emlProjection</span><span class='op'>(</span><span class='va'>rasterdata</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-</div></pre>
+    <pre class="examples"></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
