@@ -100,6 +100,17 @@ create_spatialVector <- function(
   baseURL = "https://data.gios.asu.edu/datasets/cap/",
   projectNaming = TRUE) {
 
+  # deprecation ---------------------------------------------------------------
+
+  .Deprecated(
+    new = "create_vector_kml or create_vector_shape",
+    package="capemlGIS",
+    old = as.character(sys.call(sys.parent()))[1L]
+  )
+
+  stop()
+
+
   # required parameters -----------------------------------------------------
 
   # do not proceed if a description is not provided
