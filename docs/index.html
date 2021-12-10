@@ -90,7 +90,7 @@
 <a href="#installation" class="anchor"></a>installation</h3>
 <p>Install from GitHub (after installing the <a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CAPLTER/capemlGIS"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CAPLTER/capemlGIS"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="getting-started" class="section level3">
 <h3 class="hasAnchor">
@@ -103,12 +103,12 @@
 <div id="eml" class="section level4">
 <h4 class="hasAnchor">
 <a href="#eml" class="anchor"></a>EML</h4>
-<p>This package defaults to the current version of EML. If desired, users can switch to the previous version with <code><a href="https://docs.ropensci.org/emld/reference/eml_version.html">emld::eml_version("eml-2.1.1")</a></code>.</p>
+<p>This package defaults to the current version of EML. If desired, users can switch to the previous version with <code>emld::eml_version("eml-2.1.1")</code>.</p>
 </div>
 <div id="project-naming" class="section level4">
 <h4 class="hasAnchor">
 <a href="#project-naming" class="anchor"></a>project naming</h4>
-<p>Most EML-generating functions in the capeml and capemlGIS packages will create both physical objects and EML references to those objects. By default, the package will name output files with the format <code>project-id</code>_<code>object-name</code>_<code>object-hash</code>.<code>file-extension</code> (e.g., <em>664_site_map_5fb7b8d53d48010eab1a2e73db7f1941.kml</em>). The target object (e.g., site_map.png from the previous example) is renamed with the additional metadata and this object name is referenced in the EML metadata. Project naming can be disabled by setting the <code>projectNaming</code> flag to <code>FALSE</code>. When set to FALSE, the object name is not changed, and the name of the data object as read into the R environment is written to file and referenced in the EML. Note that the project-id is not passed as an argument, and must exist in <code>config.yaml</code> (as <code>projectid</code>).</p>
+<p>Most EML-generating functions in the capeml and capemlGIS packages will create both physical objects and EML references to those objects. By default, the package will name output files with the format <code>project-id</code>_<code>object-name</code>.<code>file-extension</code> (e.g., <em>664_site_map.kml</em>). The target object (e.g., site_map.png from the previous example) is renamed with the additional metadata and this object name is referenced in the EML metadata. Project naming can be disabled by setting the <code>projectNaming</code> flag to <code>FALSE</code>. When set to FALSE, the object name is not changed, and the name of the data object as read into the R environment is written to file and referenced in the EML. Note that the project-id is not passed as an argument, and must exist in <code>config.yaml</code> (as <code>projectid</code>).</p>
 </div>
 </div>
 <div id="tools-to-generate-entity-metadata" class="section level3">
@@ -137,10 +137,10 @@
 </ul>
 </li>
 <li>
-<code>create_vector_kml</code> Output includes:
+<code>create_vector</code> Output includes:
 <ul>
 <li>EML entity of type <code>spatialVector</code> that can be added to a EML dataset.</li>
-<li>Input data written to a kml file with project naming (if selected).</li>
+<li>Input data written to a kml or GeoJSON file with project naming (if selected).</li>
 </ul>
 </li>
 <li>
@@ -169,10 +169,10 @@
 <h4 class="hasAnchor">
 <a href="#output-to-shapefile" class="anchor"></a>output to shapefile</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># load spatial vector object; because create_vector_shape will generate a</span>
-<span class="co"># new shapefile, we have complete flexibility over the shapefile name and</span>
-<span class="co"># manipulating the data - here we are starting with an existing shapefile</span>
-<span class="co"># named CORETT but will generate a shapefile with the name</span>
+<code class="sourceCode R"><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span>
+<span class="co"># shapefile, we have complete flexibility over the shapefile name and</span>
+<span class="co"># manipulating the data - here we are starting with an existing shapefile named</span>
+<span class="co"># CORETT but will generate a shapefile with the name</span>
 <span class="co"># ejido_titles_points_of_decree </span>
 
 <span class="va">ejido_titles_points_of_decree</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span>
@@ -224,12 +224,12 @@ Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span>
 <div id="output-to-kml" class="section level4">
 <h4 class="hasAnchor">
 <a href="#output-to-kml" class="anchor"></a>output to kml</h4>
-<p>The workflow for writing to kml is nearly identical to the workflow for writing to shapefile. Some differences include that we need (or, at least, should) have a Name field in the resulting kml file that serves as a unique identifier for each data entity - added in the workflow below as an additional line in the call to <code>mutate.</code> Also, some parameters are different, such as unlike <code>create_vector_shape</code>, which requires the user to pass an EML-compliant coordinate reference system, since <code>create_vector_kml</code> writes to kml, the resulting CRS is <em>always</em> EPSG 4326 and, thus, is hard-coded into the function.</p>
+<p>The workflow for writing to kml or GeoJSON is nearly identical to the workflow for writing to shapefile. Some differences include that we need (or, at least, should) have a <code>Name</code> field if writing to kml file that serves as a unique identifier for each data entity (added in the workflow below as an additional line in the call to <code>mutate</code>). Also, some parameters are different, such as unlike <code>create_vector_shape</code>, which requires the user to pass an EML-compliant coordinate reference system, since <code>create_vector</code> writes to kml or GeoJSON, the resulting CRS is <em>always</em> EPSG 4326 and, thus, is hard-coded into the function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># load spatial vector object; because create_vector_shape will generate a</span>
-<span class="co"># new shapefile, we have complete flexibility over the shapefile name and</span>
-<span class="co"># manipulating the data - here we are starting with an existing shapefile</span>
-<span class="co"># named CORETT but will generate a shapefile with the name</span>
+<code class="sourceCode R"><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span>
+<span class="co"># shapefile, we have complete flexibility over the shapefile name and</span>
+<span class="co"># manipulating the data - here we are starting with an existing shapefile named</span>
+<span class="co"># CORETT but will generate a shapefile with the name</span>
 <span class="co"># ejido_titles_points_of_decree </span>
 
 <span class="va">ejido_titles_points_of_decree</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span>
@@ -259,15 +259,16 @@ Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span>
 National Agency, CORETT; polygons were georeferenced from 281 paper maps,
 consolidated into 87 unique regularization degrees of ejidos that became
 privitzed from 1987-2007; includes the area of each polygon, the date of
-regularization, the name of the ejido, the delegation, and the 'plane
-number' that could be used to find the original map file in the CORETT
-office; it only includes expropriation for the delegations Xochimilco,
-Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
-Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span>
+regularization, the name of the ejido, the delegation, and the 'plane number'
+that could be used to find the original map file in the CORETT office; it only
+includes expropriation for the delegations Xochimilco, Magdalena Contreras,
+Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,
+Coyoacan, and Milpa Alta"</span>
 
-<span class="va">ejido_titles_points_of_decree_SV</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_vector_kml.html">create_vector_kml</a></span><span class="op">(</span>
+<span class="va">ejido_titles_points_of_decree_SV</span> <span class="op">&lt;-</span> <span class="fu">create_vector_kml</span><span class="op">(</span>
   vector_name <span class="op">=</span> <span class="va">ejido_titles_points_of_decree</span>,
   description <span class="op">=</span> <span class="va">ejido_titles_points_of_decree_desc</span>,
+  driver <span class="op">=</span> <span class="st">"kml"</span>,
   overwrite <span class="op">=</span> <span class="cn">TRUE</span>,
   projectNaming <span class="op">=</span> <span class="cn">TRUE</span>
   <span class="op">)</span>

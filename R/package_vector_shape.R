@@ -73,7 +73,7 @@
 #' 
 #' # read spatial data into R and manipulate as necessary (but minimally as a
 #' # new data object is not created so the metadata should reflect the unaltered
-#' source data)
+#' # source data)
 #' CORETT <- sf::read_sf(
 #'   dsn = "data/",
 #'   layer = "CORETT"

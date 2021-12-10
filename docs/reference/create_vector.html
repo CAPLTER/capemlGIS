@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Construct an ESRI shapefile and create metadata of type spatial
-vector — create_vector_shape • capemlGIS</title>
+<title>Construct a spatial file of type KML or GeoJSON and create metadata
+of type spatial vector — create_vector • capemlGIS</title>
 
 
 <!-- jquery -->
@@ -40,13 +40,10 @@ vector — create_vector_shape • capemlGIS</title>
 
 
 
-<meta property="og:title" content="Construct an ESRI shapefile and create metadata of type spatial
-vector — create_vector_shape" />
-<meta property="og:description" content="create_vector_shape generates a EML entity of type
-spatialVector. The function allows the user to build a shapefile and
-accompanying metadata from a spatial object read into or created within the
-R environment. The resulting shapefile is written to a directory that is
-then zipped for inclusion in a data package." />
+<meta property="og:title" content="Construct a spatial file of type KML or GeoJSON and create metadata
+of type spatial vector — create_vector" />
+<meta property="og:description" content="create_vector writes a spatial data file of type KML and
+generates corresponding metadata of EML entity of type spatialVector" />
 
 
 
@@ -121,26 +118,22 @@ then zipped for inclusion in a data package." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Construct an ESRI shapefile and create metadata of type spatial
-vector</h1>
+    <h1>Construct a spatial file of type KML or GeoJSON and create metadata
+of type spatial vector</h1>
     
-    <div class="hidden name"><code>create_vector_shape.Rd</code></div>
+    <div class="hidden name"><code>create_vector.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>create_vector_shape generates a EML entity of type
-spatialVector. The function allows the user to build a shapefile and
-accompanying metadata from a spatial object read into or created within the
-R environment. The resulting shapefile is written to a directory that is
-then zipped for inclusion in a data package.</p>
+    <p>create_vector writes a spatial data file of type KML and
+generates corresponding metadata of EML entity of type spatialVector</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_vector_shape</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>create_vector</span><span class='op'>(</span>
   <span class='va'>vector_name</span>,
   <span class='va'>description</span>,
+  driver <span class='op'>=</span> <span class='st'>"GeoJSON"</span>,
   geoDescription <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>coord_sys</span>,
-  layer_opts <span class='op'>=</span> <span class='cn'>NULL</span>,
   overwrite <span class='op'>=</span> <span class='cn'>FALSE</span>,
   projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span>,
   missing_value_code <span class='op'>=</span> <span class='cn'>NULL</span>
@@ -151,41 +144,35 @@ then zipped for inclusion in a data package.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>vector_name</th>
-      <td><p>(character) The unquoted name of the spatial object in the R environment.</p></td>
+      <td><p>(character) The unquoted name of the spatial data object in the R
+environment.</p></td>
     </tr>
     <tr>
       <th>description</th>
-      <td><p>(character) Description of the vector resource.</p></td>
+      <td><p>(character) Quoated description of the vector resource.</p></td>
+    </tr>
+    <tr>
+      <th>driver</th>
+      <td><p>(character) Quoted format of output file: KML or GeoJSON (default).</p></td>
     </tr>
     <tr>
       <th>geoDescription</th>
-      <td><p>(character) A textual description of the geographic coverage of the vector.
-If not provided, the project-level geographic desciption in the config.yaml
-will be used.</p></td>
-    </tr>
-    <tr>
-      <th>coord_sys</th>
-      <td><p>(character) The quoted EML-compliant name of the coordinate reference
-system.</p></td>
-    </tr>
-    <tr>
-      <th>layer_opts</th>
-      <td><p>(character) Additional options for generating a shapefile that are passed to
-the sf::st_write function</p></td>
+      <td><p>(character) A textual description of the geographic study area of the
+vector. This parameter allows the user to overwrite the
+geographicDesciption value provided in the project config.yaml.</p></td>
     </tr>
     <tr>
       <th>overwrite</th>
-      <td><p>(logical) A logical indicating whether to overwrite an existing directory
-bearing the same name as the shapefile.</p></td>
+      <td><p>(logical) A logical indicating whether to overwrite an existing file bearing
+the same name as kml file as it is imported.</p></td>
     </tr>
     <tr>
       <th>projectNaming</th>
-      <td><p>(logical) Logical indicating if the zipped directory should be renamed per
-the style used within the capeml ecosystem (default) with the project id +
-base file name + md5sum + file extension (zip in this case). The name of the
-shapefile + file extension (zip in this case) will be used if this is set to
-FALSE. Note that this applies only to the zipped directory, the files that
-constitute the shapefile are not renamed.</p></td>
+      <td><p>(logical) Logical indicating if the resulting file should be renamed per
+the style used in the capeml ecosystem with the project id + base file name
++ file extension. If set to false, the resulting file will bear the name
+the object is assigned in the R environment with the appropriate file
+extension.</p></td>
     </tr>
     <tr>
       <th>missing_value_code</th>
@@ -196,43 +183,36 @@ indicate missing values within the data.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of type EML spatialVector is returned. Additionally, all
-files that make up a single shapefile are harvested into a new directory
-that is zipped for inclusion in the data package.</p>
+    <p>EML spatialVector object is returned. Additionally, the spatial data
+entity is written to file as type kml or GeoJSON.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Unlike the package_vector_shape function in the capemlGIS package,
-create_vector_shape writes a new shapefile to file. This allows the user to
-produce a shapefile and corresponding metadata by either loading a spatial
-object into the R environment or creating a spatial object with the R
-environment. The shapefile that is written to file is packaged within a new
-directory that is zipped for inclusion in a data package. Because a new
-spatial object is created, the data can be modified as needed. If present,
-the function reads attribute and factor metadata from supporting yaml
-file(s) generated from the capeml::write_attributes() and
-capeml::write_factors() functions - create_vector_shape will look for files
-in the working directory with a name of type "entity name"_attrs.yaml (or
-"entity name"_attrs.csv if an older project) for attribute metadata, and
-"entity name"_factors.yaml (or "entity name"_factors.csv if an older
-project) for factor metadata. Note that this functionality is predicated on
-the existence of a file containing metadata about the attributes, that that
-file is in the working directory, and that the file matches the name of the
-spatial data entity precisely.</p>
+    <p>create_vector creates a EML spatialVector object from a spatial
+data object that is read into or created within the R environment. If
+present, the function reads attribute and factor metadata from supporting
+yaml file(s) generated from the capeml::write_attributes() and
+capeml::write_factors() functions - create_vector will look for files in the
+working directory with a name of type "entity name"_attrs.yaml (or "entity
+name"_attrs.csv if an older project) for attribute metadata, and "entity
+name"_factors.yaml (or "entity name"_factors.csv if an older project) for
+factor metadata. Note that this functionality is predicated on the existence
+of a file containing metadata about the attributes, that that file is in the
+working directory, and that the file matches the name of the spatial data
+entity precisely.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>create_vector_shape will look for a package number (packageNum) in
-config.yaml; this parameter is not passed to the function and it must exist.</p>
-<p>The shapefile generated from create_vector_shape will have the same
-coordinate reference system (CRS) as the input spatial object.</p>
+    <p>If project naming is TRUE then create_vector will look for a
+package number (packageNum) in config.yaml; this parameter is not passed to
+the function and it must exist.</p>
+<p>All vector objects are transformed to epsg 4326 (WGS 1984)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'># load spatial vector object; because create_vector_shape will generate a</span></span>
-<span class='r-in'><span class='co'># new shapefile, we have complete flexibility over the shapefile name and</span></span>
-<span class='r-in'><span class='co'># manipulating the data - here we are starting with an existing shapefile</span></span>
-<span class='r-in'><span class='co'># named CORETT but will generate a shapefile with the name</span></span>
-<span class='r-in'><span class='co'># ejido_titles_points_of_decree </span></span>
+<span class='r-in'><span class='co'># load spatial vector object; because create_vector will generate a new kml or GeoJSON file, we</span></span>
+<span class='r-in'><span class='co'># have complete flexibility over the resulting file name and manipulating</span></span>
+<span class='r-in'><span class='co'># the data - here we are starting with an existing shapefile named CORETT but</span></span>
+<span class='r-in'><span class='co'># will generate a kml with the name ejido_titles_points_of_decree </span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>ejido_titles_points_of_decree</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>read_sf</a></span><span class='op'>(</span></span>
 <span class='r-in'>  dsn <span class='op'>=</span> <span class='st'>"data/Regularizacion/ejidal"</span>,</span>
@@ -266,19 +246,15 @@ coordinate reference system (CRS) as the input spatial object.</p>
 <span class='r-in'>Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro</span>
 <span class='r-in'>Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='va'>ejido_titles_points_of_decree_SV</span> <span class='op'>&lt;-</span> <span class='fu'>create_vector_shape</span><span class='op'>(</span></span>
+<span class='r-in'><span class='va'>ejido_titles_points_of_decree_SV</span> <span class='op'>&lt;-</span> <span class='fu'>create_vector</span><span class='op'>(</span></span>
 <span class='r-in'>  vector_name <span class='op'>=</span> <span class='va'>ejido_titles_points_of_decree</span>,</span>
 <span class='r-in'>  description <span class='op'>=</span> <span class='va'>ejido_titles_points_of_decree_desc</span>,</span>
-<span class='r-in'>  coord_sys <span class='op'>=</span> <span class='st'>"WGS_1984_UTM_Zone_55N"</span>,</span>
-<span class='r-in'>  layer_opts <span class='op'>=</span> <span class='st'>"SHPT=POLYGON"</span>,</span>
+<span class='r-in'>  driver <span class='op'>=</span> <span class='st'>"kml"</span>,</span>
 <span class='r-in'>  overwrite <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
-<span class='r-in'>  projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
+<span class='r-in'>  projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span></span>
 <span class='r-in'>  <span class='op'>)</span></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'># The resulting spatialVector entity can be added to a EML dataset.</span></span>
-<span class='r-in'><span class='co'># Note also in this example that we are passing additional layer options,</span></span>
-<span class='r-in'><span class='co'># which ultimately feed to sf::st_write, necessary here to generate a</span></span>
-<span class='r-in'><span class='co'># multi-polygon shapefile.</span></span>
+<span class='r-in'><span class='co'># The resulting spatialVector entity can be added to a EML dataset</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='op'>}</span></span>
 <span class='r-in'></span>

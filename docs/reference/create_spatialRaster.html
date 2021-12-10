@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>create_spatialRaster — create_spatialRaster • capemlGIS</title>
+<title>generate a EML entity of type spatialRaster — create_spatialRaster • capemlGIS</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="create_spatialRaster — create_spatialRaster" />
+<meta property="og:title" content="generate a EML entity of type spatialRaster — create_spatialRaster" />
 <meta property="og:description" content="create_spatialRaster generates a EML entity of type
   spatialRaster" />
 
@@ -116,7 +116,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>create_spatialRaster</h1>
+    <h1>generate a EML entity of type spatialRaster</h1>
     
     <div class="hidden name"><code>create_spatialRaster.Rd</code></div>
     </div>
@@ -132,9 +132,7 @@
   <span class='va'>epsgProjection</span>,
   <span class='va'>rasterValueDescription</span>,
   <span class='va'>rasterValueUnits</span>,
-  zipFiles <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  <span class='va'>geoDescription</span>,
-  baseURL <span class='op'>=</span> <span class='st'>"https://data.gios.asu.edu/datasets/cap/"</span>,
+  geoDescription <span class='op'>=</span> <span class='cn'>NULL</span>,
   projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
@@ -151,7 +149,8 @@
     </tr>
     <tr>
       <th>epsgProjection</th>
-      <td><p>(integer) EPSG numeric code of raster coordinate reference system</p></td>
+      <td><p>(integer) Four- or five-digit EPSG numeric code of raster Coordinate
+Reference System (CRS)</p></td>
     </tr>
     <tr>
       <th>rasterValueDescription</th>
@@ -159,13 +158,8 @@
     </tr>
     <tr>
       <th>rasterValueUnits</th>
-      <td><p>(character) Raster value units</p></td>
-    </tr>
-    <tr>
-      <th>zipFiles</th>
-      <td><p>(logical) Logical indicating whether spatial raster entity should be
-constructed from a single raster file (FALSE, default) or entire directory
-(TRUE)</p></td>
+      <td><p>(character) Raster value units. Units must be EML-compliant or annotated by
+a custom unit definition.</p></td>
     </tr>
     <tr>
       <th>geoDescription</th>
@@ -174,65 +168,60 @@ raster. This parameter allows the user to overwrite the
 geographicDesciption value provided in the project config.yaml.</p></td>
     </tr>
     <tr>
-      <th>baseURL</th>
-      <td><p>(character) The base path of the web-accessible location of the data file;
-the name of the resulting file will be passed to the base path to generate
-a web-resolvable file path. This parameter is required with the default set
-to the CAP LTER file path</p></td>
-    </tr>
-    <tr>
       <th>projectNaming</th>
-      <td><p>(logical) Logical indicating if the raster file (or parent directory if
-zipFiles == TRUE) should be renamed per the style used by the CAP LTER
-(default) with the project id + base file name + md5sum + file extension.
-The passed file or directory name will be used if this parameter is set to
-FALSE.</p></td>
+      <td><p>(logical) Logical indicating if the raster file should be renamed per the
+style used by the CAP LTER (default) with the project id + base file name +
+file extension. The passed file or directory name will be used if this
+parameter is set to FALSE.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>EML spatial data object is returned. Additionally, if projectNaming
- is set to TRUE (default) the spatial data file is renamed with the project
- id + base file name + md5sum + file extension (zip in the case when
- multiple files are aggregated).</p>
+is set to TRUE (default) the spatial data file is renamed with the project
+id + base file name + file extension (zip in the case when multiple files
+are aggregated).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>a spatialRaster entity is created from a single data file (e.g.,
- CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
- CAP_1985.img.aux.xml). In the case of multiple files, all files in the
- parent directory where the raster file is located are aggregated into a
- single compressed (zipped) file. In all cases, the resulting entity is
- renamed with the project id + base file name + md5sum + file extension (zip
- in the case when multiple files are aggregated).</p>
+CAP_1985.img). The resulting entity is renamed with the project id + base
+file name + file extension or base file name + file extension depending on
+desired output.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>create_spatialRaster will look for a package number in config.yaml;
- congig.yaml::packageNum must exist in the project directory.</p>
+congig.yaml::packageNum must exist in the project directory.</p>
+<p>EML requires that geographic extents are provided as decimal degrees.
+Because it is often impractical or inadviseable to change the projection of
+rasters, a spatial coverage is not constructed if the projection of a raster
+is in units of meters.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-
-<span class='va'>rasterDesc</span> <span class='op'>&lt;-</span> <span class='st'>"NDVI for the central Arizona region derived from 2015 NAIP
-imagery. NAIP NDVI data are presented as a series of tiles each representing
-a portion of the overall central Arizona coverage area. The relative position
-of this tile to the entire coverage area is detailed in the files
-NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."</span>
-
-<span class='va'>geoDesc</span> <span class='op'>&lt;-</span> <span class='st'>"one in a series of tiles covering the central-Arizona Phoenix
-region"</span>
-
-<span class='va'>NAIP_NDVI_2015_SV</span> <span class='op'>&lt;-</span> <span class='fu'>create_spatialRaster</span><span class='op'>(</span>
-   rasterFile <span class='op'>=</span> <span class='st'>"path-to-file/NAIP_NDVI_2015.tiff"</span>,
-   description <span class='op'>=</span> <span class='va'>rasterDesc</span>,
-   epsgProjection <span class='op'>=</span> <span class='fl'>4326</span>,
-   rasterValueDescription <span class='op'>=</span> <span class='st'>"Normalized Difference Vegetation Index (NDVI)"</span>,
-   rasterValueUnits <span class='op'>=</span> <span class='st'>"dimensionless"</span>,
-   geoDescription <span class='op'>=</span> <span class='va'>geoDesc</span>,
-   projectNaming <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>rasterDesc</span> <span class='op'>&lt;-</span> <span class='st'>"NDVI for the central Arizona region derived from 2015 NAIP</span>
+<span class='r-in'>imagery. NAIP NDVI data are presented as a series of tiles each representing</span>
+<span class='r-in'>a portion of the overall central Arizona coverage area. The relative position</span>
+<span class='r-in'>of this tile to the entire coverage area is detailed in the files</span>
+<span class='r-in'>NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>my_area</span> <span class='op'>&lt;-</span> <span class='st'>"one in a series of tiles covering the central-Arizona Phoenix</span>
+<span class='r-in'>region"</span> <span class='co'># supercedes yaml</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>NAIP_NDVI_2015_SV</span> <span class='op'>&lt;-</span> <span class='fu'>capemlGIS</span><span class='fu'>::</span><span class='fu'>create_spatialRaster</span><span class='op'>(</span></span>
+<span class='r-in'>   rasterFile             <span class='op'>=</span> <span class='st'>"path-to-file/NAIP_NDVI_2015.tiff"</span>,</span>
+<span class='r-in'>   description            <span class='op'>=</span> <span class='va'>rasterDesc</span>,</span>
+<span class='r-in'>   epsgProjection         <span class='op'>=</span> <span class='fl'>4326</span>,</span>
+<span class='r-in'>   rasterValueDescription <span class='op'>=</span> <span class='st'>"Normalized Difference Vegetation Index (NDVI)"</span>,</span>
+<span class='r-in'>   rasterValueUnits       <span class='op'>=</span> <span class='st'>"dimensionless"</span>,</span>
+<span class='r-in'>   geoDescription         <span class='op'>=</span> <span class='st'>"my_area"</span>,</span>
+<span class='r-in'>   projectNaming          <span class='op'>=</span> <span class='cn'>FALSE</span></span>
+<span class='r-in'> <span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
