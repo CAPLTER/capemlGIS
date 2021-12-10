@@ -221,13 +221,13 @@ create_spatialRaster <- function(
 
   # identify EML-compliant spatial reference --------------------------------
 
-  if (!epsgProjection %in% eml_valid_crs$epsg) {
+  if (!epsgProjection %in% capemlGIS::eml_valid_crs$epsg) {
 
     stop("cannot identify EML-compliant projection for EPSG: ", epsgProjection)
 
   }
 
-  emlProjection <- eml_valid_crs[eml_valid_crs$epsg == epsgProjection,]$value
+  emlProjection <- capemlGIS::eml_valid_crs[eml_valid_crs$epsg == epsgProjection,]$value
 
 
   # create spatial raster entity --------------------------------------------
