@@ -2,7 +2,9 @@
 % Please edit documentation in R/get_emlProjection.R
 \name{get_emlProjection}
 \alias{get_emlProjection}
-\title{get_emlProjection}
+\title{get_emlProjection attempts to identify the projection of a spatial
+data file, and match this to the corresponding projection ID permissible by
+EML (deprecated)}
 \usage{
 get_emlProjection(spatialDataEntity)
 }

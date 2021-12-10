@@ -73,7 +73,7 @@
 #' 
 #' # read spatial data into R and manipulate as necessary (but minimally as a
 #' # new data object is not created so the metadata should reflect the unaltered
-#' source data)
+#' # source data)
 #' CORETT <- sf::read_sf(
 #'   dsn = "data/",
 #'   layer = "CORETT"
@@ -103,12 +103,12 @@
 #' # to the geoDescription parameter if appropriate.
 #' 
 #' corett_SV <- package_vector_shape(
-#'   dsn = "~/Desktop/shapedir/data",
-#'   layer = "CORETT",
-#'   description = corett_desc,
+#'   dsn           = "~/Desktop/shapedir/data",
+#'   layer         = "CORETT",
+#'   description   = corett_desc,
 #'   geoDescription,
-#'   coord_sys = "WGS_1984_UTM_Zone_55N",
-#'   overwrite = TRUE,
+#'   coord_sys     = "WGS_1984_UTM_Zone_55N",
+#'   overwrite     = TRUE,
 #'   projectNaming = TRUE
 #'   )
 #'
@@ -122,10 +122,10 @@ package_vector_shape <- function(
   dsn,
   layer,
   description,
-  geoDescription = NULL,
+  geoDescription     = NULL,
   coord_sys,
-  overwrite = FALSE,
-  projectNaming = TRUE,
+  overwrite          = FALSE,
+  projectNaming      = TRUE,
   missing_value_code = NULL
   ) {
 
@@ -156,7 +156,7 @@ package_vector_shape <- function(
 
   }
 
-  #{{{ file management
+  # file management
 
   # create a target directory in the working directory to house shapefiles ----
 

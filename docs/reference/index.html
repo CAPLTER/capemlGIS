@@ -142,20 +142,21 @@
         <td>
           <p><code><a href="create_spatialRaster.html">create_spatialRaster()</a></code> </p>
         </td>
-        <td><p>create_spatialRaster</p></td>
+        <td><p>generate a EML entity of type spatialRaster</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="create_spatialVector.html">create_spatialVector()</a></code> </p>
         </td>
-        <td><p>create_spatialVector</p></td>
+        <td><p>Construct a spatial file of type KML and create metadata of type
+ spatial vector (deprecated: use create_vector or create_vector_shape)</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="create_vector_kml.html">create_vector_kml()</a></code> </p>
+          <p><code><a href="create_vector.html">create_vector()</a></code> </p>
         </td>
-        <td><p>Construct a KML spatial file and create metadata of type spatial
-vector</p></td>
+        <td><p>Construct a spatial file of type KML or GeoJSON and create metadata
+of type spatial vector</p></td>
       </tr><tr>
         
         <td>
@@ -172,9 +173,17 @@ vector</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="eml_valid_crs.html">eml_valid_crs</a></code> </p>
+        </td>
+        <td><p>Tibble of valid EML CRS descriptions and EPSG codes</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_emlProjection.html">get_emlProjection()</a></code> </p>
         </td>
-        <td><p>get_emlProjection</p></td>
+        <td><p>get_emlProjection attempts to identify the projection of a spatial
+data file, and match this to the corresponding projection ID permissible by
+EML (deprecated)</p></td>
       </tr><tr>
         
         <td>
@@ -193,7 +202,8 @@ zipped directory</p></td>
         <td>
           <p><code><a href="write_raster_factors.html">write_raster_factors()</a></code> </p>
         </td>
-        <td><p>write_raster_factors</p></td>
+        <td><p>create a template as a csv file for supplying code definition
+metadata for spatial rasters (if raster values are categorical).</p></td>
       </tr><tr>
         
         <td>

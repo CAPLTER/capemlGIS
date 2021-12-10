@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_spatialRaster.R
 \name{create_spatialRaster}
 \alias{create_spatialRaster}
-\title{create_spatialRaster}
+\title{generate a EML entity of type spatialRaster}
 \usage{
 create_spatialRaster(
   rasterFile,
@@ -10,9 +10,7 @@ create_spatialRaster(
   epsgProjection,
   rasterValueDescription,
   rasterValueUnits,
-  zipFiles = FALSE,
-  geoDescription,
-  baseURL = "https://data.gios.asu.edu/datasets/cap/",
+  geoDescription = NULL,
   projectNaming = TRUE
 )
 }
@@ -21,36 +19,28 @@ create_spatialRaster(
 
 \item{description}{(character) Description of the raster.}
 
-\item{epsgProjection}{(integer) EPSG numeric code of raster coordinate reference system}
+\item{epsgProjection}{(integer) Four- or five-digit EPSG numeric code of raster Coordinate
+Reference System (CRS)}
 
 \item{rasterValueDescription}{(character) Description of raster values}
 
-\item{rasterValueUnits}{(character) Raster value units}
-
-\item{zipFiles}{(logical) Logical indicating whether spatial raster entity should be
-constructed from a single raster file (FALSE, default) or entire directory
-(TRUE)}
+\item{rasterValueUnits}{(character) Raster value units. Units must be EML-compliant or annotated by
+a custom unit definition.}
 
 \item{geoDescription}{(character) A textual description of the geographic study area of the
 raster. This parameter allows the user to overwrite the
 geographicDesciption value provided in the project config.yaml.}
 
-\item{baseURL}{(character) The base path of the web-accessible location of the data file;
-the name of the resulting file will be passed to the base path to generate
-a web-resolvable file path. This parameter is required with the default set
-to the CAP LTER file path}
-
-\item{projectNaming}{(logical) Logical indicating if the raster file (or parent directory if
-zipFiles == TRUE) should be renamed per the style used by the CAP LTER
-(default) with the project id + base file name + md5sum + file extension.
-The passed file or directory name will be used if this parameter is set to
-FALSE.}
+\item{projectNaming}{(logical) Logical indicating if the raster file should be renamed per the
+style used by the CAP LTER (default) with the project id + base file name +
+file extension. The passed file or directory name will be used if this
+parameter is set to FALSE.}
 }
 \value{
 EML spatial data object is returned. Additionally, if projectNaming
- is set to TRUE (default) the spatial data file is renamed with the project
- id + base file name + md5sum + file extension (zip in the case when
- multiple files are aggregated).
+is set to TRUE (default) the spatial data file is renamed with the project
+id + base file name + file extension (zip in the case when multiple files
+are aggregated).
 }
 \description{
 create_spatialRaster generates a EML entity of type
@@ -58,16 +48,18 @@ create_spatialRaster generates a EML entity of type
 }
 \details{
 a spatialRaster entity is created from a single data file (e.g.,
- CAP_1985.img) or a collection of related files (e.g., CAP_1985.img,
- CAP_1985.img.aux.xml). In the case of multiple files, all files in the
- parent directory where the raster file is located are aggregated into a
- single compressed (zipped) file. In all cases, the resulting entity is
- renamed with the project id + base file name + md5sum + file extension (zip
- in the case when multiple files are aggregated).
+CAP_1985.img). The resulting entity is renamed with the project id + base
+file name + file extension or base file name + file extension depending on
+desired output.
 }
 \note{
 create_spatialRaster will look for a package number in config.yaml;
- congig.yaml::packageNum must exist in the project directory.
+congig.yaml::packageNum must exist in the project directory.
+
+EML requires that geographic extents are provided as decimal degrees.
+Because it is often impractical or inadviseable to change the projection of
+rasters, a spatial coverage is not constructed if the projection of a raster
+is in units of meters.
 }
 \examples{
 \dontrun{
@@ -78,17 +70,19 @@ a portion of the overall central Arizona coverage area. The relative position
 of this tile to the entire coverage area is detailed in the files
 NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
 
-geoDesc <- "one in a series of tiles covering the central-Arizona Phoenix
-region"
+my_area <- "one in a series of tiles covering the central-Arizona Phoenix
+region" # supercedes yaml
 
-NAIP_NDVI_2015_SV <- create_spatialRaster(
-   rasterFile = "path-to-file/NAIP_NDVI_2015.tiff",
-   description = rasterDesc,
-   epsgProjection = 4326,
+NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
+   rasterFile             = "path-to-file/NAIP_NDVI_2015.tiff",
+   description            = rasterDesc,
+   epsgProjection         = 4326,
    rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
-   rasterValueUnits = "dimensionless",
-   geoDescription = geoDesc,
-   projectNaming = FALSE)
+   rasterValueUnits       = "dimensionless",
+   geoDescription         = "my_area",
+   projectNaming          = FALSE
+ )
+
 }
 
 }

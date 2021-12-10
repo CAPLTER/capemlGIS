@@ -85,7 +85,7 @@ config.yaml; this parameter is not passed to the function and it must exist.
 
 # read spatial data into R and manipulate as necessary (but minimally as a
 # new data object is not created so the metadata should reflect the unaltered
-source data)
+# source data)
 CORETT <- sf::read_sf(
   dsn = "data/",
   layer = "CORETT"
@@ -115,12 +115,12 @@ Alta"
 # to the geoDescription parameter if appropriate.
 
 corett_SV <- package_vector_shape(
-  dsn = "~/Desktop/shapedir/data",
-  layer = "CORETT",
-  description = corett_desc,
+  dsn           = "~/Desktop/shapedir/data",
+  layer         = "CORETT",
+  description   = corett_desc,
   geoDescription,
-  coord_sys = "WGS_1984_UTM_Zone_55N",
-  overwrite = TRUE,
+  coord_sys     = "WGS_1984_UTM_Zone_55N",
+  overwrite     = TRUE,
   projectNaming = TRUE
   )
 

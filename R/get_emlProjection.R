@@ -1,4 +1,6 @@
-#' @title get_emlProjection
+#' @title get_emlProjection attempts to identify the projection of a spatial
+#' data file, and match this to the corresponding projection ID permissible by
+#' EML (deprecated)
 #'
 #' @description get_emlProjection attempts to identify the projection of a
 #'   spatial data file, and match this to the corresponding projection ID
@@ -17,9 +19,9 @@
 #' @param spatialDataEntity a spatial data entity, often loaded into R with the
 #'   raster (for rasters) or rgdal (for vectors) packages
 #'
-#' @import rgdal
+#' @importFrom rgdal make_EPSG
 #' @importFrom stringr str_match str_replace_all
-#' @import dplyr
+#' @importFrom dplyr filter mutate
 #' @importFrom readr read_csv
 #' @importFrom raster crs
 #'
@@ -33,9 +35,20 @@
 #' emlCompliantProjection <- get_emlProjection(rasterdata)
 #' }
 #'
-#' @export
 
 get_emlProjection <- function(spatialDataEntity) {
+
+  # deprecation ---------------------------------------------------------------
+
+  .Deprecated(
+    new = "none",
+    package="capemlGIS",
+    old = as.character(sys.call(sys.parent()))[1L]
+  )
+
+  stop()
+
+  #   function ----------------------------------------------------------------
 
   # will need a separate matching system for transverse mercator, which employs
   # lat, long, k, etc. as opposed to a datum and zone

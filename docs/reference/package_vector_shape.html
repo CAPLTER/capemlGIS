@@ -223,7 +223,54 @@ spatial data entity precisely.</p>
 config.yaml; this parameter is not passed to the function and it must exist.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># read spatial data into R and manipulate as necessary (but minimally as a</span></span>
+<span class='r-in'><span class='co'># new data object is not created so the metadata should reflect the unaltered</span></span>
+<span class='r-in'><span class='co'># source data)</span></span>
+<span class='r-in'><span class='va'>CORETT</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>read_sf</a></span><span class='op'>(</span></span>
+<span class='r-in'>  dsn <span class='op'>=</span> <span class='st'>"data/"</span>,</span>
+<span class='r-in'>  layer <span class='op'>=</span> <span class='st'>"CORETT"</span></span>
+<span class='r-in'>  <span class='op'>)</span> <span class='op'>%&gt;%</span></span>
+<span class='r-in'><span class='fu'>mutate</span><span class='op'>(</span></span>
+<span class='r-in'>  Id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>Id</span><span class='op'>)</span>,</span>
+<span class='r-in'>  Year <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>Year</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># write an attributes metadata template (and factors if relevant (not shown))</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/try.html'>try</a></span><span class='op'>(</span><span class='fu'>capeml</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/capeml/man/write_attributes.html'>write_attributes</a></span><span class='op'>(</span><span class='va'>CORETT</span>, overwrite <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># generate a description for the data entity</span></span>
+<span class='r-in'><span class='va'>corett_desc</span> <span class='op'>&lt;-</span> <span class='st'>"polygons of land regularized by the National Agency, CORETT;</span>
+<span class='r-in'>polygons were georeferenced from 281 paper maps, consolidated into 87 unique</span>
+<span class='r-in'>regularization degrees of ejidos that became privitzed from 1987-2007;</span>
+<span class='r-in'>includes the area of each polygon, the date of regularization, the name of</span>
+<span class='r-in'>the ejido, the delegation, and the 'plane number' that could be used to find</span>
+<span class='r-in'>the original map file in the CORETT office; it only includes expropriation</span>
+<span class='r-in'>for the delegations Xochimilco, Magdalena Contreras, Iztapalapa, Tlahuac,</span>
+<span class='r-in'>Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan, Coyoacan, and Milpa</span>
+<span class='r-in'>Alta"</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># generate the spatial vector object, which can now be incorporated into our</span></span>
+<span class='r-in'><span class='co'># EML dataset metadata; here we are relying on the geographic description in</span></span>
+<span class='r-in'><span class='co'># the project config.yaml but we could overwrite that by passing an argument</span></span>
+<span class='r-in'><span class='co'># to the geoDescription parameter if appropriate.</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>corett_SV</span> <span class='op'>&lt;-</span> <span class='fu'>package_vector_shape</span><span class='op'>(</span></span>
+<span class='r-in'>  dsn           <span class='op'>=</span> <span class='st'>"~/Desktop/shapedir/data"</span>,</span>
+<span class='r-in'>  layer         <span class='op'>=</span> <span class='st'>"CORETT"</span>,</span>
+<span class='r-in'>  description   <span class='op'>=</span> <span class='va'>corett_desc</span>,</span>
+<span class='r-in'>  <span class='va'>geoDescription</span>,</span>
+<span class='r-in'>  coord_sys     <span class='op'>=</span> <span class='st'>"WGS_1984_UTM_Zone_55N"</span>,</span>
+<span class='r-in'>  overwrite     <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
+<span class='r-in'>  projectNaming <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># The resulting spatialVector entity can be added to a EML dataset</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

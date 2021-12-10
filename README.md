@@ -43,15 +43,15 @@ can switch to the previous version with
 Most EML-generating functions in the capeml and capemlGIS packages will
 create both physical objects and EML references to those objects. By
 default, the package will name output files with the format
-`project-id`\_`object-name`\_`object-hash`.`file-extension` (e.g.,
-*664\_site\_map\_5fb7b8d53d48010eab1a2e73db7f1941.kml*). The target
-object (e.g., site\_map.png from the previous example) is renamed with
-the additional metadata and this object name is referenced in the EML
-metadata. Project naming can be disabled by setting the `projectNaming`
-flag to `FALSE`. When set to FALSE, the object name is not changed, and
-the name of the data object as read into the R environment is written to
-file and referenced in the EML. Note that the project-id is not passed
-as an argument, and must exist in `config.yaml` (as `projectid`).
+`project-id`\_`object-name`.`file-extension` (e.g.,
+*664\_site\_map.kml*). The target object (e.g., site\_map.png from the
+previous example) is renamed with the additional metadata and this
+object name is referenced in the EML metadata. Project naming can be
+disabled by setting the `projectNaming` flag to `FALSE`. When set to
+FALSE, the object name is not changed, and the name of the data object
+as read into the R environment is written to file and referenced in the
+EML. Note that the project-id is not passed as an argument, and must
+exist in `config.yaml` (as `projectid`).
 
 ### tools to generate entity metadata
 
@@ -75,11 +75,11 @@ package*
     -   see
         [vignette](https://caplter.github.io/capeml/articles/create_spatialRaster.html)
         for more detail
--   `create_vector_kml` Output includes:
+-   `create_vector` Output includes:
     -   EML entity of type `spatialVector` that can be added to a EML
         dataset.
-    -   Input data written to a kml file with project naming (if
-        selected).
+    -   Input data written to a kml or GeoJSON file with project naming
+        (if selected).
 -   `create_vector_shape` Output includes:
     -   EML entity of type `spatialVector` that can be added to a EML
         dataset.
@@ -105,10 +105,10 @@ package*
 #### output to shapefile
 
 ``` r
-# load spatial vector object; because create_vector_shape will generate a
-# new shapefile, we have complete flexibility over the shapefile name and
-# manipulating the data - here we are starting with an existing shapefile
-# named CORETT but will generate a shapefile with the name
+# load spatial vector object; because create_vector_shape will generate a new
+# shapefile, we have complete flexibility over the shapefile name and
+# manipulating the data - here we are starting with an existing shapefile named
+# CORETT but will generate a shapefile with the name
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
@@ -160,21 +160,21 @@ ejido_titles_points_of_decree_SV <- create_vector_shape(
 
 #### output to kml
 
-The workflow for writing to kml is nearly identical to the workflow for
-writing to shapefile. Some differences include that we need (or, at
-least, should) have a Name field in the resulting kml file that serves
-as a unique identifier for each data entity - added in the workflow
-below as an additional line in the call to `mutate.` Also, some
-parameters are different, such as unlike `create_vector_shape`, which
-requires the user to pass an EML-compliant coordinate reference system,
-since `create_vector_kml` writes to kml, the resulting CRS is *always*
-EPSG 4326 and, thus, is hard-coded into the function.
+The workflow for writing to kml or GeoJSON is nearly identical to the
+workflow for writing to shapefile. Some differences include that we need
+(or, at least, should) have a `Name` field if writing to kml file that
+serves as a unique identifier for each data entity (added in the
+workflow below as an additional line in the call to `mutate`). Also,
+some parameters are different, such as unlike `create_vector_shape`,
+which requires the user to pass an EML-compliant coordinate reference
+system, since `create_vector` writes to kml or GeoJSON, the resulting
+CRS is *always* EPSG 4326 and, thus, is hard-coded into the function.
 
 ``` r
-# load spatial vector object; because create_vector_shape will generate a
-# new shapefile, we have complete flexibility over the shapefile name and
-# manipulating the data - here we are starting with an existing shapefile
-# named CORETT but will generate a shapefile with the name
+# load spatial vector object; because create_vector_shape will generate a new
+# shapefile, we have complete flexibility over the shapefile name and
+# manipulating the data - here we are starting with an existing shapefile named
+# CORETT but will generate a shapefile with the name
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
@@ -204,15 +204,16 @@ ejido_titles_points_of_decree_desc <- "polygons of land regularized by the
 National Agency, CORETT; polygons were georeferenced from 281 paper maps,
 consolidated into 87 unique regularization degrees of ejidos that became
 privitzed from 1987-2007; includes the area of each polygon, the date of
-regularization, the name of the ejido, the delegation, and the 'plane
-number' that could be used to find the original map file in the CORETT
-office; it only includes expropriation for the delegations Xochimilco,
-Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
-Obregon, Tlalpan, Coyoacan, and Milpa Alta"
+regularization, the name of the ejido, the delegation, and the 'plane number'
+that could be used to find the original map file in the CORETT office; it only
+includes expropriation for the delegations Xochimilco, Magdalena Contreras,
+Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,
+Coyoacan, and Milpa Alta"
 
 ejido_titles_points_of_decree_SV <- create_vector_kml(
   vector_name = ejido_titles_points_of_decree,
   description = ejido_titles_points_of_decree_desc,
+  driver = "kml",
   overwrite = TRUE,
   projectNaming = TRUE
   )
