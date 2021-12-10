@@ -1,27 +1,23 @@
-#' @title Construct a KML spatial file and create metadata of type spatial
-#' vector
+#' @title Construct a spatial file of type KML or GeoJSON and create metadata
+#' of type spatial vector
 #'
-#' @description create_vector_kml writes a spatial data file of type KML and
+#' @description create_vector writes a spatial data file of type KML and
 #' generates corresponding metadata of EML entity of type spatialVector
 #'
-#' @details create_vector_kml creates a EML spatialVector object from a spatial
-#' data object (shapefile, kml) that is read into the R environment or created
-#' in the R environment. The function reads the attributes and classes
-#' contained within a supporting yaml file generated from the
-#' capeml::write_attributes function - create_vector_kml will look for a file
-#' in the working directory with a name of type spatialEntityName_attrs.yaml.
-#' If present, the function reads attribute and factor metadata from supporting
+#' @details create_vector creates a EML spatialVector object from a spatial
+#' data object that is read into or created within the R environment. If
+#' present, the function reads attribute and factor metadata from supporting
 #' yaml file(s) generated from the capeml::write_attributes() and
-#' capeml::write_factors() functions - create_vector_shape will look for files
-#' in the working directory with a name of type "entity name"_attrs.yaml (or
-#' "entity name"_attrs.csv if an older project) for attribute metadata, and
-#' "entity name"_factors.yaml (or "entity name"_factors.csv if an older
-#' project) for factor metadata. Note that this functionality is predicated on
-#' the existence of a file containing metadata about the attributes, that that
-#' file is in the working directory, and that the file matches the name of the
-#' spatial data entity precisely.
+#' capeml::write_factors() functions - create_vector will look for files in the
+#' working directory with a name of type "entity name"_attrs.yaml (or "entity
+#' name"_attrs.csv if an older project) for attribute metadata, and "entity
+#' name"_factors.yaml (or "entity name"_factors.csv if an older project) for
+#' factor metadata. Note that this functionality is predicated on the existence
+#' of a file containing metadata about the attributes, that that file is in the
+#' working directory, and that the file matches the name of the spatial data
+#' entity precisely.
 #'
-#' @note If project naming is TRUE then create_vector_kml will look for a
+#' @note If project naming is TRUE then create_vector will look for a
 #' package number (packageNum) in config.yaml; this parameter is not passed to
 #' the function and it must exist.
 #' @note All vector objects are transformed to epsg 4326 (WGS 1984)
@@ -30,7 +26,9 @@
 #'  (character) The unquoted name of the spatial data object in the R
 #'  environment.
 #' @param description
-#'  (character) Description of the vector resource.
+#'  (character) Quoated description of the vector resource.
+#' @param driver
+#'  (character) Quoted format of output file: KML or GeoJSON (default).
 #' @param geoDescription
 #'  (character) A textual description of the geographic study area of the
 #'  vector. This parameter allows the user to overwrite the
@@ -39,10 +37,11 @@
 #' (logical) A logical indicating whether to overwrite an existing file bearing
 #' the same name as kml file as it is imported.
 #' @param projectNaming
-#'  (logical) Logical indicating if the resulting kml file should be renamed
-#'  per the style used in the capeml ecosystem with the project id + base file
-#'  name + md5sum + file extension.  If set to false, the resulting kml will
-#'  bear the name the object is assigned in the R environment.
+#'  (logical) Logical indicating if the resulting file should be renamed per
+#'  the style used in the capeml ecosystem with the project id + base file name
+#'  + file extension. If set to false, the resulting file will bear the name
+#'  the object is assigned in the R environment with the appropriate file
+#'  extension.
 #' @param missing_value_code
 #' (character) Quoted character(s) of a flag, in addition to NA or NaN, used to
 #' indicate missing values within the data.
@@ -54,13 +53,13 @@
 #' @importFrom capeml read_attributes
 #'
 #' @return EML spatialVector object is returned. Additionally, the spatial data
-#' entity is written to file as type kml.
+#' entity is written to file as type kml or GeoJSON.
 #'
 #' @examples
 #' \dontrun{
 #' 
-#' # load spatial vector object; because create_kml will generate a new kml, we
-#' # have complete flexibility over the resulting kml file name and manipulating
+#' # load spatial vector object; because create_vector will generate a new kml or GeoJSON file, we
+#' # have complete flexibility over the resulting file name and manipulating
 #' # the data - here we are starting with an existing shapefile named CORETT but
 #' # will generate a kml with the name ejido_titles_points_of_decree 
 #' 
@@ -96,9 +95,10 @@
 #' Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
 #' Obregon, Tlalpan, Coyoacan, and Milpa Alta"
 #' 
-#' ejido_titles_points_of_decree_SV <- create_vector_kml(
+#' ejido_titles_points_of_decree_SV <- create_vector(
 #'   vector_name = ejido_titles_points_of_decree,
 #'   description = ejido_titles_points_of_decree_desc,
+#'   driver = "kml",
 #'   overwrite = TRUE,
 #'   projectNaming = TRUE
 #'   )
@@ -109,9 +109,10 @@
 #'
 #' @export
 #'
-create_vector_kml <- function(
+create_vector <- function(
   vector_name,
   description,
+  driver = "GeoJSON",
   geoDescription = NULL,
   overwrite = FALSE,
   projectNaming = TRUE,
@@ -133,6 +134,21 @@ create_vector_kml <- function(
   if (!file.exists("config.yaml")) {
 
     stop("could not locate config.yaml in ", getwd())
+
+  }
+
+
+  # driver-specific formatting ------------------------------------------------
+
+  if (grepl("geojson", driver, ignore.case = TRUE)) {
+
+    file_extension  <- "geojson"
+    data_one_format <- "GeoJSON"
+
+  } else {
+
+    file_extension  <- "kml"
+    data_one_format <- "Google Earth Keyhole Markup Language (KML)"
 
   }
 
@@ -174,16 +190,16 @@ create_vector_kml <- function(
 
   # write to kml ------------------------------------------------------------
 
-  if (file.exists(paste0(vector_name_string, ".kml")) && overwrite == FALSE) {
+  if (file.exists(paste0(vector_name_string, file_extension)) && overwrite == FALSE) {
 
-    stop("kml file to be created (", paste0(vector_name_string, ".kml"), ") already exists in working directory (set overwrite to TRUE)")
+    stop("file to be created (", paste0(vector_name_string, file_extension), ") already exists in working directory (set overwrite to TRUE)")
 
   }
 
   sf::st_write(
     obj = vector_name,
-    dsn = paste0(vector_name_string, ".kml"),
-    driver = "kml",
+    dsn = paste0(vector_name_string, file_extension),
+    driver = file_extension,
     delete_layer = TRUE,
     delete_dsn = TRUE
   )
@@ -211,12 +227,12 @@ create_vector_kml <- function(
 
     packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
 
-    project_name <- paste0(packageNum, "_", vector_name_string, "_", tools::md5sum(paste0(vector_name_string, ".kml")), ".kml")
+    project_name <- paste0(packageNum, "_", vector_name_string, ".", file_extension)
 
     system(
       paste0(
         "mv ",
-        paste0(shQuote(vector_name_string, type = "sh"), ".kml"),
+        paste0(shQuote(vector_name_string, type = "sh"), file_extension),
         " ",
         shQuote(project_name, type = "sh")
       )
@@ -224,7 +240,7 @@ create_vector_kml <- function(
 
   } else {
 
-    project_name <- paste0(vector_name_string, ".kml")
+    project_name <- paste0(vector_name_string, file_extension)
 
   }
 
@@ -243,7 +259,7 @@ create_vector_kml <- function(
 
   fileDataFormat <- EML::eml$dataFormat(
     externallyDefinedFormat = EML::eml$externallyDefinedFormat(
-      formatName = "Google Earth Keyhole Markup Language (KML)")
+      formatName = data_one_format)
   )
 
   # file size
@@ -323,4 +339,4 @@ create_vector_kml <- function(
 
   return(newSV)
 
-} # close create_vector_kml
+} # close create_vector

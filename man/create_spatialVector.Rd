@@ -2,7 +2,8 @@
 % Please edit documentation in R/create_spatialVector.R
 \name{create_spatialVector}
 \alias{create_spatialVector}
-\title{create_spatialVector}
+\title{Construct a spatial file of type KML and create metadata of type
+ spatial vector (deprecated: use create_vector or create_vector_shape)}
 \usage{
 create_spatialVector(
   svname,
@@ -73,33 +74,4 @@ Because file name metadata is incorporated into the kml generated from
  spatialVector objects.
 
 All vector objects are transformed to epsg 4326 (WGS 1984)
-}
-\examples{
-\dontrun{
-
-# Load spatial vector object, here reading an existing kml file but this
-# could be by constructing a spatial object in R using any means.
-msp_arthropod_locations <- sf::st_read("msp_arthropod_locations.kml")
-
-# The Name attribute of a kml file describes the points so be sure that this field is populated with meaninful data.
-msp_arthropod_locations <- msp_arthropod_locations \%>\%
-  mutate(Name = sampling_locations)
-
-write_attributes(msp_arthropod_locations)
-
-msp_arthropod_locations_desc <- "Geospatial file (KML) detailing the
-locations of ground-dwelling arthropod sampling sites in the McDowell
-Sonoran Preserve, Scottsdale, Arizona. Polygons reflect the bounding box
-(minimum and maximum extents) of paired (boundary-interior) sampling
-locations. Precise sampling locations are available upon request to the CAP
-LTER Data Manager."
-
-msp_arthropod_locations_SV <- create_spatialVector(
-  svname = msp_arthropod_locations,
-  description = msp_arthropod_locations_desc
-)
-
-# The resulting spatialVector entity can be added to a EML dataset
-}
-
 }

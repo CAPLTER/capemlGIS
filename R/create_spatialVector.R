@@ -1,4 +1,5 @@
-#' @title create_spatialVector
+#' @title Construct a spatial file of type KML and create metadata of type
+#'  spatial vector (deprecated: use create_vector or create_vector_shape)
 #'
 #' @description create_spatialVector generates a EML entity of type
 #'   spatialVector
@@ -52,8 +53,8 @@
 #'  FALSE.
 #'
 #' @import EML
-#' @import dplyr
 #' @import sf
+#' @importFrom dplyr mutate select_if
 #' @importFrom yaml yaml.load_file
 #' @importFrom utils write.csv read.csv
 #' @importFrom tidyr unnest_wider unnest_longer
@@ -63,47 +64,19 @@
 #'  entity is written to file as type kml, and renamed with the project id +
 #'  base file name + file extension (kml in this case).
 #'
-#' @examples
-#' \dontrun{
-#'
-#' # Load spatial vector object, here reading an existing kml file but this
-#' # could be by constructing a spatial object in R using any means.
-#' msp_arthropod_locations <- sf::st_read("msp_arthropod_locations.kml")
-#'
-#' # The Name attribute of a kml file describes the points so be sure that this field is populated with meaninful data.
-#' msp_arthropod_locations <- msp_arthropod_locations %>%
-#'   mutate(Name = sampling_locations)
-#'
-#' write_attributes(msp_arthropod_locations)
-#'
-#' msp_arthropod_locations_desc <- "Geospatial file (KML) detailing the
-#' locations of ground-dwelling arthropod sampling sites in the McDowell
-#' Sonoran Preserve, Scottsdale, Arizona. Polygons reflect the bounding box
-#' (minimum and maximum extents) of paired (boundary-interior) sampling
-#' locations. Precise sampling locations are available upon request to the CAP
-#' LTER Data Manager."
-#'
-#' msp_arthropod_locations_SV <- create_spatialVector(
-#'   svname = msp_arthropod_locations,
-#'   description = msp_arthropod_locations_desc
-#' )
-#'
-#' # The resulting spatialVector entity can be added to a EML dataset
-#' }
-#'
-#' @export
 
 create_spatialVector <- function(
   svname,
   description,
   geoDescription,
   baseURL = "https://data.gios.asu.edu/datasets/cap/",
-  projectNaming = TRUE) {
+  projectNaming = TRUE
+  ) {
 
   # deprecation ---------------------------------------------------------------
 
   .Deprecated(
-    new = "create_vector_kml or create_vector_shape",
+    new = "create_vector or create_vector_shape",
     package="capemlGIS",
     old = as.character(sys.call(sys.parent()))[1L]
   )
@@ -194,7 +167,8 @@ create_spatialVector <- function(
     dsn = fname,
     driver = "kml",
     delete_layer = TRUE,
-    delete_dsn = TRUE)
+    delete_dsn = TRUE
+  )
 
 
   # attributes --------------------------------------------------------------
@@ -204,9 +178,10 @@ create_spatialVector <- function(
 
     attrs <- yaml::yaml.load_file(paste0(namestr, "_attrs.yaml"))
     attrs <- yaml::yaml.load(attrs)
-    attrs <- tibble::enframe(attrs) %>%
-      tidyr::unnest_wider(value) %>%
-      dplyr::select(-one_of("name"))
+    attrs <- tibble::enframe(attrs) |>
+      tidyr::unnest_wider(value)
+
+    attrs <- subset(attrs, select = -name)
 
   } else if (!file.exists(paste0(namestr, "_attrs.yaml")) && file.exists(paste0(namestr, "_attrs.csv"))) {
 
@@ -219,8 +194,7 @@ create_spatialVector <- function(
   }
 
   # column classes to vector (req'd by set_attributes)
-  classes <- attrs %>%
-    dplyr::pull(columnClasses)
+  classes <- attrs$columnClasses
 
   # copy attributeDefinition to defintion as appropriate; remove col classes
   # from attrs (req'd by set_attributes); remove empty columns (real targets
@@ -232,15 +206,18 @@ create_spatialVector <- function(
     !all(is.na(x))
   }
 
-  attrs <- attrs %>%
-    mutate(
-      definition = case_when(
+  attrs <- attrs |>
+    dplyr::mutate(
+      definition = dplyr::case_when(
         grepl("character", columnClasses) & ((is.na(definition) | definition == "")) ~ attributeDefinition,
         TRUE ~ definition
       )
-      ) %>%
-  dplyr::select(-columnClasses) %>%
-  dplyr::select_if(not_all_na)
+    )
+
+  attrs <- subset(attrs, select = -columnClasses)
+
+  attrs <- attrs |>
+    dplyr::select_if(not_all_na)
 
 attr_list <- EML::set_attributes(attributes = attrs, col_classes = classes)
 

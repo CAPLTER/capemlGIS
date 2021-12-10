@@ -130,11 +130,11 @@
 create_vector_shape <- function(
   vector_name,
   description,
-  geoDescription = NULL,
+  geoDescription     = NULL,
   coord_sys,
-  layer_opts = NULL,
-  overwrite = FALSE,
-  projectNaming = TRUE,
+  layer_opts         = NULL,
+  overwrite          = FALSE,
+  projectNaming      = TRUE,
   missing_value_code = NULL
   ) {
 
