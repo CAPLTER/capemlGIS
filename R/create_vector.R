@@ -180,28 +180,28 @@ create_vector <- function(
   }
 
   spatialCoverage <- EML::set_coverage(
-    geographicDescription = geoDescription,
-    westBoundingCoordinate =  sf::st_bbox(vector_name)[["xmin"]],
-    eastBoundingCoordinate =  sf::st_bbox(vector_name)[["xmax"]],
+    geographicDescription   = geoDescription,
+    westBoundingCoordinate  = sf::st_bbox(vector_name)[["xmin"]],
+    eastBoundingCoordinate  = sf::st_bbox(vector_name)[["xmax"]],
     northBoundingCoordinate = sf::st_bbox(vector_name)[["ymax"]],
     southBoundingCoordinate = sf::st_bbox(vector_name)[["ymin"]]
   )
 
 
-  # write to kml ------------------------------------------------------------
+  # write to file ----------------------------------------------------------------
 
-  if (file.exists(paste0(vector_name_string, file_extension)) && overwrite == FALSE) {
+  if (file.exists(paste0(vector_name_string, ".", file_extension)) && overwrite == FALSE) {
 
-    stop("file to be created (", paste0(vector_name_string, file_extension), ") already exists in working directory (set overwrite to TRUE)")
+    stop("file to be created (", paste0(vector_name_string, ".", file_extension), ") already exists in working directory (set overwrite to TRUE)")
 
   }
 
   sf::st_write(
-    obj = vector_name,
-    dsn = paste0(vector_name_string, file_extension),
-    driver = file_extension,
+    obj          = vector_name,
+    dsn          = paste0(vector_name_string, ".", file_extension),
+    driver       = file_extension,
     delete_layer = TRUE,
-    delete_dsn = TRUE
+    delete_dsn   = TRUE
   )
 
 
@@ -210,8 +210,8 @@ create_vector <- function(
   if (file.exists(paste0(vector_name_string, "_attrs.yaml")) | file.exists(paste0(vector_name_string, "_attrs.csv"))) {
 
     attributes <- capeml::read_attributes(
-      entity_name = vector_name_string,
-      missing_value_code = missing_value_code 
+      entity_name        = vector_name_string,
+      missing_value_code = missing_value_code
     )
 
   } else {
@@ -240,7 +240,7 @@ create_vector <- function(
 
   } else {
 
-    project_name <- paste0(vector_name_string, file_extension)
+    project_name <- paste0(vector_name_string, ".", file_extension)
 
   }
 

@@ -33,10 +33,17 @@
 #'  raster. This parameter allows the user to overwrite the
 #'  geographicDesciption value provided in the project config.yaml.
 #' @param projectNaming
-#' (logical) Logical indicating if the raster file should be renamed per the
-#' style used by the CAP LTER (default) with the project id + base file name +
-#' file extension. The passed file or directory name will be used if this
-#' parameter is set to FALSE.
+#'  (logical) Logical indicating if the raster file should be renamed per the
+#'  style used by the CAP LTER (default) with the project id + base file name +
+#'  file extension. The passed file or directory name will be used if this
+#'  parameter is set to FALSE.
+#' @param file_url
+#'  (character) Optional parameter detailing the online location where the data
+#'  entity can be accessed. In most cases, the online location is the same for
+#'  all files in the dataset and is detailed in config.yaml. file_url allows
+#'  the user to overide project-level configuration in config.yaml and provide
+#'  a specific, unique resource (e.g., a link to a file in Dropbox) for each
+#'  data entity.
 #'
 #' @import EML
 #' @importFrom raster raster extent ncell crs bandnr nrow ncol xres yres
@@ -82,7 +89,8 @@ create_spatialRaster <- function(
   rasterValueDescription,
   rasterValueUnits,
   geoDescription = NULL,
-  projectNaming  = TRUE
+  projectNaming  = TRUE,
+  file_url       = NULL
   ) {
 
 
@@ -227,7 +235,7 @@ create_spatialRaster <- function(
 
   }
 
-  emlProjection <- capemlGIS::eml_valid_crs[eml_valid_crs$epsg == epsgProjection,]$value
+  emlProjection <- capemlGIS::eml_valid_crs[capemlGIS::eml_valid_crs$epsg == epsgProjection,]$value
 
 
   # create spatial raster entity --------------------------------------------
@@ -290,13 +298,24 @@ create_spatialRaster <- function(
 
   } # close projectNaming == FALSE
 
-# distribution
+  # distribution
 
-fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+  if (!is.null(file_url)) {
 
-fileDistribution <- EML::eml$distribution(
-  EML::eml$online(url = paste0(fileURL, resource_ident))
-)
+    fileDistribution <- EML::eml$distribution(
+      EML::eml$online(url = file_url)
+    )
+
+  } else {
+
+    fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+
+    fileDistribution <- EML::eml$distribution(
+      EML::eml$online(url = paste0(fileURL, resource_ident))
+    )
+
+  }
+
 
 # build physical
 

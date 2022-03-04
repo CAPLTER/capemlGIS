@@ -11,7 +11,8 @@ create_spatialRaster(
   rasterValueDescription,
   rasterValueUnits,
   geoDescription = NULL,
-  projectNaming = TRUE
+  projectNaming = TRUE,
+  file_url = NULL
 )
 }
 \arguments{
@@ -35,6 +36,13 @@ geographicDesciption value provided in the project config.yaml.}
 style used by the CAP LTER (default) with the project id + base file name +
 file extension. The passed file or directory name will be used if this
 parameter is set to FALSE.}
+
+\item{file_url}{(character) Optional parameter detailing the online location where the data
+entity can be accessed. In most cases, the online location is the same for
+all files in the dataset and is detailed in config.yaml. file_url allows
+the user to overide project-level configuration in config.yaml and provide
+a specific, unique resource (e.g., a link to a file in Dropbox) for each
+data entity.}
 }
 \value{
 EML spatial data object is returned. Additionally, if projectNaming
