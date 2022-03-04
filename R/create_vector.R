@@ -112,10 +112,10 @@
 create_vector <- function(
   vector_name,
   description,
-  driver = "GeoJSON",
-  geoDescription = NULL,
-  overwrite = FALSE,
-  projectNaming = TRUE,
+  driver             = "GeoJSON",
+  geoDescription     = NULL,
+  overwrite          = FALSE,
+  projectNaming      = TRUE,
   missing_value_code = NULL
   ) {
 
@@ -216,7 +216,7 @@ create_vector <- function(
 
   } else {
 
-    warning("missing attributes file: ", paste0(vector_name_string, "_attrs.yaml"), " / ", paste0(layer, "_attrs.yaml"))
+    warning("missing attributes file: ", paste0(vector_name_string, "_attrs.yaml"), " / ", paste0(vector_name_string, "_attrs.csv"))
 
   }
 
@@ -232,7 +232,7 @@ create_vector <- function(
     system(
       paste0(
         "mv ",
-        paste0(shQuote(vector_name_string, type = "sh"), file_extension),
+        paste0(shQuote(vector_name_string, type = "sh"), ".", file_extension),
         " ",
         shQuote(project_name, type = "sh")
       )
@@ -264,35 +264,35 @@ create_vector <- function(
 
   # file size
 
-  fileSize <- EML::eml$size(unit = "byte")
+  fileSize      <- EML::eml$size(unit = "byte")
   fileSize$size <- deparse(file.size(project_name))
 
   # authentication
 
-  fileAuthentication <- EML::eml$authentication(method = "MD5")
+  fileAuthentication                <- EML::eml$authentication(method = "MD5")
   fileAuthentication$authentication <- md5sum(project_name)
 
   # construct physical
 
   spatialVectorPhysical <- EML::eml$physical(
-    objectName = project_name,
+    objectName     = project_name,
     authentication = fileAuthentication,
-    size = fileSize,
-    dataFormat = fileDataFormat,
-    distribution = fileDistribution
+    size           = fileSize,
+    dataFormat     = fileDataFormat,
+    distribution   = fileDistribution
   )
 
 
   # create spatialVector entity ---------------------------------------------
 
   newSV <- EML::eml$spatialVector(
-    entityName = project_name,
-    entityDescription = description,
-    physical = spatialVectorPhysical,
-    coverage = spatialCoverage,
-    attributeList = attributes,
+    entityName           = project_name,
+    entityDescription    = description,
+    physical             = spatialVectorPhysical,
+    coverage             = spatialCoverage,
+    attributeList        = attributes,
     geometricObjectCount = nrow(vector_name),
-    id = project_name
+    id                   = project_name
   )
 
 

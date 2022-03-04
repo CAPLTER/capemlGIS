@@ -137,7 +137,7 @@ create_spatialRaster <- function(
 
   rasterFactorsFileName <- paste0(directory_name, "/", basename(file_path_sans_ext(rasterFile)), "_factors.csv")
 
-  # compile components for attributeList of dataTable
+  # compile components for attributeList
 
   # condition: factors present
   if (file.exists(rasterFactorsFileName)) {
@@ -218,7 +218,7 @@ create_spatialRaster <- function(
   projections <- list(
     section = list(
       paste0("<title>user-provided coordinate reference system</title>\n<para>", epsgProjection, "</para>"),
-      paste0("<title>raster-derived coordinate reference system</title>\n<para>", as.character(crs(raster_object)), "</para>")
+      paste0("<title>raster-derived coordinate reference system</title>\n<para>", as.character(raster::crs(raster_object)), "</para>")
     )
   )
 
