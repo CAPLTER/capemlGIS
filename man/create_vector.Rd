@@ -62,9 +62,9 @@ working directory, and that the file matches the name of the spatial data
 entity precisely.
 }
 \note{
-If project naming is TRUE then create_vector will look for a
-package number (packageNum) in config.yaml; this parameter is not passed to
-the function and it must exist.
+If project naming is TRUE then create_vector will look for a package
+number (packageNum (deprecated) or identifier) in config.yaml; this
+parameter is not passed to the function and it must exist.
 
 All vector objects are transformed to epsg 4326 (WGS 1984)
 }

@@ -25,8 +25,9 @@
 #' file is in the working directory, and that the file matches the name of the
 #' spatial data entity precisely.
 #'
-#' @note create_vector_shape will look for a package number (packageNum) in
-#' config.yaml; this parameter is not passed to the function and it must exist.
+#' @note create_vector_shape will look for a package number (packageNum
+#' (deprecated) or identifier) in config.yaml; this parameter is not passed to
+#' the function and it must exist.
 #' @note The shapefile generated from create_vector_shape will have the same
 #' coordinate reference system (CRS) as the input spatial object.
 #'
@@ -63,6 +64,7 @@
 #' @importFrom yaml yaml.load_file
 #' @importFrom capeml read_attributes
 #' @importFrom tools md5sum
+#' @importFrom stringr str_extract
 #'
 #' @return An object of type EML spatialVector is returned. Additionally, all
 #' files that make up a single shapefile are harvested into a new directory
@@ -163,6 +165,11 @@ create_vector_shape <- function(
     stop("please provide an EML-compliant coordinate reference system for this vector")
 
   }
+
+
+  # retrieve dataset details from config.yaml
+
+  configurations <- yaml::yaml.load_file("config.yaml")
 
 
   # stringify vector name -----------------------------------------------------
@@ -271,9 +278,26 @@ create_vector_shape <- function(
 
   if (projectNaming == TRUE) {
 
-    packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
+    if (exists("packageNum", configurations)) {
 
-    zipped_name <- paste0(packageNum, "_", vector_name_string, "_", tools::md5sum(paste0(vector_name_string, ".zip")), ".zip")
+      this_identifier <- stringr::str_extract(
+        string  = configurations[["packageNum"]],
+        pattern = "[0-9]+"
+      )
+
+    } else if (exists("identifier", configurations)) {
+
+      this_identifier <- configurations[["identifier"]]
+
+    } else {
+
+      stop("could not resolve package identifier (number)")
+
+    }
+
+    this_identifier <- as.integer(this_identifier)
+
+    zipped_name <- paste0(this_identifier, "_", vector_name_string, "_", tools::md5sum(paste0(vector_name_string, ".zip")), ".zip")
 
     system(
       paste0(

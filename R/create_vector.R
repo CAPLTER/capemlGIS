@@ -17,9 +17,9 @@
 #' working directory, and that the file matches the name of the spatial data
 #' entity precisely.
 #'
-#' @note If project naming is TRUE then create_vector will look for a
-#' package number (packageNum) in config.yaml; this parameter is not passed to
-#' the function and it must exist.
+#' @note If project naming is TRUE then create_vector will look for a package
+#' number (packageNum (deprecated) or identifier) in config.yaml; this
+#' parameter is not passed to the function and it must exist.
 #' @note All vector objects are transformed to epsg 4326 (WGS 1984)
 #'
 #' @param vector_name
@@ -51,6 +51,7 @@
 #' @importFrom yaml yaml.load_file
 #' @importFrom tools md5sum
 #' @importFrom capeml read_attributes
+#' @importFrom stringr str_extract
 #'
 #' @return EML spatialVector object is returned. Additionally, the spatial data
 #' entity is written to file as type kml or GeoJSON.
@@ -160,7 +161,15 @@ create_vector <- function(
 
   # ensure epsg4326 -----------------------------------------------------------
 
-  vector_name <- sf::st_transform(vector_name, crs = 4326)
+  vector_name <- sf::st_transform(
+    x   = vector_name,
+    crs = 4326
+  )
+
+
+  # retrieve dataset details from config.yaml
+
+  configurations <- yaml::yaml.load_file("config.yaml")
 
 
   # geographic coverage -------------------------------------------------------
@@ -225,9 +234,26 @@ create_vector <- function(
 
   if (projectNaming == TRUE) {
 
-    packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
+    if (exists("packageNum", configurations)) {
 
-    project_name <- paste0(packageNum, "_", vector_name_string, ".", file_extension)
+      this_identifier <- stringr::str_extract(
+        string  = configurations[["packageNum"]],
+        pattern = "[0-9]+"
+      )
+
+    } else if (exists("identifier", configurations)) {
+
+      this_identifier <- configurations[["identifier"]]
+
+    } else {
+
+      stop("could not resolve package identifier (number)")
+
+    }
+
+    this_identifier <- as.integer(this_identifier)
+
+    project_name <- paste0(this_identifier, "_", vector_name_string, ".", file_extension)
 
     system(
       paste0(
@@ -249,7 +275,7 @@ create_vector <- function(
 
   # distribution
 
-  fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+  fileURL <- configurations[["baseURL"]]
 
   fileDistribution <- EML::eml$distribution(
     EML::eml$online(url = paste0(fileURL, project_name))
@@ -259,7 +285,8 @@ create_vector <- function(
 
   fileDataFormat <- EML::eml$dataFormat(
     externallyDefinedFormat = EML::eml$externallyDefinedFormat(
-      formatName = data_one_format)
+      formatName            = data_one_format
+    )
   )
 
   # file size

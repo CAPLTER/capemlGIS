@@ -174,6 +174,12 @@ package_vector_shape <- function(
 
   system(paste0("mkdir ", shQuote(layer, type = "sh")))
 
+
+  # retrieve dataset details from config.yaml
+
+  configurations <- yaml::yaml.load_file("config.yaml")
+
+
   # identify shapefiles and copy to target directory --------------------------
 
   shape_files <- list.files(
@@ -236,9 +242,26 @@ package_vector_shape <- function(
 
   if (projectNaming == TRUE) {
 
-    packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
+    if (exists("packageNum", configurations)) {
 
-    zipped_name <- paste0(packageNum, "_", layer, "_", tools::md5sum(paste0(layer, ".zip")), ".zip")
+      this_identifier <- stringr::str_extract(
+        string  = configurations[["packageNum"]],
+        pattern = "[0-9]+"
+      )
+
+    } else if (exists("identifier", configurations)) {
+
+      this_identifier <- configurations[["identifier"]]
+
+    } else {
+
+      stop("could not resolve package identifier (number)")
+
+    }
+
+    this_identifier <- as.integer(this_identifier)
+
+    zipped_name <- paste0(this_identifier, "_", layer, "_", tools::md5sum(paste0(layer, ".zip")), ".zip")
 
     system(
       paste0(
@@ -264,7 +287,7 @@ package_vector_shape <- function(
   # read data -----------------------------------------------------------------
 
   this_vector <- sf::st_read(
-    dsn = dsn,
+    dsn   = dsn,
     layer = layer
   )
 
@@ -315,7 +338,7 @@ package_vector_shape <- function(
 
   # distribution
 
-  fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+  fileURL <- configurations[["baseURL"]]
 
   fileDistribution <- EML::eml$distribution(
     EML::eml$online(url = paste0(fileURL, zipped_name))
