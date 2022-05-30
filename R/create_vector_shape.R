@@ -25,9 +25,9 @@
 #' file is in the working directory, and that the file matches the name of the
 #' spatial data entity precisely.
 #'
-#' @note create_vector_shape will look for a package number (packageNum
-#' (deprecated) or identifier) in config.yaml; this parameter is not passed to
-#' the function and it must exist.
+#' @note If project naming is TRUE then create_vector will look for a package
+#' number (packageNum (deprecated) or identifier) in config.yaml; this
+#' parameter is not passed to the function and it must exist.
 #' @note The shapefile generated from create_vector_shape will have the same
 #' coordinate reference system (CRS) as the input spatial object.
 #'
@@ -62,7 +62,7 @@
 #' @import EML
 #' @importFrom sf st_write st_transform
 #' @importFrom yaml yaml.load_file
-#' @importFrom capeml read_attributes
+#' @importFrom capeml read_attributes read_package_configuration
 #' @importFrom tools md5sum
 #' @importFrom stringr str_extract
 #'
@@ -80,15 +80,15 @@
 #' # ejido_titles_points_of_decree 
 #' 
 #' ejido_titles_points_of_decree <- sf::read_sf(
-#'   dsn = "data/Regularizacion/ejidal",
+#'   dsn   = "data/Regularizacion/ejidal",
 #'   layer = "CORETT"
 #'   ) %>%
-#' select(
+#' dplyr::select(
 #'   -OBJECTID_1,
 #'   -FolderNumb,
 #'   -Surface
 #'   ) %>%
-#' mutate(
+#' dplyr::mutate(
 #'   Id = as.character(Id),
 #'   across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
 #'   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
@@ -150,14 +150,6 @@ create_vector_shape <- function(
 
   }
 
-  # do not proceed if config.yaml is not present
-
-  if (!file.exists("config.yaml")) {
-
-    stop("could not locate config.yaml in ", getwd())
-
-  }
-
   # do not proceed if coord_sys is not present
 
   if (missing("coord_sys")) {
@@ -169,7 +161,7 @@ create_vector_shape <- function(
 
   # retrieve dataset details from config.yaml
 
-  configurations <- yaml::yaml.load_file("config.yaml")
+  configurations <- capeml::read_package_configuration()
 
 
   # stringify vector name -----------------------------------------------------
@@ -181,7 +173,7 @@ create_vector_shape <- function(
 
   if (missing("geoDescription") | is.null(geoDescription)) {
 
-    geoDescription <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+    geoDescription <- configurations[["geographic_description"]]
     message("project-level geographic description used for spatial entity ", vector_name_string)
 
   }
@@ -242,10 +234,10 @@ create_vector_shape <- function(
   shapefile_name <- paste0(vector_name_string, "/", vector_name_string, ".shp")
 
   sf::st_write(
-    obj = vector_name,
-    dsn = shapefile_name,
-    driver = "ESRI Shapefile",
-    append = !overwrite,
+    obj           = vector_name,
+    dsn           = shapefile_name,
+    driver        = "ESRI Shapefile",
+    append        = !overwrite,
     layer_options = layer_opts
   )
 
@@ -278,26 +270,7 @@ create_vector_shape <- function(
 
   if (projectNaming == TRUE) {
 
-    if (exists("packageNum", configurations)) {
-
-      this_identifier <- stringr::str_extract(
-        string  = configurations[["packageNum"]],
-        pattern = "[0-9]+"
-      )
-
-    } else if (exists("identifier", configurations)) {
-
-      this_identifier <- configurations[["identifier"]]
-
-    } else {
-
-      stop("could not resolve package identifier (number)")
-
-    }
-
-    this_identifier <- as.integer(this_identifier)
-
-    zipped_name <- paste0(this_identifier, "_", vector_name_string, "_", tools::md5sum(paste0(vector_name_string, ".zip")), ".zip")
+    zipped_name <- paste0(configurations$identifier, "_", vector_name_string, "_", tools::md5sum(paste0(vector_name_string, ".zip")), ".zip")
 
     system(
       paste0(
@@ -340,7 +313,7 @@ create_vector_shape <- function(
 
   # distribution
 
-  fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+  fileURL <- configurations$fileURL
 
   fileDistribution <- EML::eml$distribution(
     EML::eml$online(url = paste0(fileURL, zipped_name))
@@ -355,34 +328,34 @@ create_vector_shape <- function(
 
   # file size
 
-  fileSize <- EML::eml$size(unit = "byte")
+  fileSize      <- EML::eml$size(unit = "byte")
   fileSize$size <- deparse(file.size(zipped_name))
 
   # authentication
 
-  fileAuthentication <- EML::eml$authentication(method = "MD5")
+  fileAuthentication                <- EML::eml$authentication(method = "MD5")
   fileAuthentication$authentication <- md5sum(zipped_name)
 
   # construct physical
 
   spatialVectorPhysical <- EML::eml$physical(
-    objectName = zipped_name,
+    objectName     = zipped_name,
     authentication = fileAuthentication,
-    size = fileSize,
-    dataFormat = fileDataFormat,
-    distribution = fileDistribution
+    size           = fileSize,
+    dataFormat     = fileDataFormat,
+    distribution   = fileDistribution
   )
 
   # create spatialVector ----------------------------------------------------
 
   newSV <- EML::eml$spatialVector(
-    entityName = zipped_name,
-    entityDescription = description,
-    physical = spatialVectorPhysical,
-    coverage = spatialCoverage,
-    attributeList = attributes,
+    entityName           = zipped_name,
+    entityDescription    = description,
+    physical             = spatialVectorPhysical,
+    coverage             = spatialCoverage,
+    attributeList        = attributes,
     geometricObjectCount = nrow(vector_name),
-    id = zipped_name
+    id                   = zipped_name
   )
 
   # add geometry type -------------------------------------------------------

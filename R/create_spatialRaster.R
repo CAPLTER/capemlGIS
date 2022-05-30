@@ -50,6 +50,7 @@
 #' @importFrom tools md5sum file_ext
 #' @importFrom utils read.csv
 #' @importFrom yaml yaml.load_file
+#' @importFrom capeml read_package_configuration
 #'
 #' @return EML spatial data object is returned. Additionally, if projectNaming
 #' is set to TRUE (default) the spatial data file is renamed with the project
@@ -258,20 +259,19 @@ create_spatialRaster <- function(
   directoryNameFull <- sub("/$", "", path.expand(directory_name))
   pathToFile        <- path.expand(rasterFile)
 
+
+  # retrieve dataset details from config.yaml
+
+  configurations <- capeml::read_package_configuration()
+
+
   if (projectNaming == TRUE) {
 
     # if using project naming, add project-name specific elements to
     # spatialRaster entity
 
-    # retrieve package number from config.yaml
-    if (!file.exists("config.yaml")) {
-      stop("config.yaml not found")
-    }
-
-    packageNum <- yaml::yaml.load_file("config.yaml")$packageNum
-
     newRasterName <- paste0(
-      packageNum, "_",
+      configurations$identifier, "_",
       file_path_sans_ext(rasterBaseName), ".",
       file_ext(rasterFile)
     )
@@ -308,7 +308,7 @@ create_spatialRaster <- function(
 
   } else {
 
-    fileURL <- yaml::yaml.load_file("config.yaml")$baseURL
+    fileURL <- configurations$fileURL
 
     fileDistribution <- EML::eml$distribution(
       EML::eml$online(url = paste0(fileURL, resource_ident))
@@ -364,14 +364,7 @@ if (abs(raster::extent(raster_object)@xmin) > 180) {
 
   if (!is.null(geoDescription)) {
 
-    # retrieve geographic description from config.yaml
-    if (!file.exists("config.yaml")) {
-
-      stop("could not locate geographic description, config.yaml not found")
-
-    }
-
-    geoDesc <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+    geoDesc <- configurations[["geographic_description"]]
 
     if (is.na(geoDesc) | is.null(geoDesc) | geoDesc == "") {
 

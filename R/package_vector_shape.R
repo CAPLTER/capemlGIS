@@ -26,8 +26,9 @@
 #' file is in the working directory, and that the file matches the name of the
 #' spatial data entity precisely.
 #'
-#' @note package_vector_shape will look for a package number (packageNum) in
-#' config.yaml; this parameter is not passed to the function and it must exist.
+#' @note If project naming is TRUE then create_vector will look for a package
+#' number (packageNum (deprecated) or identifier) in config.yaml; this
+#' parameter is not passed to the function and it must exist.
 #'
 #' @param dsn
 #' (character) The quoted name of the directory where the shapefile is
@@ -61,7 +62,7 @@
 #' @importFrom sf st_read
 #' @importFrom yaml yaml.load_file
 #' @importFrom purrr map
-#' @importFrom capeml read_attributes
+#' @importFrom capeml read_attributes read_package_configuration
 #' @importFrom tools md5sum
 #'
 #' @return An object of type EML spatialVector is returned. Additionally, all
@@ -140,14 +141,6 @@ package_vector_shape <- function(
 
   }
 
-  # do not proceed if config.yaml is not present
-
-  if (!file.exists("config.yaml")) {
-
-    stop("could not locate config.yaml")
-
-  }
-
   # do not proceed if coord_sys is not present
 
   if (missing("coord_sys")) {
@@ -177,14 +170,14 @@ package_vector_shape <- function(
 
   # retrieve dataset details from config.yaml
 
-  configurations <- yaml::yaml.load_file("config.yaml")
+  configurations <- capeml::read_package_configuration()
 
 
   # identify shapefiles and copy to target directory --------------------------
 
   shape_files <- list.files(
-    path = dsn,
-    pattern = layer,
+    path       = dsn,
+    pattern    = layer,
     full.names = TRUE
   )
 
@@ -242,26 +235,7 @@ package_vector_shape <- function(
 
   if (projectNaming == TRUE) {
 
-    if (exists("packageNum", configurations)) {
-
-      this_identifier <- stringr::str_extract(
-        string  = configurations[["packageNum"]],
-        pattern = "[0-9]+"
-      )
-
-    } else if (exists("identifier", configurations)) {
-
-      this_identifier <- configurations[["identifier"]]
-
-    } else {
-
-      stop("could not resolve package identifier (number)")
-
-    }
-
-    this_identifier <- as.integer(this_identifier)
-
-    zipped_name <- paste0(this_identifier, "_", layer, "_", tools::md5sum(paste0(layer, ".zip")), ".zip")
+    zipped_name <- paste0(configurations$identifier, "_", layer, "_", tools::md5sum(paste0(layer, ".zip")), ".zip")
 
     system(
       paste0(
@@ -297,7 +271,7 @@ package_vector_shape <- function(
 
   if (missing("geoDescription") | is.null(geoDescription)) {
 
-    geoDescription <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+    geoDescription <- configurations[["geographic_description"]]
     message("project-level geographic description used for spatial entity ", layer)
 
   }
@@ -338,7 +312,7 @@ package_vector_shape <- function(
 
   # distribution
 
-  fileURL <- configurations[["baseURL"]]
+  fileURL <- configurations$fileURL
 
   fileDistribution <- EML::eml$distribution(
     EML::eml$online(url = paste0(fileURL, zipped_name))

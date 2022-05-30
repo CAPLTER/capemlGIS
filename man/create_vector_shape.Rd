@@ -76,8 +76,9 @@ file is in the working directory, and that the file matches the name of the
 spatial data entity precisely.
 }
 \note{
-create_vector_shape will look for a package number (packageNum) in
-config.yaml; this parameter is not passed to the function and it must exist.
+If project naming is TRUE then create_vector will look for a package
+number (packageNum (deprecated) or identifier) in config.yaml; this
+parameter is not passed to the function and it must exist.
 
 The shapefile generated from create_vector_shape will have the same
 coordinate reference system (CRS) as the input spatial object.
@@ -92,15 +93,15 @@ coordinate reference system (CRS) as the input spatial object.
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
-  dsn = "data/Regularizacion/ejidal",
+  dsn   = "data/Regularizacion/ejidal",
   layer = "CORETT"
   ) \%>\%
-select(
+dplyr::select(
   -OBJECTID_1,
   -FolderNumb,
   -Surface
   ) \%>\%
-mutate(
+dplyr::mutate(
   Id = as.character(Id),
   across(where(is.character), ~ gsub(pattern = "\\\\r\\\\n", replacement = "", x = .)),
   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),

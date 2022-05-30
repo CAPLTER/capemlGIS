@@ -50,7 +50,7 @@
 #' @importFrom sf st_transform st_write
 #' @importFrom yaml yaml.load_file
 #' @importFrom tools md5sum
-#' @importFrom capeml read_attributes
+#' @importFrom capeml read_attributes read_package_configuration
 #' @importFrom stringr str_extract
 #'
 #' @return EML spatialVector object is returned. Additionally, the spatial data
@@ -130,14 +130,6 @@ create_vector <- function(
 
   }
 
-  # do not proceed if config.yaml is not present
-
-  if (!file.exists("config.yaml")) {
-
-    stop("could not locate config.yaml in ", getwd())
-
-  }
-
 
   # driver-specific formatting ------------------------------------------------
 
@@ -169,14 +161,14 @@ create_vector <- function(
 
   # retrieve dataset details from config.yaml
 
-  configurations <- yaml::yaml.load_file("config.yaml")
+  configurations <- capeml::read_package_configuration()
 
 
   # geographic coverage -------------------------------------------------------
 
   if (missing("geoDescription") | is.null(geoDescription)) {
 
-    geoDescription <- yaml::yaml.load_file("config.yaml")$geographicCoverage$geographicDescription
+    geoDescription <- configurations[["geographic_description"]]
     message("project-level geographic description used for spatial entity ", vector_name_string)
 
   }
@@ -234,26 +226,7 @@ create_vector <- function(
 
   if (projectNaming == TRUE) {
 
-    if (exists("packageNum", configurations)) {
-
-      this_identifier <- stringr::str_extract(
-        string  = configurations[["packageNum"]],
-        pattern = "[0-9]+"
-      )
-
-    } else if (exists("identifier", configurations)) {
-
-      this_identifier <- configurations[["identifier"]]
-
-    } else {
-
-      stop("could not resolve package identifier (number)")
-
-    }
-
-    this_identifier <- as.integer(this_identifier)
-
-    project_name <- paste0(this_identifier, "_", vector_name_string, ".", file_extension)
+    project_name <- paste0(configurations$identifier, "_", vector_name_string, ".", file_extension)
 
     system(
       paste0(
@@ -275,7 +248,7 @@ create_vector <- function(
 
   # distribution
 
-  fileURL <- configurations[["baseURL"]]
+  fileURL <- configurations$fileURL
 
   fileDistribution <- EML::eml$distribution(
     EML::eml$online(url = paste0(fileURL, project_name))

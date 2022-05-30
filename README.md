@@ -43,15 +43,15 @@ can switch to the previous version with
 Most EML-generating functions in the capeml and capemlGIS packages will
 create both physical objects and EML references to those objects. By
 default, the package will name output files with the format
-`project-id`\_`object-name`.`file-extension` (e.g.,
+`project identifier (number)`\_`object-name`.`file-extension` (e.g.,
 *664\_site\_map.kml*). The target object (e.g., site\_map.png from the
 previous example) is renamed with the additional metadata and this
 object name is referenced in the EML metadata. Project naming can be
 disabled by setting the `projectNaming` flag to `FALSE`. When set to
 FALSE, the object name is not changed, and the name of the data object
 as read into the R environment is written to file and referenced in the
-EML. Note that the project-id is not passed as an argument, and must
-exist in `config.yaml` (as `projectid`).
+EML. Note that the project identifier (number) is not passed as an
+argument, and must exist in `config.yaml` (as `identiifer`).
 
 ### tools to generate entity metadata
 
@@ -112,24 +112,29 @@ package*
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
-  dsn = "data/Regularizacion/ejidal",
+  dsn   = "data/Regularizacion/ejidal",
   layer = "CORETT"
-  ) %>%
-select(
+  ) |>
+dplyr::select(
   -OBJECTID_1,
   -FolderNumb,
   -Surface
-  ) %>%
-mutate(
-  Id = as.character(Id),
+  ) |>
+dplyr::mutate(
+  Id                                         = as.character(Id),
   across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
-  Year = as.character(Year)
+  Year                                       = as.character(Year)
 )
 
 # write attributes (and factors if relevant)
 
-try(write_attributes(ejido_titles_points_of_decree, overwrite = FALSE))
+try(
+  capeml::write_attributes(
+    dfname    = ejido_titles_points_of_decree,
+    overwrite = FALSE
+  )
+)
 
 # generate a description for the data entity
 
@@ -143,12 +148,12 @@ office; it only includes expropriation for the delegations Xochimilco,
 Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro
 Obregon, Tlalpan, Coyoacan, and Milpa Alta"
 
-ejido_titles_points_of_decree_SV <- create_vector_shape(
-  vector_name = ejido_titles_points_of_decree,
-  description = ejido_titles_points_of_decree_desc,
-  coord_sys = "WGS_1984_UTM_Zone_55N",
-  layer_opts = "SHPT=POLYGON",
-  overwrite = TRUE,
+ejido_titles_points_of_decree_SV <- capemlGIS::create_vector_shape(
+  vector_name   = ejido_titles_points_of_decree,
+  description   = ejido_titles_points_of_decree_desc,
+  coord_sys     = "WGS_1984_UTM_Zone_55N",
+  layer_opts    = "SHPT=POLYGON",
+  overwrite     = TRUE,
   projectNaming = TRUE,
   )
 
@@ -167,8 +172,9 @@ serves as a unique identifier for each data entity (added in the
 workflow below as an additional line in the call to `mutate`). Also,
 some parameters are different, such as unlike `create_vector_shape`,
 which requires the user to pass an EML-compliant coordinate reference
-system, since `create_vector` writes to kml or GeoJSON, the resulting
-CRS is *always* EPSG 4326 and, thus, is hard-coded into the function.
+system, since `create_vector` writes a new kml or GeoJSON file, the
+resulting CRS is *always* EPSG 4326 and, thus, is hard-coded into the
+function.
 
 ``` r
 # load spatial vector object; because create_vector_shape will generate a new
@@ -178,20 +184,20 @@ CRS is *always* EPSG 4326 and, thus, is hard-coded into the function.
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
-  dsn = "data/Regularizacion/ejidal",
+  dsn   = "path-to-directory/",
   layer = "CORETT"
-  ) %>%
-select(
+  ) |>
+dplyr::select(
   -OBJECTID_1,
   -FolderNumb,
   -Surface
-  ) %>%
-mutate(
-  Id = as.character(Id),
-  Name = Id, # assign Name to the site identifier variable
+  ) |>
+dplyr::mutate(
+  Id                                         = as.character(Id),
+  Name                                       = Id, # assign Name to the site identifier variable
   across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
-  Year = as.character(Year)
+  Year                                       = as.character(Year)
 )
 
 # write attributes (and factors if relevant)
@@ -210,11 +216,11 @@ includes expropriation for the delegations Xochimilco, Magdalena Contreras,
 Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,
 Coyoacan, and Milpa Alta"
 
-ejido_titles_points_of_decree_SV <- create_vector_kml(
-  vector_name = ejido_titles_points_of_decree,
-  description = ejido_titles_points_of_decree_desc,
-  driver = "kml",
-  overwrite = TRUE,
+ejido_titles_points_of_decree_SV <- capemlGIS::create_vector(
+  vector_name   = ejido_titles_points_of_decree,
+  description   = ejido_titles_points_of_decree_desc,
+  driver        = "kml",
+  overwrite     = TRUE,
   projectNaming = TRUE
   )
 

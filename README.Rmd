@@ -44,15 +44,15 @@ switch to the previous version with `emld::eml_version("eml-2.1.1")`.
 
 Most EML-generating functions in the capeml and capemlGIS packages will create
 both physical objects and EML references to those objects. By default, the
-package will name output files with the format
-`project-id`\_`object-name`.`file-extension` (e.g., *664_site_map.kml*). The
+package will name output files with the format `project identifier
+(number)`\_`object-name`.`file-extension` (e.g., *664_site_map.kml*). The
 target object (e.g., site_map.png from the previous example) is renamed with
 the additional metadata and this object name is referenced in the EML metadata.
 Project naming can be disabled by setting the `projectNaming` flag to `FALSE`.
 When set to FALSE, the object name is not changed, and the name of the data
 object as read into the R environment is written to file and referenced in the
-EML. Note that the project-id is not passed as an argument, and must exist in
-`config.yaml` (as `projectid`). 
+EML. Note that the project identifier (number) is not passed as an argument,
+and must exist in `config.yaml` (as `identiifer`). 
 
 ### tools to generate entity metadata
 *note that write_attributes and write_factors are in the capeml package*
@@ -106,26 +106,26 @@ EML. Note that the project-id is not passed as an argument, and must exist in
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
-  dsn = "data/Regularizacion/ejidal",
+  dsn   = "data/Regularizacion/ejidal",
   layer = "CORETT"
-  ) %>%
-select(
+  ) |>
+dplyr::select(
   -OBJECTID_1,
   -FolderNumb,
   -Surface
-  ) %>%
-mutate(
-  Id = as.character(Id),
+  ) |>
+dplyr::mutate(
+  Id                                         = as.character(Id),
   across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
-  Year = as.character(Year)
+  Year                                       = as.character(Year)
 )
 
 # write attributes (and factors if relevant)
 
 try(
   capeml::write_attributes(
-    dfname = ejido_titles_points_of_decree,
+    dfname    = ejido_titles_points_of_decree,
     overwrite = FALSE
   )
 )
@@ -178,7 +178,7 @@ function.
 # ejido_titles_points_of_decree 
 
 ejido_titles_points_of_decree <- sf::read_sf(
-  dsn = "path-to-directory/",
+  dsn   = "path-to-directory/",
   layer = "CORETT"
   ) |>
 dplyr::select(
@@ -187,11 +187,11 @@ dplyr::select(
   -Surface
   ) |>
 dplyr::mutate(
-  Id = as.character(Id),
-  Name = Id, # assign Name to the site identifier variable
+  Id                                         = as.character(Id),
+  Name                                       = Id, # assign Name to the site identifier variable
   across(where(is.character), ~ gsub(pattern = "\\r\\n", replacement = "", x = .)),
   across(where(is.character), ~ gsub(pattern = "--", replacement = NA_character_, x = .)),
-  Year = as.character(Year)
+  Year                                       = as.character(Year)
 )
 
 # write attributes (and factors if relevant)
