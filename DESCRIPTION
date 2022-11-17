@@ -31,7 +31,7 @@ Imports:
     xml2,
     purrr
 Remotes: CAPLTER/capeml
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.2
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

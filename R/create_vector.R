@@ -23,10 +23,10 @@
 #' @note All vector objects are transformed to epsg 4326 (WGS 1984)
 #'
 #' @param vector_name
-#'  (character) The unquoted name of the spatial data object in the R
+#'  (character) The quoted or unquoted name of the spatial data object in the R
 #'  environment.
 #' @param description
-#'  (character) Quoated description of the vector resource.
+#'  (character) Quoted description of the vector resource.
 #' @param driver
 #'  (character) Quoted format of output file: KML or GeoJSON (default).
 #' @param geoDescription
@@ -146,15 +146,28 @@ create_vector <- function(
   }
 
 
-  # stringify vector name -----------------------------------------------------
+  # get text reference of vector name for use throughout ----------------------
 
-  vector_name_string <- deparse(substitute(vector_name))
+  if (rlang::is_expression(vector_name)) {
+
+    namestr <- rlang::get_expr(vector_name)
+
+  } else {
+
+    namestr <- deparse(substitute(vector_name))
+
+  }
+
+
+  # load object from environment ----------------------------------------------
+
+  data_object <- get(namestr)
 
 
   # ensure epsg4326 -----------------------------------------------------------
 
-  vector_name <- sf::st_transform(
-    x   = vector_name,
+  data_object <- sf::st_transform(
+    x   = data_object,
     crs = 4326
   )
 
@@ -169,37 +182,37 @@ create_vector <- function(
   if (missing("geoDescription") | is.null(geoDescription)) {
 
     geoDescription <- configurations[["geographic_description"]]
-    message("project-level geographic description used for spatial entity ", vector_name_string)
+    message("project-level geographic description used for spatial entity ", namestr)
 
   }
 
   if (is.na(geoDescription) | is.null(geoDescription) | geoDescription == "") {
 
     geoDescription <- NULL
-    stop("entity ", vector_name_string," does not have a geographic description")
+    stop("entity ", namestr," does not have a geographic description")
 
   }
 
   spatialCoverage <- EML::set_coverage(
     geographicDescription   = geoDescription,
-    westBoundingCoordinate  = sf::st_bbox(vector_name)[["xmin"]],
-    eastBoundingCoordinate  = sf::st_bbox(vector_name)[["xmax"]],
-    northBoundingCoordinate = sf::st_bbox(vector_name)[["ymax"]],
-    southBoundingCoordinate = sf::st_bbox(vector_name)[["ymin"]]
+    westBoundingCoordinate  = sf::st_bbox(data_object)[["xmin"]],
+    eastBoundingCoordinate  = sf::st_bbox(data_object)[["xmax"]],
+    northBoundingCoordinate = sf::st_bbox(data_object)[["ymax"]],
+    southBoundingCoordinate = sf::st_bbox(data_object)[["ymin"]]
   )
 
 
   # write to file ----------------------------------------------------------------
 
-  if (file.exists(paste0(vector_name_string, ".", file_extension)) && overwrite == FALSE) {
+  if (file.exists(paste0(namestr, ".", file_extension)) && overwrite == FALSE) {
 
-    stop("file to be created (", paste0(vector_name_string, ".", file_extension), ") already exists in working directory (set overwrite to TRUE)")
+    stop("file to be created (", paste0(namestr, ".", file_extension), ") already exists in working directory (set overwrite to TRUE)")
 
   }
 
   sf::st_write(
-    obj          = vector_name,
-    dsn          = paste0(vector_name_string, ".", file_extension),
+    obj          = data_object,
+    dsn          = paste0(namestr, ".", file_extension),
     driver       = file_extension,
     delete_layer = TRUE,
     delete_dsn   = TRUE
@@ -208,16 +221,16 @@ create_vector <- function(
 
   # attributes ---------------------------------------------------------------
 
-  if (file.exists(paste0(vector_name_string, "_attrs.yaml")) | file.exists(paste0(vector_name_string, "_attrs.csv"))) {
+  if (file.exists(paste0(namestr, "_attrs.yaml")) | file.exists(paste0(namestr, "_attrs.csv"))) {
 
     attributes <- capeml::read_attributes(
-      entity_name        = vector_name_string,
+      entity_name        = namestr,
       missing_value_code = missing_value_code
     )
 
   } else {
 
-    warning("missing attributes file: ", paste0(vector_name_string, "_attrs.yaml"), " / ", paste0(vector_name_string, "_attrs.csv"))
+    warning("missing attributes file: ", paste0(namestr, "_attrs.yaml"), " / ", paste0(namestr, "_attrs.csv"))
 
   }
 
@@ -226,12 +239,12 @@ create_vector <- function(
 
   if (projectNaming == TRUE) {
 
-    project_name <- paste0(configurations$identifier, "_", vector_name_string, ".", file_extension)
+    project_name <- paste0(configurations$identifier, "_", namestr, ".", file_extension)
 
     system(
       paste0(
         "mv ",
-        paste0(shQuote(vector_name_string, type = "sh"), ".", file_extension),
+        paste0(shQuote(namestr, type = "sh"), ".", file_extension),
         " ",
         shQuote(project_name, type = "sh")
       )
@@ -239,7 +252,7 @@ create_vector <- function(
 
   } else {
 
-    project_name <- paste0(vector_name_string, ".", file_extension)
+    project_name <- paste0(namestr, ".", file_extension)
 
   }
 
@@ -291,14 +304,14 @@ create_vector <- function(
     physical             = spatialVectorPhysical,
     coverage             = spatialCoverage,
     attributeList        = attributes,
-    geometricObjectCount = nrow(vector_name),
+    geometricObjectCount = nrow(data_object),
     id                   = project_name
   )
 
 
   # add geometry type -------------------------------------------------------
 
-  sfGeometry <- attr(vector_name$geometry, "class")[[1]]
+  sfGeometry <- attr(data_object$geometry, "class")[[1]]
 
   if (grepl("polygon", sfGeometry, ignore.case = TRUE)) {
 
@@ -314,7 +327,7 @@ create_vector <- function(
 
   } else {
 
-    stop(paste0("undetermined geometry: ", attr(vector_name$geometry, "class")[[1]]))
+    stop(paste0("undetermined geometry: ", attr(data_object$geometry, "class")[[1]]))
 
   }
 

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.0</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -65,13 +65,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="create_spatialRaster_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>create_spatialRaster</h1>
                         <h4 data-toc-skip class="author">S. Earl</h4>
             
-            <h4 data-toc-skip class="date">2022-03-04</h4>
+            <h4 data-toc-skip class="date">2022-11-17</h4>
       
       
       <div class="hidden name"><code>create_spatialRaster.Rmd</code></div>
@@ -172,24 +172,24 @@
 </h3>
 <p>Call the <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function to generate the EML to describe the raster. Arguments include the quoted full or relative path to the raster file (or files), the quoted full or relative path and name of the raster metadata file, and the quoted full or relative path and name of the raster value categories (if needed). Output of the function yields EML that can be incorporated into the metadata for a data set.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">raster_desc</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP
-imagery. NAIP NDVI data are presented as a series of tiles each representing
-a portion of the overall central Arizona coverage area. The relative position
-of this tile to the entire coverage area is detailed in the files
-NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."</span>
-
-<span class="va">my_area</span> <span class="op">&lt;-</span> <span class="st">"one in a series of tiles covering the central-Arizona Phoenix
-region"</span>
-
-<span class="va">NAIP_NDVI_2015_SV</span> <span class="op">&lt;-</span> <span class="fu">capemlGIS</span><span class="fu">::</span><span class="fu"><a href="../reference/create_spatialRaster.html">create_spatialRaster</a></span><span class="op">(</span>
-   rasterFile             <span class="op">=</span> <span class="st">"path-to-file/NAIP_NDVI_2015.tiff"</span>,
-   description            <span class="op">=</span> <span class="va">raster_desc</span>,
-   epsgProjection         <span class="op">=</span> <span class="fl">4326</span>,
-   rasterValueDescription <span class="op">=</span> <span class="st">"Normalized Difference Vegetation Index (NDVI)"</span>,
-   rasterValueUnits       <span class="op">=</span> <span class="st">"dimensionless"</span>,
-   geoDescription         <span class="op">=</span> <span class="st">"my_area"</span>,
-   projectNaming          <span class="op">=</span> <span class="cn">FALSE</span>
- <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">raster_desc</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP</span></span>
+<span><span class="st">imagery. NAIP NDVI data are presented as a series of tiles each representing</span></span>
+<span><span class="st">a portion of the overall central Arizona coverage area. The relative position</span></span>
+<span><span class="st">of this tile to the entire coverage area is detailed in the files</span></span>
+<span><span class="st">NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."</span></span>
+<span></span>
+<span><span class="va">my_area</span> <span class="op">&lt;-</span> <span class="st">"one in a series of tiles covering the central-Arizona Phoenix</span></span>
+<span><span class="st">region"</span></span>
+<span></span>
+<span><span class="va">NAIP_NDVI_2015_SV</span> <span class="op">&lt;-</span> <span class="fu">capemlGIS</span><span class="fu">::</span><span class="fu"><a href="../reference/create_spatialRaster.html">create_spatialRaster</a></span><span class="op">(</span></span>
+<span>   rasterFile             <span class="op">=</span> <span class="st">"path-to-file/NAIP_NDVI_2015.tiff"</span>,</span>
+<span>   description            <span class="op">=</span> <span class="va">raster_desc</span>,</span>
+<span>   epsgProjection         <span class="op">=</span> <span class="fl">4326</span>,</span>
+<span>   rasterValueDescription <span class="op">=</span> <span class="st">"Normalized Difference Vegetation Index (NDVI)"</span>,</span>
+<span>   rasterValueUnits       <span class="op">=</span> <span class="st">"dimensionless"</span>,</span>
+<span>   geoDescription         <span class="op">=</span> <span class="st">"my_area"</span>,</span>
+<span>   projectNaming          <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span> <span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -208,7 +208,7 @@ region"</span>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

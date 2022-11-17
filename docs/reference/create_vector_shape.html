@@ -23,7 +23,7 @@ then zipped for inclusion in a data package."><!-- mathjax --><script src="https
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@ then zipped for inclusion in a data package."><!-- mathjax --><script src="https
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -65,37 +65,49 @@ then zipped for inclusion in a data package.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_vector_shape</span><span class="op">(</span>
-  <span class="va">vector_name</span>,
-  <span class="va">description</span>,
-  geoDescription <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">coord_sys</span>,
-  layer_opts <span class="op">=</span> <span class="cn">NULL</span>,
-  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,
-  projectNaming <span class="op">=</span> <span class="cn">TRUE</span>,
-  missing_value_code <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_vector_shape</span><span class="op">(</span></span>
+<span>  <span class="va">vector_name</span>,</span>
+<span>  <span class="va">description</span>,</span>
+<span>  geoDescription <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">coord_sys</span>,</span>
+<span>  layer_opts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  projectNaming <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  missing_value_code <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>vector_name</dt>
 <dd><p>(character) The unquoted name of the spatial object in the R environment.</p></dd>
+
+
 <dt>description</dt>
 <dd><p>(character) Description of the vector resource.</p></dd>
+
+
 <dt>geoDescription</dt>
 <dd><p>(character) A textual description of the geographic coverage of the vector.
 If not provided, the project-level geographic desciption in the config.yaml
 will be used.</p></dd>
+
+
 <dt>coord_sys</dt>
 <dd><p>(character) The quoted EML-compliant name of the coordinate reference
 system.</p></dd>
+
+
 <dt>layer_opts</dt>
 <dd><p>(character) Additional options for generating a shapefile that are passed to
 the sf::st_write function</p></dd>
+
+
 <dt>overwrite</dt>
 <dd><p>(logical) A logical indicating whether to overwrite an existing directory
 bearing the same name as the shapefile.</p></dd>
+
+
 <dt>projectNaming</dt>
 <dd><p>(logical) Logical indicating if the zipped directory should be renamed per
 the style used within the capeml ecosystem (default) with the project id +
@@ -103,13 +115,18 @@ base file name + md5sum + file extension (zip in this case). The name of the
 shapefile + file extension (zip in this case) will be used if this is set to
 FALSE. Note that this applies only to the zipped directory, the files that
 constitute the shapefile are not renamed.</p></dd>
+
+
 <dt>missing_value_code</dt>
 <dd><p>(character) Quoted character(s) of a flag, in addition to NA or NaN, used to
 indicate missing values within the data.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of type EML spatialVector is returned. Additionally, all
+    
+
+<p>An object of type EML spatialVector is returned. Additionally, all
 files that make up a single shapefile are harvested into a new directory
 that is zipped for inclusion in the data package.</p>
     </div>
@@ -135,70 +152,71 @@ spatial data entity precisely.</p>
     </div>
     <div id="note">
     <h2>Note</h2>
-    <p>create_vector_shape will look for a package number (packageNum) in
-config.yaml; this parameter is not passed to the function and it must exist.</p>
+    <p>If project naming is TRUE then create_vector will look for a package
+number (packageNum (deprecated) or identifier) in config.yaml; this
+parameter is not passed to the function and it must exist.</p>
 <p>The shapefile generated from create_vector_shape will have the same
 coordinate reference system (CRS) as the input spatial object.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># load spatial vector object; because create_vector_shape will generate a</span></span>
-<span class="r-in"><span class="co"># new shapefile, we have complete flexibility over the shapefile name and</span></span>
-<span class="r-in"><span class="co"># manipulating the data - here we are starting with an existing shapefile</span></span>
-<span class="r-in"><span class="co"># named CORETT but will generate a shapefile with the name</span></span>
-<span class="r-in"><span class="co"># ejido_titles_points_of_decree </span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ejido_titles_points_of_decree</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span></span>
-<span class="r-in">  dsn <span class="op">=</span> <span class="st">"data/Regularizacion/ejidal"</span>,</span>
-<span class="r-in">  layer <span class="op">=</span> <span class="st">"CORETT"</span></span>
-<span class="r-in">  <span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in"><span class="fu">select</span><span class="op">(</span></span>
-<span class="r-in">  <span class="op">-</span><span class="va">OBJECTID_1</span>,</span>
-<span class="r-in">  <span class="op">-</span><span class="va">FolderNumb</span>,</span>
-<span class="r-in">  <span class="op">-</span><span class="va">Surface</span></span>
-<span class="r-in">  <span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in"><span class="fu">mutate</span><span class="op">(</span></span>
-<span class="r-in">  Id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Id</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.character</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"\\r\\n"</span>, replacement <span class="op">=</span> <span class="st">""</span>, x <span class="op">=</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.character</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"--"</span>, replacement <span class="op">=</span> <span class="cn">NA_character_</span>, x <span class="op">=</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">  Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># write attributes (and factors if relevant)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">write_attributes</span><span class="op">(</span><span class="va">ejido_titles_points_of_decree</span>, overwrite <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># generate a description for the data entity</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ejido_titles_points_of_decree_desc</span> <span class="op">&lt;-</span> <span class="st">"polygons of land regularized by the</span>
-<span class="r-in">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span>
-<span class="r-in">consolidated into 87 unique regularization degrees of ejidos that became</span>
-<span class="r-in">privitzed from 1987-2007; includes the area of each polygon, the date of</span>
-<span class="r-in">regularization, the name of the ejido, the delegation, and the 'plane</span>
-<span class="r-in">number' that could be used to find the original map file in the CORETT</span>
-<span class="r-in">office; it only includes expropriation for the delegations Xochimilco,</span>
-<span class="r-in">Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro</span>
-<span class="r-in">Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ejido_titles_points_of_decree_SV</span> <span class="op">&lt;-</span> <span class="fu">create_vector_shape</span><span class="op">(</span></span>
-<span class="r-in">  vector_name <span class="op">=</span> <span class="va">ejido_titles_points_of_decree</span>,</span>
-<span class="r-in">  description <span class="op">=</span> <span class="va">ejido_titles_points_of_decree_desc</span>,</span>
-<span class="r-in">  coord_sys <span class="op">=</span> <span class="st">"WGS_1984_UTM_Zone_55N"</span>,</span>
-<span class="r-in">  layer_opts <span class="op">=</span> <span class="st">"SHPT=POLYGON"</span>,</span>
-<span class="r-in">  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">  projectNaming <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># The resulting spatialVector entity can be added to a EML dataset.</span></span>
-<span class="r-in"><span class="co"># Note also in this example that we are passing additional layer options,</span></span>
-<span class="r-in"><span class="co"># which ultimately feed to sf::st_write, necessary here to generate a</span></span>
-<span class="r-in"><span class="co"># multi-polygon shapefile.</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># load spatial vector object; because create_vector_shape will generate a</span></span></span>
+<span class="r-in"><span><span class="co"># new shapefile, we have complete flexibility over the shapefile name and</span></span></span>
+<span class="r-in"><span><span class="co"># manipulating the data - here we are starting with an existing shapefile</span></span></span>
+<span class="r-in"><span><span class="co"># named CORETT but will generate a shapefile with the name</span></span></span>
+<span class="r-in"><span><span class="co"># ejido_titles_points_of_decree </span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ejido_titles_points_of_decree</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  dsn   <span class="op">=</span> <span class="st">"data/Regularizacion/ejidal"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"CORETT"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">-</span><span class="va">OBJECTID_1</span>,</span></span>
+<span class="r-in"><span>  <span class="op">-</span><span class="va">FolderNumb</span>,</span></span>
+<span class="r-in"><span>  <span class="op">-</span><span class="va">Surface</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  Id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Id</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.character</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"\\r\\n"</span>, replacement <span class="op">=</span> <span class="st">""</span>, x <span class="op">=</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.character</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"--"</span>, replacement <span class="op">=</span> <span class="cn">NA_character_</span>, x <span class="op">=</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># write attributes (and factors if relevant)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">write_attributes</span><span class="op">(</span><span class="va">ejido_titles_points_of_decree</span>, overwrite <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># generate a description for the data entity</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ejido_titles_points_of_decree_desc</span> <span class="op">&lt;-</span> <span class="st">"polygons of land regularized by the</span></span></span>
+<span class="r-in"><span><span class="st">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span></span></span>
+<span class="r-in"><span><span class="st">consolidated into 87 unique regularization degrees of ejidos that became</span></span></span>
+<span class="r-in"><span><span class="st">privitzed from 1987-2007; includes the area of each polygon, the date of</span></span></span>
+<span class="r-in"><span><span class="st">regularization, the name of the ejido, the delegation, and the 'plane</span></span></span>
+<span class="r-in"><span><span class="st">number' that could be used to find the original map file in the CORETT</span></span></span>
+<span class="r-in"><span><span class="st">office; it only includes expropriation for the delegations Xochimilco,</span></span></span>
+<span class="r-in"><span><span class="st">Magdalena Contreras, Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro</span></span></span>
+<span class="r-in"><span><span class="st">Obregon, Tlalpan, Coyoacan, and Milpa Alta"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ejido_titles_points_of_decree_SV</span> <span class="op">&lt;-</span> <span class="fu">create_vector_shape</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  vector_name <span class="op">=</span> <span class="va">ejido_titles_points_of_decree</span>,</span></span>
+<span class="r-in"><span>  description <span class="op">=</span> <span class="va">ejido_titles_points_of_decree_desc</span>,</span></span>
+<span class="r-in"><span>  coord_sys <span class="op">=</span> <span class="st">"WGS_1984_UTM_Zone_55N"</span>,</span></span>
+<span class="r-in"><span>  layer_opts <span class="op">=</span> <span class="st">"SHPT=POLYGON"</span>,</span></span>
+<span class="r-in"><span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  projectNaming <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The resulting spatialVector entity can be added to a EML dataset.</span></span></span>
+<span class="r-in"><span><span class="co"># Note also in this example that we are passing additional layer options,</span></span></span>
+<span class="r-in"><span><span class="co"># which ultimately feed to sf::st_write, necessary here to generate a</span></span></span>
+<span class="r-in"><span><span class="co"># multi-polygon shapefile.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -213,7 +231,7 @@ coordinate reference system (CRS) as the input spatial object.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

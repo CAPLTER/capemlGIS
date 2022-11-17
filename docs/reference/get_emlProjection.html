@@ -23,7 +23,7 @@ EML (deprecated) — get_emlProjection"><meta property="og:description" content=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@ EML (deprecated) — get_emlProjection"><meta property="og:description" content=
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -64,7 +64,7 @@ EML (deprecated)</h1>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_emlProjection</span><span class="op">(</span><span class="va">spatialDataEntity</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_emlProjection</span><span class="op">(</span><span class="va">spatialDataEntity</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,10 +72,13 @@ EML (deprecated)</h1>
     <dl><dt>spatialDataEntity</dt>
 <dd><p>a spatial data entity, often loaded into R with the
 raster (for rasters) or rgdal (for vectors) packages</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>if a suitable match was found, function returns an EML-compliant
+    
+
+<p>if a suitable match was found, function returns an EML-compliant
   listing of the projection of the spatial data object</p>
     </div>
     <div id="details">
@@ -95,12 +98,12 @@ raster (for rasters) or rgdal (for vectors) packages</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">vectorData</span> <span class="op">&lt;-</span> <span class="fu">readOGR</span><span class="op">(</span>dsn<span class="op">=</span><span class="st">"/GISfiles/WatershedShapefile/"</span>, layer<span class="op">=</span><span class="st">"AZwatersheds_prj"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">rasterdata</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="op">(</span><span class="st">"CAP_1985.img"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">emlCompliantProjection</span> <span class="op">&lt;-</span> <span class="fu">get_emlProjection</span><span class="op">(</span><span class="va">rasterdata</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">vectorData</span> <span class="op">&lt;-</span> <span class="fu">readOGR</span><span class="op">(</span>dsn<span class="op">=</span><span class="st">"/GISfiles/WatershedShapefile/"</span>, layer<span class="op">=</span><span class="st">"AZwatersheds_prj"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rasterdata</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="op">(</span><span class="st">"CAP_1985.img"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">emlCompliantProjection</span> <span class="op">&lt;-</span> <span class="fu">get_emlProjection</span><span class="op">(</span><span class="va">rasterdata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -115,7 +118,7 @@ raster (for rasters) or rgdal (for vectors) packages</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

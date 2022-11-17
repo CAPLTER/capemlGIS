@@ -16,10 +16,10 @@ create_vector(
 )
 }
 \arguments{
-\item{vector_name}{(character) The unquoted name of the spatial data object in the R
+\item{vector_name}{(character) The quoted or unquoted name of the spatial data object in the R
 environment.}
 
-\item{description}{(character) Quoated description of the vector resource.}
+\item{description}{(character) Quoted description of the vector resource.}
 
 \item{driver}{(character) Quoted format of output file: KML or GeoJSON (default).}
 
