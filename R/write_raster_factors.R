@@ -72,9 +72,9 @@ write_raster_factors <- function(
   factors_to_yaml <- function(raster_values_categories, raster_value_name) {
 
     factors_yaml <- list(
-      attribute = list(
+      attribute       = list(
         attributeName = raster_value_name,
-        levels = purrr::map(
+        levels        = purrr::map(
           .x = raster_values_categories,
           .f = map_factor_levels
         )

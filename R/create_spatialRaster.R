@@ -146,7 +146,7 @@ create_spatialRaster <- function(
       dplyr::select(-one_of("name"))
 
     raster_attributes <- data.frame(
-      attributeName       = raster_factors[["attributeName"]][[1]]
+      attributeName       = raster_factors[["attributeName"]][[1]],
       attributeDefinition = raster_value_description
     )
 
@@ -216,7 +216,7 @@ create_spatialRaster <- function(
 
   # additionalInfo ------------------------------------------------------------
 
-  this_crs <- raster::crs(this_raster)
+  this_crs <- suppressWarnings(raster::crs(this_raster))
 
   projections <- list(
     section = list(
@@ -226,8 +226,8 @@ create_spatialRaster <- function(
   )
 
   message(
-    paste0("user-provided CRS: ", epsg, "\n"),
-    paste0("raster-derived CRS: ", as.character(this_crs)))
+    "user-provided CRS: ", epsg, "\n",
+    "raster-derived CRS: ", as.character(this_crs)
   )
 
 
@@ -347,7 +347,10 @@ create_spatialRaster <- function(
 
   # spatial coverage (units must be DD, not constructed for units = m)
 
-  if (abs(raster::extent(this_raster)@xmin) > 180) {
+  this_extent <- suppressWarnings(raster::extent(this_raster))
+
+
+  if (abs(this_extent@xmin) > 180) {
 
     warning("projection in meters, spatial coverage not constructed")
 
@@ -370,7 +373,6 @@ create_spatialRaster <- function(
 
     }
 
-    this_extent <- raster::extent(this_raster)
 
     rasterSpatialCoverage <- list(
       geographicDescription = this_geographic_description,

@@ -130,15 +130,15 @@ NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
 my_area <- "one in a series of tiles covering the central-Arizona Phoenix
 region"
 
-NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
-   rasterFile             = "path-to-file/NAIP_NDVI_2015.tiff",
-   description            = raster_desc,
-   epsgProjection         = 4326,
-   rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
-   rasterValueUnits       = "dimensionless",
-   geoDescription         = "my_area",
-   projectNaming          = FALSE
- )
+# NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
+#    rasterFile             = "path-to-file/NAIP_NDVI_2015.tiff",
+#    description            = raster_desc,
+#    epsgProjection         = 4326,
+#    rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
+#    rasterValueUnits       = "dimensionless",
+#    geoDescription         = "my_area",
+#    projectNaming          = FALSE
+#  )
 
 ```
 

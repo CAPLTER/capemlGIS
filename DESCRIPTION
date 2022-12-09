@@ -21,7 +21,6 @@ Imports:
     sf,
     readr,
     stringr,
-    magrittr,
     utils,
     tibble,
     tools,

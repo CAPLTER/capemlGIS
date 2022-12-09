@@ -52,6 +52,7 @@
 #' @importFrom tools md5sum
 #' @importFrom capeml read_attributes read_package_configuration
 #' @importFrom stringr str_extract
+#' @importFrom rlang is_expression get_expr
 #'
 #' @return EML spatialVector object is returned. Additionally, the spatial data
 #' entity is written to file as type kml or GeoJSON.

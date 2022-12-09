@@ -5,54 +5,52 @@
 \title{generate a EML entity of type spatialRaster}
 \usage{
 create_spatialRaster(
-  rasterFile,
+  raster_file,
   description,
-  epsgProjection,
-  rasterValueDescription,
-  rasterValueUnits,
-  geoDescription = NULL,
-  projectNaming = TRUE,
+  epsg,
+  raster_value_description,
+  raster_value_units,
+  geographic_description = NULL,
+  project_naming = FALSE,
   file_url = NULL
 )
 }
 \arguments{
-\item{rasterFile}{(character) Quoted full path to raster file.}
+\item{raster_file}{(character) Quoted full path to raster file.}
 
 \item{description}{(character) Description of the raster.}
 
-\item{epsgProjection}{(integer) Four- or five-digit EPSG numeric code of raster Coordinate
+\item{epsg}{(integer) Four- or five-digit EPSG numeric code of raster Coordinate
 Reference System (CRS)}
 
-\item{rasterValueDescription}{(character) Description of raster values}
+\item{raster_value_description}{(character) Description of raster values}
 
-\item{rasterValueUnits}{(character) Raster value units. Units must be EML-compliant or annotated by
+\item{raster_value_units}{(character) Raster value units. Units must be EML-compliant or annotated by
 a custom unit definition.}
 
-\item{geoDescription}{(character) A textual description of the geographic study area of the
-raster. This parameter allows the user to overwrite the
-geographicDesciption value provided in the project config.yaml.}
+\item{geographic_description}{(character) A textual description of the geographic study area of the
+raster. This parameter allows the user to overwrite the study-wide
+geographic_description value provided in config.yaml (default).}
 
-\item{projectNaming}{(logical) Logical indicating if the raster file should be renamed per the
-style used by the CAP LTER (default) with the project id + base file name +
-file extension. The passed file or directory name will be used if this
-parameter is set to FALSE.}
+\item{project_naming}{(logical) Logical indicating if the raster file should be renamed per the
+style used by the CAP LTER: project id + base file name + file extension.}
 
 \item{file_url}{(character) Optional parameter detailing the online location where the data
 entity can be accessed. In most cases, the online location is the same for
-all files in the dataset and is detailed in config.yaml. file_url allows
-the user to overide project-level configuration in config.yaml and provide
-a specific, unique resource (e.g., a link to a file in Dropbox) for each
-data entity.}
+all files in the dataset and is detailed in config.yaml. \code{file_url}
+allows the user to overide project-level configuration in config.yaml and
+provide a specific, unique resource (e.g., a link to a file in Dropbox) for
+each data entity.}
 }
 \value{
-EML spatial data object is returned. Additionally, if projectNaming
-is set to TRUE (default) the spatial data file is renamed with the project
+EML spatial data object is returned. Additionally, if project_naming
+is set to TRUE the spatial data file is renamed with the project
 id + base file name + file extension (zip in the case when multiple files
 are aggregated).
 }
 \description{
-create_spatialRaster generates a EML entity of type
-  spatialRaster
+\code{create_spatialRaster} generates a EML entity of type
+spatialRaster
 }
 \details{
 a spatialRaster entity is created from a single data file (e.g.,
@@ -61,8 +59,8 @@ file name + file extension or base file name + file extension depending on
 desired output.
 }
 \note{
-create_spatialRaster will look for a package number in config.yaml;
-congig.yaml::packageNum must exist in the project directory.
+\code{create_spatialRaster} will look for a package number in
+config.yaml; congig.yaml::packageNum must exist in the project directory.
 
 EML requires that geographic extents are provided as decimal degrees.
 Because it is often impractical or inadviseable to change the projection of
@@ -82,13 +80,13 @@ my_area <- "one in a series of tiles covering the central-Arizona Phoenix
 region" # supercedes yaml
 
 NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
-   rasterFile             = "path-to-file/NAIP_NDVI_2015.tiff",
-   description            = rasterDesc,
-   epsgProjection         = 4326,
-   rasterValueDescription = "Normalized Difference Vegetation Index (NDVI)",
-   rasterValueUnits       = "dimensionless",
-   geoDescription         = "my_area",
-   projectNaming          = FALSE
+   raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
+   description               = rasterDesc,
+   epsg                      = 4326,
+   raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
+   raster_value_units        = "dimensionless",
+   geographic_description    = "my_area",
+   project_naming            = FALSE
  )
 
 }
