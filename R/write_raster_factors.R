@@ -89,7 +89,7 @@ write_raster_factors <- function(
   map_factor_levels <- function(level) {
 
     var_levs <- list(
-      category   = level,
+      code       = level,
       definition = "metadata_not_provided"
     )
 
@@ -118,8 +118,10 @@ write_raster_factors <- function(
   factors_as_yaml <- factors_to_yaml(
     raster_values_categories = these_levels,
     raster_value_name        = value_name
-    ) |>
-  yaml::as.yaml()
+    )
+
+  factors_as_yaml <- list(factors_as_yaml) # hack to match capeml format
+  factors_as_yaml <- yaml::as.yaml(factors_as_yaml)
 
 
   # write to file -------------------------------------------------------------

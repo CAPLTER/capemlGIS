@@ -26,7 +26,8 @@ Reference System (CRS)}
 \item{raster_value_description}{(character) Description of raster values}
 
 \item{raster_value_units}{(character) Raster value units. Units must be EML-compliant or annotated by
-a custom unit definition.}
+a custom unit definition. This argument is ignored for categorical values
+(i.e., as indicated by a corresponding `_factors.yaml` file).}
 
 \item{geographic_description}{(character) A textual description of the geographic study area of the
 raster. This parameter allows the user to overwrite the study-wide

@@ -8,9 +8,6 @@
 #' file name + file extension or base file name + file extension depending on
 #' desired output.
 #'
-#' @note \code{create_spatialRaster} will look for a package number in
-#' config.yaml; congig.yaml::packageNum must exist in the project directory.
-#'
 #' @note EML requires that geographic extents are provided as decimal degrees.
 #' Because it is often impractical or inadviseable to change the projection of
 #' rasters, a spatial coverage is not constructed if the projection of a raster
@@ -27,14 +24,17 @@
 #'  (character) Description of raster values
 #' @param raster_value_units
 #'  (character) Raster value units. Units must be EML-compliant or annotated by
-#'  a custom unit definition.
+#'  a custom unit definition. This argument is ignored for categorical values
+#'  (i.e., as indicated by a corresponding `_factors.yaml` file).
 #' @param geographic_description
 #'  (character) A textual description of the geographic study area of the
 #'  raster. This parameter allows the user to overwrite the study-wide
 #'  geographic_description value provided in config.yaml (default).
 #' @param project_naming
 #'  (logical) Logical indicating if the raster file should be renamed per the
-#'  style used by the CAP LTER: project id + base file name + file extension.
+#'  style: project id + base file name + file extension. If true,
+#'  \code{create_spatialRaster} will look for a package identifer in
+#'  config.yaml.
 #' @param file_url
 #'  (character) Optional parameter detailing the online location where the data
 #'  entity can be accessed. In most cases, the online location is the same for
@@ -100,21 +100,18 @@ create_spatialRaster <- function(
 
   # required parameters -----------------------------------------------------
 
-  # do not proceed if a description is not provided
   if (missing("description")) {
 
     stop("please provide a description for this raster")
 
   }
 
-  # do not proceed if a description of the raster values is not provided
   if (missing("raster_value_description")) {
 
     stop("please provide a desription of the raster cell values")
 
   }
 
-  # do not proceed if a epsg of EML-compliant projection is not provided
   if (missing("epsg")) {
 
     stop("please provide a EPSG projection for this raster")
@@ -130,7 +127,7 @@ create_spatialRaster <- function(
 
   # attributes -----------------------------------------------------------------
 
-  # raster factor yaml metadata exists:
+  # raster factor yaml metadata present ~ values are categorical:
 
   raster_factors_file_name <- paste0(entity_name, "_factors.yaml")
 
@@ -158,7 +155,7 @@ create_spatialRaster <- function(
 
   } else {
 
-  # raster factor yaml metadata exists (not categorical):
+  # raster factor yaml not present ~ values are not categorical:
 
     # require units
     if (missing("raster_value_units")) { stop("missing units for raster cell values") }
@@ -175,7 +172,10 @@ create_spatialRaster <- function(
     if (file.size(raster_file) <= 524288000) {
 
       # determine raster number type by sampling 20% of values sans NAs
-      rasterValuesSample <- na.omit(sample(this_raster, size = 0.2 * raster::ncell(this_raster)))
+
+      number_raster_cells <- this_raster@ncols * this_raster@nrows
+
+      rasterValuesSample <- na.omit(sample(x = this_raster, size = 0.2 * number_raster_cells))
       rasterValuesSample <- rasterValuesSample[is.finite(rasterValuesSample)]
 
       rounded <- floor(rasterValuesSample)
@@ -216,7 +216,7 @@ create_spatialRaster <- function(
 
   # additionalInfo ------------------------------------------------------------
 
-  this_crs <- suppressWarnings(raster::crs(this_raster))
+  this_crs <- this_raster@crs@projargs
 
   projections <- list(
     section = list(
@@ -245,7 +245,7 @@ create_spatialRaster <- function(
   # create spatial raster entity --------------------------------------------
 
   fileAuthentication                <- EML::eml$authentication(method = "MD5")
-  fileAuthentication$authentication <- md5sum(raster_file)
+  fileAuthentication$authentication <- tools::md5sum(raster_file)
 
   fileSize      <- EML::eml$size(unit = "byte")
   fileSize$size <- deparse(file.size(raster_file))
@@ -331,13 +331,13 @@ create_spatialRaster <- function(
     spatialReference    = EML::eml$spatialReference(
       horizCoordSysName = emlProjection
       ),
-    numberOfBands       = raster::bandnr(this_raster),
-    rows                = raster::nrow(this_raster),
-    columns             = raster::ncol(this_raster),
+    numberOfBands       = this_raster@file@nbands,
+    rows                = this_raster@nrows,
+    columns             = this_raster@ncols,
     horizontalAccuracy  = EML::eml$horizontalAccuracy(accuracyReport = "METADATA_NOT_PROVIDED"),
     verticalAccuracy    = EML::eml$verticalAccuracy(accuracyReport = "METADATA_NOT_PROVIDED"),
-    cellSizeXDirection  = raster::xres(this_raster),
-    cellSizeYDirection  = raster::yres(this_raster),
+    cellSizeXDirection  = suppressWarnings(raster::xres(this_raster)),
+    cellSizeYDirection  = suppressWarnings(raster::yres(this_raster)),
     rasterOrigin        = "Upper Left",
     verticals           = 1,
     cellGeometry        = "pixel",
@@ -345,12 +345,9 @@ create_spatialRaster <- function(
   )
 
 
-  # spatial coverage (units must be DD, not constructed for units = m)
+  # spatial coverage (units must be DD)
 
-  this_extent <- suppressWarnings(raster::extent(this_raster))
-
-
-  if (abs(this_extent@xmin) > 180) {
+  if (abs(this_raster@extent@xmin) > 180) {
 
     warning("projection in meters, spatial coverage not constructed")
 
@@ -377,10 +374,10 @@ create_spatialRaster <- function(
     rasterSpatialCoverage <- list(
       geographicDescription = this_geographic_description,
       boundingCoordinates   = list(
-        westBoundingCoordinate  = this_extent@xmin,
-        eastBoundingCoordinate  = this_extent@xmax,
-        northBoundingCoordinate = this_extent@ymax,
-        southBoundingCoordinate = this_extent@ymin
+        westBoundingCoordinate  = this_raster@extent@xmin,
+        eastBoundingCoordinate  = this_raster@extent@xmax,
+        northBoundingCoordinate = this_raster@extent@ymax,
+        southBoundingCoordinate = this_raster@extent@ymin
       )
     )
 
