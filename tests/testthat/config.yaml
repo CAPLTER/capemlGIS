@@ -1,0 +1,8 @@
+scope: knb-lter-cap
+identifier: 101
+baseURL: https://data.gios.asu.edu/datasets/cap/
+project: lter
+title: 'Database of Geographic Information: Change in groundwater level, Central Arizona-Phoenix, 1985-2000'
+maintenance: none
+geographic_description: 'CAP LTER study area: greater Phoenix, Arizona (USA) metropolitan
+  area and surrounding Sonoran desert region'
