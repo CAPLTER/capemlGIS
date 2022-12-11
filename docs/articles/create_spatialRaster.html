@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">capemlGIS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.0</span>
       </span>
     </div>
 
@@ -71,7 +71,7 @@
       <h1 data-toc-skip>create_spatialRaster</h1>
                         <h4 data-toc-skip class="author">S. Earl</h4>
             
-            <h4 data-toc-skip class="date">2022-11-17</h4>
+            <h4 data-toc-skip class="date">2022-12-11</h4>
       
       
       <div class="hidden name"><code>create_spatialRaster.Rmd</code></div>
@@ -83,37 +83,24 @@
 <div class="section level3">
 <h3 id="overview">overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h3>
-<p>The capemlGIS package provides the user considerable flexibility to process spatial raster data and generate EML spatial raster metadata.</p>
-<p>Of note, the package allows for processing an individual raster file (e.g., xxx.tiff) or a raster file with supporting metadata (e.g., as xml or otherwise) in a zipped directory. A preffered approach is likely to publish the raster data file as a spatialRaster entity, and supporting documents (e.g., a color profile) as otherEntities separately but zipping all entities together in a single otherEntity is provided as a processing option. In the case of zipping multiple files, all files in the parent directory where the raster file is located are aggregated into a single compressed (zipped) file. If projectNaming is enabled (default), the resulting entity is renamed with the project id + base file name + file extension (zip in the case when multiple files are aggregated).</p>
-<p>Note that the ability to zip related files was dropped from <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code>; <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> is now used only to process a single raster file; the ability to zip related files will be available as a new function in a future release.</p>
-<p>The <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function takes the following arguments:</p>
-<ul>
-<li>rasterFile (character) Quoted full path to raster file.</li>
-<li>description (character) Description of the raster.</li>
-<li>epsgProjection (integer) Four- or five-digit EPSG numeric code of raster Coordinate Reference System (CRS)</li>
-<li>rasterValueDescription (character) Description of raster values</li>
-<li>rasterValueUnits (character) Raster value units. Units must be EML-compliant or annotated by a custom unit definition.</li>
-<li>geoDescription (character) A textual description of the geographic study area of the raster. This parameter allows the user to overwrite the geographicDesciption value provided in the project config.yaml.</li>
-<li>projectNaming (logical) Logical indicating if the raster file should be renamed per the style used by the CAP LTER (default) with the project id + base file name + file extension. The passed file or directory name will be used if this parameter is set to FALSE.</li>
-</ul>
-<p>The raster file is read into the R environment where select metadata are extracted using functions from the raster package.</p>
+<p>Generate EML metadata of type spatialRaster.</p>
 </div>
 <div class="section level3">
 <h3 id="spatial-projection">spatial projection<a class="anchor" aria-label="anchor" href="#spatial-projection"></a>
 </h3>
-<p>A projection is required for EML spatialRaster entities. This critical piece of metadata is provided by supplying the numeric epsg code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must value must be paired to an EML-compliant projection name (see list <a href="https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd" class="external-link">here</a>), which the package will attempt to match but stop if a match is not available. The package has a limited number of epsg codes matched to EML-compliant projection names, mostly those commonly used for the southwestern USA investigators. The function will stop if a match cannot be identified, and the user should contact the package administrator to add the needed projection.</p>
+<p>A projection is required for EML spatialRaster entities. This critical piece of metadata is provided by supplying the numeric epsg code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must value must be paired to an EML-compliant projection name (see list <a href="https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd" class="external-link">here</a>), which the package will attempt to match but stop if a match is not available. The package includes a limited number of epsg codes matched to EML-compliant projection names, mostly those commonly used for the southwestern USA investigators. The function will stop if a match cannot be identified, and the user should contact the package administrator to add projections that are not included.</p>
 </div>
 <div class="section level3">
 <h3 id="harvested-raster-metadata">harvested raster metadata<a class="anchor" aria-label="anchor" href="#harvested-raster-metadata"></a>
 </h3>
-<p>In addition to the user-supplied metadata, the raster will be read into the R environment (with the <a href="https://cran.r-project.org/web/packages/raster/index.html" class="external-link">raster</a> package) from which additional metadata will be harvested, including: raster value number type (only for rasters &lt; 500 Mb), raster extents, number of raster bands, and cell size. The <code>horizontalAccuracy</code> and <code>verticalAcurracy</code> attributes are required by EML but, as these are generally not known, the string <code>METADATA_NOT_PROVIDED</code> is provided as content for those two attributes. Resulting EML should be hand-edited to adjust those values.</p>
-<p>Note that EML requires that geographic extents are provided as decimal degrees. Because it is often impractical or inadviseable to change the projection of rasters, a spatial coverage is not constructed if the projection of a raster is in units of meters.</p>
+<p>In addition to the user-supplied metadata, the raster will be read into the R environment (with the <a href="https://cran.r-project.org/web/packages/raster/index.html" class="external-link">raster</a> package) from which additional metadata will be harvested, including: raster value number type (only for rasters &lt; 500 Mb), raster extents, number of raster bands, and cell size. The <code>horizontalAccuracy</code> and <code>verticalAcurracy</code> attributes are required by EML but, as these are generally not known, the string <code>METADATA_NOT_PROVIDED</code> is provided as content for those two attributes. Resulting EML should be hand-edited to adjust those values in cases where the accuracy data are known.</p>
+<p>Note that EML requires that geographic extents are provided as decimal degrees. Because it is often impractical or inadvisable to change the projection of rasters, a spatial coverage is not constructed if the projection of a raster is in units of meters.</p>
 </div>
 <div class="section level3">
 <h3 id="categorical-raster-values">categorical raster values<a class="anchor" aria-label="anchor" href="#categorical-raster-values"></a>
 </h3>
 <p>If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</p>
-<p><em>Raster categorical values metadata example</em></p>
+<p><em>Raster categorical values metadata example:</em></p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">rasterValue</th>
@@ -166,29 +153,30 @@
 </tr>
 </tbody>
 </table>
+<p>In the above example, <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> will generate a yaml template file with the filename format of <code>raster_name_factors.yaml</code> with a field to provide a descriptor for each category. <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> will look for the appropriately named yaml file in the working directory and include the metadata as attribute details in the resulting EML.</p>
 </div>
 <div class="section level3">
 <h3 id="calling-the-function">calling the function<a class="anchor" aria-label="anchor" href="#calling-the-function"></a>
 </h3>
-<p>Call the <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function to generate the EML to describe the raster. Arguments include the quoted full or relative path to the raster file (or files), the quoted full or relative path and name of the raster metadata file, and the quoted full or relative path and name of the raster value categories (if needed). Output of the function yields EML that can be incorporated into the metadata for a data set.</p>
+<p>Call the <code><a href="../reference/create_spatialRaster.html">create_spatialRaster()</a></code> function to generate the EML to describe the raster. Output of the function yields EML that can be incorporated into the metadata for a data set. In the example below, the raster values are NDVI, which are not categorical, so we have not created a <code>NAIP_NDVI_2015_factors.yaml</code> file with the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function. Rather, we have provided the unit for the NDVI measurement (“dimensionless”) passed to the <code>raster_value_units</code> argument. A description of the raster resource (passed to the <code>description</code> argument) is required, as is a geographic description (passed to the <code>geographic_description</code> argument). However, the geographic description argument is optional, and if not included, the function will use the project-level geographic description included in the requisite config.yaml file.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raster_desc</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP</span></span>
+<code class="sourceCode R"><span><span class="va">raster_description</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP</span></span>
 <span><span class="st">imagery. NAIP NDVI data are presented as a series of tiles each representing</span></span>
 <span><span class="st">a portion of the overall central Arizona coverage area. The relative position</span></span>
 <span><span class="st">of this tile to the entire coverage area is detailed in the files</span></span>
 <span><span class="st">NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."</span></span>
 <span></span>
-<span><span class="va">my_area</span> <span class="op">&lt;-</span> <span class="st">"one in a series of tiles covering the central-Arizona Phoenix</span></span>
+<span><span class="va">ndvi_geographic_description</span> <span class="op">&lt;-</span> <span class="st">"one in a series of tiles covering the central-Arizona Phoenix</span></span>
 <span><span class="st">region"</span></span>
 <span></span>
 <span><span class="va">NAIP_NDVI_2015_SV</span> <span class="op">&lt;-</span> <span class="fu">capemlGIS</span><span class="fu">::</span><span class="fu"><a href="../reference/create_spatialRaster.html">create_spatialRaster</a></span><span class="op">(</span></span>
-<span>   rasterFile             <span class="op">=</span> <span class="st">"path-to-file/NAIP_NDVI_2015.tiff"</span>,</span>
-<span>   description            <span class="op">=</span> <span class="va">raster_desc</span>,</span>
-<span>   epsgProjection         <span class="op">=</span> <span class="fl">4326</span>,</span>
-<span>   rasterValueDescription <span class="op">=</span> <span class="st">"Normalized Difference Vegetation Index (NDVI)"</span>,</span>
-<span>   rasterValueUnits       <span class="op">=</span> <span class="st">"dimensionless"</span>,</span>
-<span>   geoDescription         <span class="op">=</span> <span class="st">"my_area"</span>,</span>
-<span>   projectNaming          <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>   raster_file               <span class="op">=</span> <span class="st">"path-to-file/NAIP_NDVI_2015.tiff"</span>,</span>
+<span>   description               <span class="op">=</span> <span class="va">raster_description</span>,</span>
+<span>   epsg                      <span class="op">=</span> <span class="fl">4326</span>,</span>
+<span>   raster_value_description  <span class="op">=</span> <span class="st">"Normalized Difference Vegetation Index (NDVI)"</span>,</span>
+<span>   raster_value_units        <span class="op">=</span> <span class="st">"dimensionless"</span>,</span>
+<span>   geographic_description    <span class="op">=</span> <span class="st">"ndvi_geographic_description"</span>,</span>
+<span>   project_naming            <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span> <span class="op">)</span></span></code></pre></div>
 </div>
   </div>

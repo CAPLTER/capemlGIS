@@ -34,7 +34,9 @@ raster. This parameter allows the user to overwrite the study-wide
 geographic_description value provided in config.yaml (default).}
 
 \item{project_naming}{(logical) Logical indicating if the raster file should be renamed per the
-style used by the CAP LTER: project id + base file name + file extension.}
+style: project id + base file name + file extension. If true,
+\code{create_spatialRaster} will look for a package identifer in
+config.yaml.}
 
 \item{file_url}{(character) Optional parameter detailing the online location where the data
 entity can be accessed. In most cases, the online location is the same for
@@ -60,9 +62,6 @@ file name + file extension or base file name + file extension depending on
 desired output.
 }
 \note{
-\code{create_spatialRaster} will look for a package number in
-config.yaml; congig.yaml::packageNum must exist in the project directory.
-
 EML requires that geographic extents are provided as decimal degrees.
 Because it is often impractical or inadviseable to change the projection of
 rasters, a spatial coverage is not constructed if the projection of a raster

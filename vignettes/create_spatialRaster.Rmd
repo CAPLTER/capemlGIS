@@ -1,0 +1,78 @@
+---
+title: "create_spatialRaster"
+author: "S. Earl"
+date: "2022-12-11"
+output: 
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{create_spatialRaster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### overview
+
+Generate EML metadata of type spatialRaster. 
+
+
+### spatial projection
+
+A projection is required for EML spatialRaster entities. This critical piece of metadata is provided by supplying the numeric epsg code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must value must be paired to an EML-compliant projection name (see list [here](https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd)), which the package will attempt to match but stop if a match is not available. The package includes a limited number of epsg codes matched to EML-compliant projection names, mostly those commonly used for the southwestern USA investigators. The function will stop if a match cannot be identified, and the user should contact the package administrator to add projections that are not included.
+
+
+### harvested raster metadata
+
+In addition to the user-supplied metadata, the raster will be read into the R environment (with the [raster](https://cran.r-project.org/web/packages/raster/index.html) package) from which additional metadata will be harvested, including: raster value number type (only for rasters < 500 Mb), raster extents, number of raster bands, and cell size. The `horizontalAccuracy` and `verticalAcurracy` attributes are required by EML but, as these are generally not known, the string `METADATA_NOT_PROVIDED` is provided as content for those two attributes. Resulting EML should be hand-edited to adjust those values in cases where the accuracy data are known.
+
+Note that EML requires that geographic extents are provided as decimal degrees. Because it is often impractical or inadvisable to change the projection of rasters, a spatial coverage is not constructed if the projection of a raster is in units of meters.
+
+
+### categorical raster values
+
+If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the `write_raster_factors()` function.
+
+*Raster categorical values metadata example:*
+
+|rasterValue | categoryName |
+|:-----------|:-------------|
+|1 | Water |
+|2 | Asphalt/Road |
+|3 | Concrete/Buildings |
+|4 | Urban mixture |
+|5 | Residential |
+|6 | Residential (white rooftops) |
+|7 | Active crop |
+|8 | Inactive crop |
+|9 | Cultivated vegetation |
+|10 | Natural vegetation |
+|11 | Soil/Desert |
+
+In the above example, `write_raster_factors()` will generate a yaml template file with the filename format of `raster_name_factors.yaml` with a field to provide a descriptor for each category. `create_spatialRaster()` will look for the appropriately named yaml file in the working directory and include the metadata as attribute details in the resulting EML.
+
+
+### calling the function
+
+Call the `create_spatialRaster()` function to generate the EML to describe the raster. Output of the function yields EML that can be incorporated into the metadata for a data set. In the example below, the raster values are NDVI, which are not categorical, so we have not created a `NAIP_NDVI_2015_factors.yaml` file with the `write_raster_factors()` function. Rather, we have provided the unit for the NDVI measurement ("dimensionless") passed to the `raster_value_units` argument. A description of the raster resource (passed to the `description` argument) is required, as is a geographic description (passed to the `geographic_description` argument). However, the geographic description argument is optional, and if not included, the function will use the project-level geographic description included in the requisite config.yaml file.
+
+
+```r
+raster_description <- "NDVI for the central Arizona region derived from 2015 NAIP
+imagery. NAIP NDVI data are presented as a series of tiles each representing
+a portion of the overall central Arizona coverage area. The relative position
+of this tile to the entire coverage area is detailed in the files
+NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
+
+ndvi_geographic_description <- "one in a series of tiles covering the central-Arizona Phoenix
+region"
+
+NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
+   raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
+   description               = raster_description,
+   epsg                      = 4326,
+   raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
+   raster_value_units        = "dimensionless",
+   geographic_description    = "ndvi_geographic_description",
+   project_naming            = FALSE
+ )
+```
