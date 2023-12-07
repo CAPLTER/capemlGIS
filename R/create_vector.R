@@ -23,25 +23,24 @@
 #' @note All vector objects are transformed to epsg 4326 (WGS 1984)
 #'
 #' @param vector_name
-#'  (character) The quoted or unquoted name of the spatial data object in the R
-#'  environment.
+#' (character) The quoted or unquoted name of the spatial data object in the R
+#' environment.
 #' @param description
-#'  (character) Quoted description of the vector resource.
+#' (character) Quoted description of the vector resource.
 #' @param driver
-#'  (character) Quoted format of output file: KML or GeoJSON (default).
+#' (character) Quoted format of output file: KML or GeoJSON (default).
 #' @param geoDescription
-#'  (character) A textual description of the geographic study area of the
-#'  vector. This parameter allows the user to overwrite the
-#'  geographicDesciption value provided in the project config.yaml.
+#' (character) A textual description of the geographic study area of the
+#' vector. This parameter allows the user to overwrite the geographicDesciption
+#' value provided in the project config.yaml.
 #' @param overwrite
 #' (logical) A logical indicating whether to overwrite an existing file bearing
-#' the same name as kml file as it is imported.
+#' the same name as the file to be written.
 #' @param projectNaming
-#'  (logical) Logical indicating if the resulting file should be renamed per
-#'  the style used in the capeml ecosystem with the project id + base file name
-#'  + file extension. If set to false, the resulting file will bear the name
-#'  the object is assigned in the R environment with the appropriate file
-#'  extension.
+#' (logical) Logical indicating if the resulting file should be renamed per the
+#' style used in the capeml ecosystem with the project id + base file name +
+#' file extension. If set to FALSE, the resulting file will bear the name the
+#' object is assigned in the R environment with the appropriate file extension.
 #' @param missing_value_code
 #' (character) Quoted character(s) of a flag, in addition to NA or NaN, used to
 #' indicate missing values within the data.
@@ -121,13 +120,34 @@ create_vector <- function(
   missing_value_code = NULL
   ) {
 
+  # get text reference of vector name for use throughout ----------------------
+
+  if (rlang::is_expression(vector_name)) {
+
+    namestr <- rlang::get_expr(vector_name)
+
+  } else {
+
+    namestr <- deparse(substitute(vector_name))
+
+  }
+
+
   # required parameters -------------------------------------------------------
 
   # do not proceed if a description is not provided
 
   if (missing("description")) {
 
-    stop("please provide a description for this vector")
+    stop("please provide a description for the vector:", namestr)
+
+  }
+
+  # spatialVectors must have an attributes file
+
+  if (!file.exists(paste0(namestr, "_attrs.yaml"))) {
+
+    stop("attributes file not found for the vector:", namestr)
 
   }
 
@@ -143,19 +163,6 @@ create_vector <- function(
 
     file_extension  <- "kml"
     data_one_format <- "Google Earth Keyhole Markup Language (KML)"
-
-  }
-
-
-  # get text reference of vector name for use throughout ----------------------
-
-  if (rlang::is_expression(vector_name)) {
-
-    namestr <- rlang::get_expr(vector_name)
-
-  } else {
-
-    namestr <- deparse(substitute(vector_name))
 
   }
 
@@ -178,16 +185,38 @@ create_vector <- function(
   configurations <- capeml::read_package_configuration()
 
 
+  # project naming ------------------------------------------------------------
+
+  if (projectNaming == TRUE) {
+
+    project_name <- paste0(configurations$identifier, "_", namestr, ".", file_extension)
+
+    system(
+      paste0(
+        "mv ",
+        paste0(shQuote(namestr, type = "sh"), ".", file_extension),
+        " ",
+        shQuote(project_name, type = "sh")
+      )
+    )
+
+  } else {
+
+    project_name <- paste0(namestr, ".", file_extension)
+
+  }
+
+
   # geographic coverage -------------------------------------------------------
 
-  if (missing("geoDescription") | is.null(geoDescription)) {
+  if (missing("geoDescription") || is.null(geoDescription)) {
 
     geoDescription <- configurations[["geographic_description"]]
     message("project-level geographic description used for spatial entity ", namestr)
 
   }
 
-  if (is.na(geoDescription) | is.null(geoDescription) | geoDescription == "") {
+  if (is.na(geoDescription) || is.null(geoDescription) || geoDescription == "") {
 
     geoDescription <- NULL
     stop("entity ", namestr," does not have a geographic description")
@@ -222,40 +251,11 @@ create_vector <- function(
 
   # attributes ---------------------------------------------------------------
 
-  if (file.exists(paste0(namestr, "_attrs.yaml")) | file.exists(paste0(namestr, "_attrs.csv"))) {
-
-    attributes <- capeml::read_attributes(
-      entity_name        = namestr,
-      missing_value_code = missing_value_code
-    )
-
-  } else {
-
-    warning("missing attributes file: ", paste0(namestr, "_attrs.yaml"), " / ", paste0(namestr, "_attrs.csv"))
-
-  }
-
-
-  # project naming ------------------------------------------------------------
-
-  if (projectNaming == TRUE) {
-
-    project_name <- paste0(configurations$identifier, "_", namestr, ".", file_extension)
-
-    system(
-      paste0(
-        "mv ",
-        paste0(shQuote(namestr, type = "sh"), ".", file_extension),
-        " ",
-        shQuote(project_name, type = "sh")
-      )
-    )
-
-  } else {
-
-    project_name <- paste0(namestr, ".", file_extension)
-
-  }
+  attributes <- capeml::read_attributes(
+    entity_name        = namestr,
+    missing_value_code = missing_value_code,
+    entity_id          = tools::md5sum(project_name)
+    )[["eml"]]
 
 
   # set physical ----------------------------------------------------------------
@@ -268,7 +268,12 @@ create_vector <- function(
     EML::eml$online(url = paste0(fileURL, project_name))
   )
 
-  # data format
+  spatialVectorPhysical <- EML::set_physical(
+    objectName = project_name,
+    url        = paste0(fileURL, project_name)
+  )
+
+  # file format
 
   fileDataFormat <- EML::eml$dataFormat(
     externallyDefinedFormat = EML::eml$externallyDefinedFormat(
@@ -276,25 +281,7 @@ create_vector <- function(
     )
   )
 
-  # file size
-
-  fileSize      <- EML::eml$size(unit = "byte")
-  fileSize$size <- deparse(file.size(project_name))
-
-  # authentication
-
-  fileAuthentication                <- EML::eml$authentication(method = "MD5")
-  fileAuthentication$authentication <- md5sum(project_name)
-
-  # construct physical
-
-  spatialVectorPhysical <- EML::eml$physical(
-    objectName     = project_name,
-    authentication = fileAuthentication,
-    size           = fileSize,
-    dataFormat     = fileDataFormat,
-    distribution   = fileDistribution
-  )
+  spatialVectorPhysical$dataFormat <- fileDataFormat
 
 
   # create spatialVector entity ---------------------------------------------
