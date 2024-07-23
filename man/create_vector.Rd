@@ -24,17 +24,16 @@ environment.}
 \item{driver}{(character) Quoted format of output file: KML or GeoJSON (default).}
 
 \item{geoDescription}{(character) A textual description of the geographic study area of the
-vector. This parameter allows the user to overwrite the
-geographicDesciption value provided in the project config.yaml.}
+vector. This parameter allows the user to overwrite the geographicDesciption
+value provided in the project config.yaml.}
 
 \item{overwrite}{(logical) A logical indicating whether to overwrite an existing file bearing
-the same name as kml file as it is imported.}
+the same name as the file to be written.}
 
-\item{projectNaming}{(logical) Logical indicating if the resulting file should be renamed per
-the style used in the capeml ecosystem with the project id + base file name
-+ file extension. If set to false, the resulting file will bear the name
-the object is assigned in the R environment with the appropriate file
-extension.}
+\item{projectNaming}{(logical) Logical indicating if the resulting file should be renamed per the
+style used in the capeml ecosystem with the project id + base file name +
+file extension. If set to FALSE, the resulting file will bear the name the
+object is assigned in the R environment with the appropriate file extension.}
 
 \item{missing_value_code}{(character) Quoted character(s) of a flag, in addition to NA or NaN, used to
 indicate missing values within the data.}
