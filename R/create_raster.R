@@ -1,6 +1,6 @@
 #' @title generate a EML entity of type spatialRaster
 #'
-#' @description \code{create_spatialRaster} generates a EML entity of type
+#' @description \code{create_raster} generates a EML entity of type
 #' spatialRaster
 #'
 #' @details a spatialRaster entity is created from a single data file (e.g.,
@@ -33,7 +33,7 @@
 #' @param project_naming
 #'  (logical) Logical indicating if the raster file should be renamed per the
 #'  style: project id + base file name + file extension. If true,
-#'  \code{create_spatialRaster} will look for a package identifer in
+#'  \code{create_raster} will look for a package identifer in
 #'  config.yaml.
 #' @param file_url
 #'  (character) Optional parameter detailing the online location where the data
@@ -67,12 +67,12 @@
 #' my_area <- "one in a series of tiles covering the central-Arizona Phoenix
 #' region" # supercedes yaml
 #'
-#' NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
+#' NAIP_NDVI_2015_SV <- capemlGIS::create_raster(
 #'    raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
 #'    description               = rasterDesc,
 #'    epsg                      = 4326,
 #'    raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
-#'    raster_value_units        = "dimensionless",
+#'    raster_value_units        = "UNITLESS",
 #'    geographic_description    = "my_area",
 #'    project_naming            = FALSE
 #'  )
@@ -81,7 +81,7 @@
 #'
 #' @export
 #'
-create_spatialRaster <- function(
+create_raster <- function(
   raster_file,
   description,
   epsg,
@@ -106,11 +106,11 @@ create_spatialRaster <- function(
 
   }
 
-  if (missing("raster_value_description")) {
-
-    stop("please provide a desription of the raster cell values")
-
-  }
+  # if (missing("raster_value_description")) {
+  #
+  #   stop("please provide a desription of the raster cell values")
+  #
+  # }
 
   if (missing("epsg")) {
 
@@ -153,14 +153,69 @@ create_spatialRaster <- function(
       col_classes = "factor"
     )
 
-  } else {
+  }
+
 
   # raster factor yaml not present ~ values are not categorical:
 
-    # require units
+  raster_attributes_file_name <- paste0(entity_name, "_attrs.yaml")
+
+  if (file.exists(raster_attributes_file_name)) {
+
+    # attributes <- capeml::read_attributes(
+    #   entity_name        = entity_name,
+    #   missing_value_code = NULL,
+    #   entity_id          = tools::md5sum(project_name)
+    #   )[["eml"]]
+
+    attrs <- yaml::yaml.load_file(raster_attributes_file_name)
+
+    attrs <- yaml::yaml.load(attrs)
+    attrs <- tibble::enframe(attrs) |>
+      tidyr::unnest_wider(value) |>
+      dplyr::select(-one_of("name"))
+
+
+    # column classes to vector (req'd by set_attributes)
+    classes <- attrs |>
+      dplyr::pull(columnClasses)
+
+    # copy attributeDefinition to defintion as appropriate; remove col classes
+    # from attrs (req'd by set_attributes); remove empty columns (targets here
+    # are max and min values, which can throw an error for data without any
+    # numeric columns) empty strings to NA
+
+    attrs[attrs == ""] <- NA
+
+    # helper function to remove missing columns
+    not_all_na <- function(x) {
+      !all(is.na(x))
+    }
+
+    entity_id <- tools::md5sum(raster_file)
+
+    attrs <- attrs |>
+      dplyr::mutate(
+        id         = paste0(entity_id, "_", row.names(attrs)),
+        definition = NA_character_,
+        definition = dplyr::case_when(
+          grepl("character", columnClasses) & ((is.na(definition) | definition == "")) ~ attributeDefinition,
+          TRUE ~ definition
+        )
+      ) |>
+      dplyr::select(-columnClasses) |>
+      dplyr::select_if(not_all_na)
+
+    attr_list <- EML::set_attributes(
+      attributes    = attrs,
+      col_classes   = classes
+    )
+
+
+  } else {
+
     if (missing("raster_value_units")) { stop("missing units for raster cell values") }
 
-    # build base attributes data frame
     raster_attributes <- data.frame(
       attributeName       = "raster_value",
       attributeDefinition = raster_value_description,
@@ -216,18 +271,18 @@ create_spatialRaster <- function(
 
   # additionalInfo ------------------------------------------------------------
 
-  this_crs <- this_raster@crs@projargs
+  this_projection <- raster::projection(this_raster)
 
   projections <- list(
     section = list(
       paste0("<title>user-provided coordinate reference system</title>\n<para>", epsg, "</para>"),
-      paste0("<title>raster-derived coordinate reference system</title>\n<para>", as.character(this_crs), "</para>")
+      paste0("<title>raster-derived projection</title>\n<para>", as.character(this_projection), "</para>")
     )
   )
 
   message(
     "user-provided CRS: ", epsg, "\n",
-    "raster-derived CRS: ", as.character(this_crs)
+    "raster-derived projection: ", as.character(this_projection)
   )
 
 
@@ -345,11 +400,11 @@ create_spatialRaster <- function(
   )
 
 
-  # spatial coverage (units must be DD)
+  # spatial coverage (units must be decimal degrees)
 
   if (abs(this_raster@extent@xmin) > 180) {
 
-    warning("projection in meters, spatial coverage not constructed")
+    warning("projection in meters ~ spatial coverage not constructed")
 
   } else {
 

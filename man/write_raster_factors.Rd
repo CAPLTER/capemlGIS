@@ -36,7 +36,9 @@ written with the name of the raster file + "_factors". The
 a EML spatialRaster entity.
 }
 \note{
-
+\code{write_raster_factors} will take as input either an object of
+class raster that is already in the environment (\code{raster_entity}) or
+will read a raster file (\code{raster_entity}) given a path and filename.
 
 Constructing the template can be extremely computationally and time
 intensive for large rasters.

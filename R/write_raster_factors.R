@@ -12,8 +12,8 @@
 #' a EML spatialRaster entity.
 #'
 #' @note \code{write_raster_factors} will take as input either an object of
-#' class raster that is already in the environment (\{raster_entity}) or will
-#' read a raster file (\{raster_entity}) given a path and filename.
+#' class raster that is already in the environment (\code{raster_entity}) or
+#' will read a raster file (\code{raster_entity}) given a path and filename.
 #'
 #' @note Constructing the template can be extremely computationally and time
 #' intensive for large rasters.
