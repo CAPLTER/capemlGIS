@@ -1,114 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/create_spatialRaster.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/capAddress.html</loc>
-  </url>
-  <url>
-    <loc>/reference/capContact.html</loc>
-  </url>
-  <url>
-    <loc>/reference/capPublisher.html</loc>
-  </url>
-  <url>
-    <loc>/reference/capRights.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_dataTable.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_dataset.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_distribution.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_eml.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_keywordSet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_otherEntity.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_spatialRaster.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_spatialVector.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_vector.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_vector_shape.html</loc>
-  </url>
-  <url>
-    <loc>/reference/emlCoordSystems.html</loc>
-  </url>
-  <url>
-    <loc>/reference/eml_valid_crs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_emlProjection.html</loc>
-  </url>
-  <url>
-    <loc>/reference/giosAddress.html</loc>
-  </url>
-  <url>
-    <loc>/reference/giosContact.html</loc>
-  </url>
-  <url>
-    <loc>/reference/giosLanguage.html</loc>
-  </url>
-  <url>
-    <loc>/reference/giosPublisher.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/list_crs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lterAccess.html</loc>
-  </url>
-  <url>
-    <loc>/reference/package_vector_shape.html</loc>
-  </url>
-  <url>
-    <loc>/reference/projectTitle.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_markdown.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write_attributes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write_factors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write_raster_factors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/zipRelatedFiles.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/create_raster.html</loc></url>
+<url><loc>/articles/create_spatialRaster.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/capAddress.html</loc></url>
+<url><loc>/reference/capContact.html</loc></url>
+<url><loc>/reference/capPublisher.html</loc></url>
+<url><loc>/reference/capRights.html</loc></url>
+<url><loc>/reference/create_dataTable.html</loc></url>
+<url><loc>/reference/create_dataset.html</loc></url>
+<url><loc>/reference/create_distribution.html</loc></url>
+<url><loc>/reference/create_eml.html</loc></url>
+<url><loc>/reference/create_keywordSet.html</loc></url>
+<url><loc>/reference/create_otherEntity.html</loc></url>
+<url><loc>/reference/create_raster.html</loc></url>
+<url><loc>/reference/create_spatialRaster.html</loc></url>
+<url><loc>/reference/create_spatialVector.html</loc></url>
+<url><loc>/reference/create_vector.html</loc></url>
+<url><loc>/reference/create_vector_shape.html</loc></url>
+<url><loc>/reference/emlCoordSystems.html</loc></url>
+<url><loc>/reference/eml_valid_crs.html</loc></url>
+<url><loc>/reference/find_element.html</loc></url>
+<url><loc>/reference/get_emlProjection.html</loc></url>
+<url><loc>/reference/giosAddress.html</loc></url>
+<url><loc>/reference/giosContact.html</loc></url>
+<url><loc>/reference/giosLanguage.html</loc></url>
+<url><loc>/reference/giosPublisher.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/list_crs.html</loc></url>
+<url><loc>/reference/lterAccess.html</loc></url>
+<url><loc>/reference/package_vector_shape.html</loc></url>
+<url><loc>/reference/projectTitle.html</loc></url>
+<url><loc>/reference/read_markdown.html</loc></url>
+<url><loc>/reference/write_attributes.html</loc></url>
+<url><loc>/reference/write_factors.html</loc></url>
+<url><loc>/reference/write_keywords.html</loc></url>
+<url><loc>/reference/write_raster_factors.html</loc></url>
+<url><loc>/reference/zipRelatedFiles.html</loc></url>
 </urlset>
+

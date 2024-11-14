@@ -9,7 +9,7 @@
 #' desired output.
 #'
 #' @note EML requires that geographic extents are provided as decimal degrees.
-#' Because it is often impractical or inadviseable to change the projection of
+#' Because it is often impractical or inadvisable to change the projection of
 #' rasters, a spatial coverage is not constructed if the projection of a raster
 #' is in units of meters.
 #'
@@ -33,13 +33,13 @@
 #' @param project_naming
 #'  (logical) Logical indicating if the raster file should be renamed per the
 #'  style: project id + base file name + file extension. If true,
-#'  \code{create_raster} will look for a package identifer in
+#'  \code{create_raster} will look for a package identifier in
 #'  config.yaml.
 #' @param file_url
 #'  (character) Optional parameter detailing the online location where the data
 #'  entity can be accessed. In most cases, the online location is the same for
 #'  all files in the dataset and is detailed in config.yaml. \code{file_url}
-#'  allows the user to overide project-level configuration in config.yaml and
+#'  allows the user to override project-level configuration in config.yaml and
 #'  provide a specific, unique resource (e.g., a link to a file in Dropbox) for
 #'  each data entity.
 #'
@@ -106,12 +106,6 @@ create_raster <- function(
 
   }
 
-  # if (missing("raster_value_description")) {
-  #
-  #   stop("please provide a desription of the raster cell values")
-  #
-  # }
-
   if (missing("epsg")) {
 
     stop("please provide a EPSG projection for this raster")
@@ -162,12 +156,6 @@ create_raster <- function(
 
   if (file.exists(raster_attributes_file_name)) {
 
-    # attributes <- capeml::read_attributes(
-    #   entity_name        = entity_name,
-    #   missing_value_code = NULL,
-    #   entity_id          = tools::md5sum(project_name)
-    #   )[["eml"]]
-
     attrs <- yaml::yaml.load_file(raster_attributes_file_name)
 
     attrs <- yaml::yaml.load(attrs)
@@ -180,7 +168,7 @@ create_raster <- function(
     classes <- attrs |>
       dplyr::pull(columnClasses)
 
-    # copy attributeDefinition to defintion as appropriate; remove col classes
+    # copy attributeDefinition to definition as appropriate; remove col classes
     # from attrs (req'd by set_attributes); remove empty columns (targets here
     # are max and min values, which can throw an error for data without any
     # numeric columns) empty strings to NA
@@ -211,7 +199,6 @@ create_raster <- function(
       col_classes   = classes
     )
 
-    ###
     if (!is.null(find_element(attr_list, "unit"))) {
 
       capeml::write_units(
@@ -220,13 +207,7 @@ create_raster <- function(
         raster      = TRUE
       )
 
-      # write_raster_units(
-      #   entity_name = entity_name,
-      #   entity_id   = entity_id
-      # )
-
     }
-    ###
 
   } else {
 
@@ -466,10 +447,12 @@ create_raster <- function(
 }
 
 
+#' @title find attributes with units
+#'
 #' @description \code{find_element} is a helper function to
-#' \code{create_dataTable} that checks for the presence of a particular element
+#' \code{create_raster} that checks for the presence of a particular element
 #' in a list. In this case, we use \code{find_element} to determine if any of
-#' the attributes of a datatable have units.
+#' the raster attributes metadata have units.
 
 find_element <- function(attributes, element) {
 
@@ -493,249 +476,3 @@ find_element <- function(attributes, element) {
   }
 
 }
-
-#' @export
-
-# read_raster_attributes <- function(
-#   entity_name,
-#   missing_value_code = NULL,
-#   entity_id          = "data_entity"
-#   ) {
-#
-#   # entity_name <- basename(tools::file_path_sans_ext(entity_name))
-#
-#   # establish references to the data entity and entity name
-#
-#   if (rlang::is_expression(entity_name)) {
-#
-#     string_pointer <- rlang::get_expr(entity_name)
-#     # object_pointer <- get(x = entity_name, envir = globalenv())
-#
-#   } else {
-#
-#     string_pointer <- deparse(substitute(entity_name))
-#     # object_pointer <- entity_name
-#
-#   }
-#
-#
-#   # attributes ----------------------------------------------------------------
-#
-#   # load attributes from yaml or csv (default to yaml)
-#   if (file.exists(paste0(string_pointer, "_attrs.yaml"))) {
-#
-#     attrs <- yaml::yaml.load_file(paste0(string_pointer, "_attrs.yaml"))
-#     attrs <- yaml::yaml.load(attrs)
-#     attrs <- tibble::enframe(attrs) |>
-#       tidyr::unnest_wider(value) |>
-#       dplyr::select(-one_of("name"))
-#
-#   } else if (!file.exists(paste0(string_pointer, "_attrs.yaml")) && file.exists(paste0(string_pointer, "_attrs.csv"))) {
-#
-#     attrs <- utils::read.csv(paste0(string_pointer, "_attrs.csv"))
-#
-#   } else {
-#
-#     stop(paste0("attributes file: ", string_pointer, "_attrs.yaml ", "not found in ", getwd()))
-#
-#   }
-#
-#   # column classes to vector (req'd by set_attributes)
-#   classes <- attrs |>
-#     dplyr::pull(columnClasses)
-#
-#   # copy attributeDefinition to defintion as appropriate;
-#   # remove col classes from attrs (req'd by set_attributes);
-#   # remove empty columns (targets here are max and min values, which can throw
-#   # an error for data without any numeric columns)
-#   # empty strings to NA
-#
-#   attrs[attrs == ""] <- NA
-#
-#   # helper function to remove missing columns
-#   not_all_na <- function(x) {
-#     !all(is.na(x))
-#   }
-#
-#   attrs <- attrs |>
-#     dplyr::mutate(
-#       id         = paste0(entity_id, "_", row.names(attrs)),
-#       definition = NA_character_,
-#       definition = dplyr::case_when(
-#         grepl("character", columnClasses) & ((is.na(definition) | definition == "")) ~ attributeDefinition,
-#         TRUE ~ definition
-#       )
-#       ) |>
-#     dplyr::select(-columnClasses) |>
-#     dplyr::select_if(not_all_na)
-#
-#
-#   # return --------------------------------------------------------------------
-#
-#   attr_list <- EML::set_attributes(
-#     attributes    = attrs,
-#     col_classes   = classes
-#   )
-#
-#   attrs["columnClasses"] <- classes
-#
-#   return(
-#     list(
-#       eml   = attr_list,
-#       table = attrs
-#     )
-#   )
-#
-# }
-#
-# write_raster_units <- function(
-#   entity_name,
-#   entity_id
-# ) {
-#
-#   qudt   <- FALSE
-#   custom <- FALSE
-#
-#   attributes_table <- read_raster_attributes(
-#     entity_name = entity_name,
-#     entity_id   = entity_id
-#   )[["table"]]
-#
-#   attributes_units_unique <- unique(attributes_table[!is.na(attributes_table$unit), ][["unit"]])
-#   attributes_units_types  <- purrr::map(.x = attributes_units_unique, ~ capeml::get_unit_type(this_unit = .x))
-#
-#   if (!all(sapply(attributes_units_types, is.null))) {
-#
-#     qudt_and_custom <- attributes_units_types |> 
-#       purrr::list_rbind() |> 
-#       dplyr::inner_join(
-#         y  = attributes_table[, c("attributeName", "id", "unit")],
-#         by = c("name" = "unit")
-#       )
-#
-#     # type: QUDT
-#
-#     if (nrow(qudt_and_custom[grepl("qudt", qudt_and_custom$type, ignore.case = TRUE), ]) > 0) {
-#
-#       qudt <- TRUE
-#
-#       qudt_units <- qudt_and_custom[grepl("qudt", qudt_and_custom$type, ignore.case = TRUE), ]
-#       qudt_units$id_name <- paste0(qudt_units$id, "_", qudt_units$name)
-#
-#       qudt_annotations <- split(
-#         x = qudt_units,
-#         f = qudt_units$id_name
-#       ) |>
-#         {\(row) purrr::map(.x = row, ~ 
-#           list(
-#             name          = .x$name,
-#             valueLabel    = .x$label,
-#             valueURI      = .x$unit,
-#             references    = .x$id,
-#             propertyLabel = "has unit",
-#             propertyURI   = "http://qudt.org/schema/qudt/hasUnit"
-#           )
-#         )}() |> 
-#         unique()
-#
-#
-#       if (file.exists("annotations.yaml")) {
-#
-#         existing_annotations <- yaml::yaml.load_file("annotations.yaml") |> 
-#           unique()
-#
-#         c(existing_annotations, qudt_annotations) |> 
-#           unique() |> 
-#           yaml::write_yaml(
-#             file         = "annotations.yaml",
-#             column.major = FALSE
-#           )
-#
-#       } else {
-#
-#         yaml::write_yaml(
-#           x            = qudt_annotations,
-#           file         = "annotations.yaml",
-#           column.major = FALSE
-#         )
-#
-#       }
-#
-#     }
-#
-#
-#     # type: custom
-#
-#     if (nrow(qudt_and_custom[qudt_and_custom$type == "custom", ]) > 0) {
-#
-#       custom <- TRUE
-#
-#       new_custom_units <- qudt_and_custom[qudt_and_custom$type == "custom", ]["name"] |> 
-#         dplyr::mutate(description = "") |>
-#         as.list() |> 
-#         purrr::list_transpose(simplify = FALSE)
-#
-#       # message("new_custom_units: ", qudt_and_custom[qudt_and_custom$type == "custom", ]["name"])
-#
-#     }
-#
-#
-#     # construct <additionalMetadata><metadata><unitList><unit>
-#
-#     if (qudt == TRUE && custom == TRUE) {
-#
-#       qudt_for_unitlist <- unique(purrr::map(.x = qudt_annotations, ~ list(name = .x$"name")))
-#       new_custom_units  <- c(new_custom_units, qudt_for_unitlist)
-#
-#     } else if (qudt == TRUE && custom == FALSE) {
-#
-#       new_custom_units <- unique(purrr::map(.x = qudt_annotations, ~ list(name = .x$"name")))
-#
-#     }
-#
-#
-#     # write to file
-#
-#     if (qudt == TRUE || custom == TRUE) {
-#
-#       if (file.exists("custom_units.yaml")) {
-#
-#         existing_custom_units <- yaml::yaml.load_file("custom_units.yaml")
-#
-#         # do not add new CUs if they already exist in cu.yaml
-#         existing_custom_units_names <- existing_custom_units |>
-#         purrr::map("name") |>
-#         unique()
-#
-#         new_custom_units <- purrr::discard(
-#           .x = new_custom_units,
-#           .p = \(x) x[["name"]] %in% existing_custom_units_names
-#         )
-#
-#         c(existing_custom_units, new_custom_units) |> 
-#           unique() |> 
-#           yaml::write_yaml(
-#             file         = "custom_units.yaml",
-#             column.major = FALSE
-#           )
-#
-#       } else {
-#
-#         yaml::write_yaml(
-#           x            = new_custom_units,
-#           file         = "custom_units.yaml",
-#           column.major = FALSE
-#         )
-#
-#       }
-#
-#     }
-#
-#   } else {
-#
-#     # message(entity_name, ": neither QUDT or custom units were detected")
-#     return(NULL)
-#
-#   }
-#
-# }

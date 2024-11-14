@@ -1,0 +1,61 @@
+|
+  annual:
+    attributeName: annual
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (January 1st - December 31st)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  1_winter:
+    attributeName: 1_winter
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (December 21st - March 19th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  2_spring:
+    attributeName: 2_spring
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (March 20th - June 20th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  3_summer:
+    attributeName: 3_summer
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (June 21st - September 21st)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  4_fall:
+    attributeName: 4_fall
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (September 22nd - December 20th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric

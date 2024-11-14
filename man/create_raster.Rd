@@ -35,13 +35,13 @@ geographic_description value provided in config.yaml (default).}
 
 \item{project_naming}{(logical) Logical indicating if the raster file should be renamed per the
 style: project id + base file name + file extension. If true,
-\code{create_raster} will look for a package identifer in
+\code{create_raster} will look for a package identifier in
 config.yaml.}
 
 \item{file_url}{(character) Optional parameter detailing the online location where the data
 entity can be accessed. In most cases, the online location is the same for
 all files in the dataset and is detailed in config.yaml. \code{file_url}
-allows the user to overide project-level configuration in config.yaml and
+allows the user to override project-level configuration in config.yaml and
 provide a specific, unique resource (e.g., a link to a file in Dropbox) for
 each data entity.}
 }
@@ -63,7 +63,7 @@ desired output.
 }
 \note{
 EML requires that geographic extents are provided as decimal degrees.
-Because it is often impractical or inadviseable to change the projection of
+Because it is often impractical or inadvisable to change the projection of
 rasters, a spatial coverage is not constructed if the projection of a raster
 is in units of meters.
 }

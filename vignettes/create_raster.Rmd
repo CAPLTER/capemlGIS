@@ -1,0 +1,247 @@
+---
+title: "create_raster"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{create_raster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r options, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include=FALSE, echo=FALSE}
+# devtools::load_all("~/localRepos/capemlGIS/")
+library(capemlGIS)
+```
+
+### overview
+
+*Generate EML metadata of type spatialRaster.* 
+
+There are generally three types of and approaches to generating EML entities of type spatialRaster:
+
+1. The raster is a single band with a continuous variable (e.g., NDVI). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters.
+2. The raster is a multi-band raster (e.g., hyperspectral data). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters, and we generate a yaml file with the raster value categories and their meanings in a `*_attrs.yaml` file.
+3. The raster is a single band with a categorical variable (e.g., land cover). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters, and we generate a yaml file with the raster value categories and their meanings using the `write_raster_factors()` function.
+
+The capeml package uses an older approach to identifying spatialRaster entities to be included in the dataset, which is by the name the entity with the extension `_SV`. As such, all spatialRaster entities should be named with that extension, and should not be included in a capeml workflow `data_objects.yaml` file.
+
+
+### spatial projection
+
+A projection is required for EML spatialRaster entities. This critical piece of metadata is provided by supplying the numeric epsg code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must value must be paired to an EML-compliant projection name (see list [here](https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd)), which the package will attempt to match but stop if a match is not available. The package includes a limited number of epsg codes matched to EML-compliant projection names, mostly those commonly used by southwestern USA investigators. The function will stop if a match cannot be identified, and the user should contact the package administrator to add projections that are not included.
+
+
+### harvested raster metadata
+
+In addition to the user-supplied metadata, the raster will be read into the R environment (with the [raster](https://cran.r-project.org/web/packages/raster/index.html) package) from which additional metadata will be harvested, including: raster value number type (only for rasters < 500 Mb), raster extents, number of raster bands, and cell size.
+
+The `horizontalAccuracy` and `verticalAcurracy` attributes are required by EML but, as these are generally not known, the string `METADATA_NOT_PROVIDED` is provided as content for those two attributes; the resulting EML should be hand-edited to adjust those values in cases where the accuracy data are known.
+
+Note that EML requires that geographic extents are provided as decimal degrees. Because it is often impractical or inadvisable to change the projection of rasters, a spatial coverage is not constructed if the projection of a raster is in units of meters.
+
+
+### example case 1: single band with a continuous variable (e.g., NDVI)
+
+In this case, we pass all the relevant metadata for the description of the raster, raster value, and raster units via the function parameters - there are not any other supporting metadata files.
+
+Note that the name of the spatialRaster entity (`NAIP_NDVI_CAP2021-0000000000-0000000000_SV`) has (1) the `_SV` extension, and (2) is rather cumbersome. The name is unforunate in this case becuase, not only is it long, but the dashes and digits require that it be wrapped in back ticks. While naming the spatialRaster entity based on the raster file name is a best practice (especially when dealing with many rasters), this is not required and any name so long as it has the `_SV` extension will work.
+
+```{r create_raster_example_1, eval=FALSE}
+`NAIP_NDVI_CAP2021-0000000000-0000000000_SV` <- capemlGIS::create_raster(
+  raster_file              = "NAIP_NDVI_CAP2021-0000000000-0000000000.TIF",
+  description              = "NDVI of central Arizona region derived from 2021 NAIP imagery",
+  epsg                     = 32612,
+  raster_value_description = "Normalized Difference Vegetation Index (NDVI)",
+  raster_value_units       = "UNITLESS",
+  geographic_description   = "central Arizona, USA",
+  project_naming           = FALSE
+)
+```
+
+
+### example case 2: the raster is a multi-band raster (e.g., hyperspectral data)
+
+In this case, the raster of MNDWI has 5 bands, one for the water index of each season and one for the entire year. As with a single-band raster, we pass some metadata (e.g., description, epsg) via the parameter functions but the details of each band are (or can be) articulated with a supporting metadata file. As with other data entity types, the metadata file should be named with the raster name and the `_attrs.yaml` extension (i.e., `MNDWI_multiseason_CAPLTER_1998_attrs.yaml` in the example).
+
+There is not currently a function to create the metadata file for multi-band rasters, so the user must create the file manually. The file should be a yaml file structure like this example:
+
+```{yaml}
+|
+  annual:
+    attributeName: annual
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (January 1st - December 31st)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  1_winter:
+    attributeName: 1_winter
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (December 21st - March 19th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  2_spring:
+    attributeName: 2_spring
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (March 20th - June 20th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  3_summer:
+    attributeName: 3_summer
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (June 21st - September 21st)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+  4_fall:
+    attributeName: 4_fall
+    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (September 22nd - December 20th)'
+    propertyURI: ''
+    propertyLabel: ''
+    valueURI: ''
+    valueLabel: ''
+    unit: 'UNITLESS'
+    numberType: real
+    minimum: ''
+    maximum: ''
+    columnClasses: numeric
+```
+
+When we build the raster entity, the package will look for the metadata file and include the metadata as attribute details in the resulting EML. It is important to note that there is not any logic connecting the contents of the metadata file to the raster file, so the user must ensure that the metadata file is accurate and complete. 
+
+In this example, we have commented out the raster_value_description and raster_value_units parameters as those metadata are provided separately for each band of the raster by via the `MNDWI_multiseason_CAPLTER_1998_attrs.yaml` file (the arguments would simply be ignored if we had not commented out those parameters).
+
+```{r create_raster_example_2, eval=FALSE}
+MNDWI_multiseason_CAPLTER_1998_SV <- capemlGIS::create_raster(
+  raster_file              = "MNDWI_multiseason_CAPLTER_1998.tif",
+  description              = "Modified Normalized Difference Water Index (MNDWI) calculated from Landsat imagery (30-m resolution) annual and seasonal bands",
+  epsg                     = 32612,
+  # raster_value_description = "Modified Normalized Difference Water Index (MNDWI)",
+  # raster_value_units       = "UNITLESS",
+  geographic_description   = "central Arizona, USA",
+  project_naming           = FALSE
+)
+```
+
+#### batch processing multiple rasters
+
+This is a good opportunity to demonstrate how we can use these tools to process many rasters in a batch. In this example, we have a directory of rasters, each with a unique year in the filename. We will use the `list.files()` function to get a list of the raster files in the directory, and then use the `purrr::walk()` function to iterate over the list of files and process each raster with the `create_raster()` function. Each spatialRaster entity will be assigned to the global environment with a name that includes the year. Given that this is the multi-spectral example (i.e., drawing on a metadata file for each raster), each raster should have a corresponding metadata file in the working directory with the appropriate naming convention, e.g.:
+
+|raster file | raster attributes file |
+|:----------------------------------|:------------------------------------------|
+|MNDWI_multiseason_CAPLTER_1998.tif | MNDWI_multiseason_CAPLTER_1998_attrs.yaml |
+|MNDWI_multiseason_CAPLTER_1999.tif | MNDWI_multiseason_CAPLTER_1999_attrs.yaml |
+|... | ... |
+|MNDWI_multiseason_CAPLTER_2023.tif | MNDWI_multiseason_CAPLTER_2023_attrs.yaml |
+
+...then process...
+
+```{r multiple_rasters, eval=FALSE}
+process_raster <- function(filename) {
+  fileBasename <- basename(filename)
+  year <- stringr::str_extract(fileBasename, "\\d+")
+
+  rasterDesc <- paste0("Modified Normalized Difference Water Index (MNDWI) calculated from Landsat imagery (30-m resolution) annual and seasonal bands: ", year)
+
+  eml_raster <- capemlGIS::create_raster(
+    raster_file              = filename,
+    description              = rasterDesc,
+    epsg                     = 32612,
+    # raster_value_description = "Modified Normalized Difference Water Index (MNDWI)",
+    # raster_value_units       = "UNITLESS",
+    geographic_description   = "central Arizona, USA",
+    project_naming           = FALSE
+  )
+
+  assign(
+    x     = paste0(fileBasename, "_SR"),
+    value = eml_raster,
+    envir = .GlobalEnv
+  )
+}
+
+list_of_rasters <- list.files(
+  path       = "working_dir",
+  pattern    = "tif$",
+  full.names = TRUE
+)
+
+purrr::walk(list_of_rasters, process_raster)
+```
+
+### example case 3: the raster is a single band with a categorical variable (e.g., land cover)
+
+**THIS SECTION UNDER CONSTRUCTION !!!**
+
+If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the `write_raster_factors()` function.
+
+*Raster categorical values metadata example:*
+
+|rasterValue | categoryName |
+|:-----------|:-------------|
+|1 | Water |
+|2 | Asphalt/Road |
+|3 | Concrete/Buildings |
+|4 | Urban mixture |
+|5 | Residential |
+|6 | Residential (white rooftops) |
+|7 | Active crop |
+|8 | Inactive crop |
+|9 | Cultivated vegetation |
+|10 | Natural vegetation |
+|11 | Soil/Desert |
+
+In the above example, `write_raster_factors()` will generate a yaml template file with the filename format of `raster_name_factors.yaml` with a field to provide a descriptor for each category. `create_spatialRaster()` will look for the appropriately named yaml file in the working directory and include the metadata as attribute details in the resulting EML.
+
+*calling the function*
+
+Call the `create_spatialRaster()` function to generate the EML to describe the raster. Output of the function yields EML that can be incorporated into the metadata for a data set. In the example below, the raster values are NDVI, which are not categorical, so we have not created a `NAIP_NDVI_2015_factors.yaml` file with the `write_raster_factors()` function. Rather, we have provided the unit for the NDVI measurement ("dimensionless") passed to the `raster_value_units` argument. A description of the raster resource (passed to the `description` argument) is required, as is a geographic description (passed to the `geographic_description` argument). However, the geographic description argument is optional, and if not included, the function will use the project-level geographic description included in the requisite config.yaml file.
+
+```{r create_raster_example_3, eval=FALSE}
+raster_description <- "NDVI for the central Arizona region derived from 2015 NAIP
+imagery. NAIP NDVI data are presented as a series of tiles each representing
+a portion of the overall central Arizona coverage area. The relative position
+of this tile to the entire coverage area is detailed in the files
+NAIP_GRID.kml, NAIP_GRID.pdf, and NAIP_GRID.png included with this data set."
+
+ndvi_geographic_description <- "one in a series of tiles covering the
+central-Arizona Phoenix region"
+
+NAIP_NDVI_2015_SV <- capemlGIS::create_spatialRaster(
+   raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
+   description               = raster_description,
+   epsg                      = 4326,
+   raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
+   raster_value_units        = "dimensionless",
+   geographic_description    = "ndvi_geographic_description",
+   project_naming            = FALSE
+ )
+```
