@@ -1,5 +1,5 @@
 ---
-title: "create_raster"
+title: "Generate a EML entity of type spatialRaster"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{create_raster}
