@@ -50,7 +50,7 @@ Note that EML requires that geographic extents are provided as decimal degrees. 
 
 In this case, we pass all the relevant metadata for the description of the raster, raster value, and raster units via the function parameters - there are not any other supporting metadata files.
 
-Note that the name of the spatialRaster entity (`NAIP_NDVI_CAP2021-0000000000-0000000000_SV`) has (1) the `_SV` extension, and (2) is rather cumbersome. The name is unforunate in this case becuase, not only is it long, but the dashes and digits require that it be wrapped in back ticks. While naming the spatialRaster entity based on the raster file name is a best practice (especially when dealing with many rasters), this is not required and any name so long as it has the `_SV` extension will work.
+Note that the name of the spatialRaster entity (`NAIP_NDVI_CAP2021-0000000000-0000000000_SV`) has (1) the `_SV` extension, and (2) is rather cumbersome. The name is unfortunate in this case because, not only is it long, but the dashes and digits require that it be wrapped in back ticks. While naming the spatialRaster entity based on the raster file name is a best practice (especially when dealing with many rasters), this is not required and any name so long as it has the `_SV` extension will work.
 
 ```{r create_raster_example_1, eval=FALSE}
 `NAIP_NDVI_CAP2021-0000000000-0000000000_SV` <- capemlGIS::create_raster(
@@ -162,12 +162,40 @@ This is a good opportunity to demonstrate how we can use these tools to process 
 |... | ... |
 |MNDWI_multiseason_CAPLTER_2023.tif | MNDWI_multiseason_CAPLTER_2023_attrs.yaml |
 
+A simple Bash script is a convenient way to generate a series of _attrs.yaml files from a template.  
+
+```{sh generate_attrs_yaml, eval=FALSE}
+
+#!/bin/bash
+
+# Input template file path
+TEMPLATE_FILE="./template.yaml"
+
+# Destination folder (you can change this to where you want the files)
+DEST_FOLDER="./"
+
+# Ensure the destination folder exists
+mkdir -p "$DEST_FOLDER"
+
+# Generate files for years 1998 to 2023
+for YEAR in {1998..2023}; do
+  # Create the filename based on the specified format
+  OUTPUT_FILE="${DEST_FOLDER}/MNDWI_multiseason_CAPLTER_${YEAR}_attrs.yaml"
+
+  # Copy the template to the new file
+  cp "$TEMPLATE_FILE" "$OUTPUT_FILE"
+done
+
+echo "Files have been generated in the '$DEST_FOLDER' folder."
+```
+
 ...then process...
 
 ```{r multiple_rasters, eval=FALSE}
 process_raster <- function(filename) {
+
   fileBasename <- basename(filename)
-  year <- stringr::str_extract(fileBasename, "\\d+")
+  year         <- stringr::str_extract(fileBasename, "\\d+")
 
   rasterDesc <- paste0("Modified Normalized Difference Water Index (MNDWI) calculated from Landsat imagery (30-m resolution) annual and seasonal bands: ", year)
 
@@ -186,6 +214,7 @@ process_raster <- function(filename) {
     value = eml_raster,
     envir = .GlobalEnv
   )
+
 }
 
 list_of_rasters <- list.files(
