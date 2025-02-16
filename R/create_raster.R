@@ -71,7 +71,7 @@
 #'    raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
 #'    description               = rasterDesc,
 #'    epsg                      = 4326,
-#'    raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
+#'    raster_value_description  = "Normalized Difference Vegetation Index",
 #'    raster_value_units        = "UNITLESS",
 #'    geographic_description    = "my_area",
 #'    project_naming            = FALSE
@@ -93,12 +93,12 @@ create_raster <- function(
   ) {
 
 
-  # set options -------------------------------------------------------------
+  # set options ----------------------------------------------------------------
 
   options(scipen = 999)
 
 
-  # required parameters -----------------------------------------------------
+  # required parameters --------------------------------------------------------
 
   if (missing("description")) {
 
@@ -156,54 +156,16 @@ create_raster <- function(
 
   if (file.exists(raster_attributes_file_name)) {
 
-    attrs <- yaml::yaml.load_file(raster_attributes_file_name)
+    attributes <- capeml::read_raster_attributes(
+      entity_name = entity_name,
+      entity_id   = tools::md5sum(raster_file)
+    )[["eml"]]
 
-    attrs <- yaml::yaml.load(attrs)
-    attrs <- tibble::enframe(attrs) |>
-      tidyr::unnest_wider(value) |>
-      dplyr::select(-one_of("name"))
-
-
-    # column classes to vector (req'd by set_attributes)
-    classes <- attrs |>
-      dplyr::pull(columnClasses)
-
-    # copy attributeDefinition to definition as appropriate; remove col classes
-    # from attrs (req'd by set_attributes); remove empty columns (targets here
-    # are max and min values, which can throw an error for data without any
-    # numeric columns) empty strings to NA
-
-    attrs[attrs == ""] <- NA
-
-    # helper function to remove missing columns
-    not_all_na <- function(x) {
-      !all(is.na(x))
-    }
-
-    entity_id <- tools::md5sum(raster_file)
-
-    attrs <- attrs |>
-      dplyr::mutate(
-        id         = paste0(entity_id, "_", row.names(attrs)),
-        definition = NA_character_,
-        definition = dplyr::case_when(
-          grepl("character", columnClasses) & ((is.na(definition) | definition == "")) ~ attributeDefinition,
-          TRUE ~ definition
-        )
-      ) |>
-      dplyr::select(-columnClasses) |>
-      dplyr::select_if(not_all_na)
-
-    attr_list <- EML::set_attributes(
-      attributes    = attrs,
-      col_classes   = classes
-    )
-
-    if (!is.null(find_element(attr_list, "unit"))) {
+    if (!is.null(find_element(attributes, "unit"))) {
 
       capeml::write_units(
         entity_name = entity_name,
-        entity_id   = entity_id,
+        entity_id   = tools::md5sum(raster_file),
         raster      = TRUE
       )
 
@@ -211,7 +173,9 @@ create_raster <- function(
 
   } else {
 
-    if (missing("raster_value_units")) { stop("missing units for raster cell values") }
+    if (missing("raster_value_units")) {
+      stop("missing units for raster cell values")
+    }
 
     raster_attributes <- data.frame(
       attributeName       = "raster_value",
@@ -227,7 +191,13 @@ create_raster <- function(
 
       number_raster_cells <- this_raster@ncols * this_raster@nrows
 
-      rasterValuesSample <- na.omit(sample(x = this_raster, size = 0.2 * number_raster_cells))
+      rasterValuesSample <- na.omit(
+        sample(
+          x    = this_raster,
+          size = 0.2 * number_raster_cells
+        )
+      )
+
       rasterValuesSample <- rasterValuesSample[is.finite(rasterValuesSample)]
 
       rounded <- floor(rasterValuesSample)
@@ -291,7 +261,7 @@ create_raster <- function(
 
   }
 
-  emlProjection <- capemlGIS::eml_valid_crs[capemlGIS::eml_valid_crs$epsg == epsg,]$value
+  emlProjection <- capemlGIS::eml_valid_crs[capemlGIS::eml_valid_crs$epsg == epsg, ]$value
 
 
   # create spatial raster entity --------------------------------------------
@@ -303,7 +273,9 @@ create_raster <- function(
   fileSize$size <- deparse(file.size(raster_file))
 
   fileDataFormat <- EML::eml$dataFormat(
-    externallyDefinedFormat = EML::eml$externallyDefinedFormat(formatName = file_ext(raster_file))
+    externallyDefinedFormat = EML::eml$externallyDefinedFormat(
+      formatName = file_ext(raster_file)
+    )
   )
 
   rasterBaseName    <- basename(raster_file)
@@ -379,15 +351,19 @@ create_raster <- function(
     entityDescription   = description,
     physical            = spatialRasterPhysical,
     additionalInfo      = projections,
-    attributeList       = attr_list,
+    attributeList       = attributes,
     spatialReference    = EML::eml$spatialReference(
       horizCoordSysName = emlProjection
-      ),
+    ),
     numberOfBands       = this_raster@file@nbands,
     rows                = this_raster@nrows,
     columns             = this_raster@ncols,
-    horizontalAccuracy  = EML::eml$horizontalAccuracy(accuracyReport = "METADATA_NOT_PROVIDED"),
-    verticalAccuracy    = EML::eml$verticalAccuracy(accuracyReport = "METADATA_NOT_PROVIDED"),
+    horizontalAccuracy  = EML::eml$horizontalAccuracy(
+      accuracyReport = "METADATA_NOT_PROVIDED"
+    ),
+    verticalAccuracy    = EML::eml$verticalAccuracy(
+      accuracyReport = "METADATA_NOT_PROVIDED"
+    ),
     cellSizeXDirection  = suppressWarnings(raster::xres(this_raster)),
     cellSizeYDirection  = suppressWarnings(raster::yres(this_raster)),
     rasterOrigin        = "Upper Left",
@@ -413,7 +389,10 @@ create_raster <- function(
 
       this_geographic_description <- configurations[["geographic_description"]]
 
-      if (is.na(this_geographic_description) | is.null(this_geographic_description) | this_geographic_description == "") {
+      if (
+        is.na(this_geographic_description) |
+        is.null(this_geographic_description) |
+        this_geographic_description == "") {
 
         this_geographic_description <- "METADATA NOT PROVIDED"
         warning("geographic description not provided and missing from config")
@@ -438,7 +417,7 @@ create_raster <- function(
   }
 
 
-  # return -----------------------------------------------------------------------
+  # return ---------------------------------------------------------------------
 
   message("created spatialRaster: ", resource_ident)
 
