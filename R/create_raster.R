@@ -141,7 +141,7 @@ create_raster <- function(
       attributeDefinition = raster_value_description
     )
 
-    attr_list <- EML::set_attributes(
+    attributes <- EML::set_attributes(
       attributes  = raster_attributes,
       factors     = raster_factors,
       col_classes = "factor"
@@ -174,64 +174,32 @@ create_raster <- function(
   } else {
 
     if (missing("raster_value_units")) {
+
       stop("missing units for raster cell values")
+
     }
 
     raster_attributes <- data.frame(
       attributeName       = "raster_value",
       attributeDefinition = raster_value_description,
-      unit                = raster_value_units
+      unit                = raster_value_units,
+      numberType          = "real"
     )
 
-    # determine raster value number type (run only if file <= 500 Mb)
-
-    if (file.size(raster_file) <= 524288000) {
-
-      # determine raster number type by sampling 20% of values sans NAs
-
-      number_raster_cells <- this_raster@ncols * this_raster@nrows
-
-      rasterValuesSample <- na.omit(
-        sample(
-          x    = this_raster,
-          size = 0.2 * number_raster_cells
-        )
-      )
-
-      rasterValuesSample <- rasterValuesSample[is.finite(rasterValuesSample)]
-
-      rounded <- floor(rasterValuesSample)
-
-      if (length(rasterValuesSample) - sum(rasterValuesSample == rounded, na.rm = T) > 0) {
-
-        rasterNumberType <- "real" # all
-
-      } else if (min(rasterValuesSample, na.rm = T) > 0) {
-
-        rasterNumberType <- "natural" # 1, 2, 3, ... (sans 0)
-
-      } else if (min(rasterValuesSample, na.rm = T) < 0) {
-
-        rasterNumberType <- "integer" # whole + negative values
-
-      } else {
-
-        rasterNumberType <- "whole" # natural + 0
-
-      }
-
-      raster_attributes$numberType <- rasterNumberType
-
-    } else {
-
-      raster_attributes$numberType <- "real"
-
-    } # close raster value number type
-
-    attr_list <- EML::set_attributes(
+    attributes <- EML::set_attributes(
       attributes  = raster_attributes,
       col_classes = "numeric"
     )
+
+    if (!is.null(find_element(attributes, "unit"))) {
+
+      raster_attributes$id <- tools::md5sum(raster_file)
+
+      capeml::write_units(
+        provided_attributes_table = raster_attributes 
+      )
+
+    }
 
   } # close condition: factors not present
 
