@@ -183,7 +183,8 @@ create_raster <- function(
       attributeName       = "raster_value",
       attributeDefinition = raster_value_description,
       unit                = raster_value_units,
-      numberType          = "real"
+      numberType          = "real",
+      id                  = paste0(tools::md5sum(raster_file), ".raster_value")
     )
 
     attributes <- EML::set_attributes(
@@ -192,8 +193,6 @@ create_raster <- function(
     )
 
     if (!is.null(find_element(attributes, "unit"))) {
-
-      raster_attributes$id <- tools::md5sum(raster_file)
 
       capeml::write_units(
         provided_attributes_table = raster_attributes 
