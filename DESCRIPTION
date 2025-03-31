@@ -1,7 +1,7 @@
 Package: capemlGIS
 Title: CAP LTER package for generating EML spatialVector and spatialRaster
   metadata
-Version: 1.10.0
+Version: 1.11.0
 Authors@R: person("S", "Earl", email = "stevan.earl@asu.edu",
   role = c("aut", "cre"))
 Description: An extension of the CAPLTER/capeml package intended to facilitate
