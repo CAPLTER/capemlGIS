@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">capemlGIS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,26 +111,30 @@
 </h3>
 <ul>
 <li>
-<code>create_spatialRaster</code> Output includes:<ul>
+<code>create_spatialRaster</code> Output includes:
+<ul>
 <li>EML entity of type <code>spatialRaster</code>
 </li>
 <li>see <a href="https://caplter.github.io/capeml/articles/create_spatialRaster.html" class="external-link">vignette</a> for more detail</li>
 </ul>
 </li>
 <li>
-<code>create_vector</code> Output includes:<ul>
+<code>create_vector</code> Output includes:
+<ul>
 <li>EML entity of type <code>spatialVector</code> that can be added to a EML dataset.</li>
 <li>Input data written to a kml or GeoJSON file with project naming (if selected).</li>
 </ul>
 </li>
 <li>
-<code>create_vector_shape</code> Output includes:<ul>
+<code>create_vector_shape</code> Output includes:
+<ul>
 <li>EML entity of type <code>spatialVector</code> that can be added to a EML dataset.</li>
 <li>Input data <strong>written</strong> to a shapefile with project naming (if selected). Shapefile files are written to a directory that is zipped.</li>
 </ul>
 </li>
 <li>
-<code>package_vector_shape</code> Output includes:<ul>
+<code>package_vector_shape</code> Output includes:
+<ul>
 <li>EML entity of type <code>spatialVector</code> that can be added to a EML dataset.</li>
 <li>
 <strong>Harvests</strong> all relevant files that constitute a single shapefile into a directory that is then zipped.</li>
@@ -146,94 +150,94 @@
 <div class="section level4">
 <h4 id="output-to-shapefile">output to shapefile<a class="anchor" aria-label="anchor" href="#output-to-shapefile"></a>
 </h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co"># shapefile, we have complete flexibility over the shapefile name and</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="co"># manipulating the data - here we are starting with an existing shapefile named</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="co"># CORETT but will generate a shapefile with the name</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="co"># ejido_titles_points_of_decree</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>ejido_titles_points_of_decree &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  <span class="dt">dsn   =</span> <span class="st">"data/Regularizacion/ejidal"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  <span class="dt">layer =</span> <span class="st">"CORETT"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>  ) <span class="op">|</span><span class="er">&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>formatting_or_data_manipuation...</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a><span class="co"># write attributes (and factors if relevant)</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a><span class="kw">try</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>  capeml<span class="op">::</span><span class="kw">write_attributes</span>(</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    <span class="dt">dfname    =</span> ejido_titles_points_of_decree,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>    <span class="dt">overwrite =</span> <span class="ot">FALSE</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>  )</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a><span class="co"># generate a description for the data entity</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>ejido_titles_points_of_decree_desc &lt;-<span class="st"> "polygons of land regularized by the</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a><span class="st">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a><span class="st">consolidated into 87 unique regularization degrees of ejidos that became</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a><span class="st">privitzed from 1987-2007; includes the area of each polygon, the date of</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a><span class="st">regularization, the name of the ejido, the delegation, and the 'plane number'</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a><span class="st">that could be used to find the original map file in the CORETT office; it only</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a><span class="st">includes expropriation for the delegations Xochimilco, Magdalena Contreras,</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a><span class="st">Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a><span class="st">Coyoacan, and Milpa Alta"</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>ejido_titles_points_of_decree_SV &lt;-<span class="st"> </span>capemlGIS<span class="op">::</span><span class="kw">create_vector_shape</span>(</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a>  <span class="dt">vector_name   =</span> ejido_titles_points_of_decree,</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a>  <span class="dt">description   =</span> ejido_titles_points_of_decree_desc,</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>  <span class="dt">coord_sys     =</span> <span class="st">"WGS_1984_UTM_Zone_55N"</span>,</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a>  <span class="dt">layer_opts    =</span> <span class="st">"SHPT=POLYGON"</span>,</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true"></a>  <span class="dt">overwrite     =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true"></a>  <span class="dt">projectNaming =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true"></a>  )</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true"></a><span class="co"># The resulting spatialVector entity can be added to a EML dataset. Note also</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true"></a><span class="co"># in this example that we are passing additional layer options, which</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true"></a><span class="co"># ultimately feed to sf::st_write, necessary here to generate a multi-polygon</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true"></a><span class="co"># shapefile.</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># shapefile, we have complete flexibility over the shapefile name and</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># manipulating the data - here we are starting with an existing shapefile named</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># CORETT but will generate a shapefile with the name</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># ejido_titles_points_of_decree</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>ejido_titles_points_of_decree <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">dsn   =</span> <span class="st">"data/Regularizacion/ejidal"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="at">layer =</span> <span class="st">"CORETT"</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>formatting_or_data_manipuation...</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># write attributes (and factors if relevant)</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="fu">try</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  capeml<span class="sc">::</span><span class="fu">write_attributes</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    <span class="at">dfname    =</span> ejido_titles_points_of_decree,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    <span class="at">overwrite =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  )</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co"># generate a description for the data entity</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>ejido_titles_points_of_decree_desc <span class="ot">&lt;-</span> <span class="st">"polygons of land regularized by the</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="st">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="st">consolidated into 87 unique regularization degrees of ejidos that became</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="st">privitzed from 1987-2007; includes the area of each polygon, the date of</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="st">regularization, the name of the ejido, the delegation, and the 'plane number'</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="st">that could be used to find the original map file in the CORETT office; it only</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="st">includes expropriation for the delegations Xochimilco, Magdalena Contreras,</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="st">Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="st">Coyoacan, and Milpa Alta"</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>ejido_titles_points_of_decree_SV <span class="ot">&lt;-</span> capemlGIS<span class="sc">::</span><span class="fu">create_vector_shape</span>(</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="at">vector_name   =</span> ejido_titles_points_of_decree,</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>  <span class="at">description   =</span> ejido_titles_points_of_decree_desc,</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  <span class="at">coord_sys     =</span> <span class="st">"WGS_1984_UTM_Zone_55N"</span>,</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  <span class="at">layer_opts    =</span> <span class="st">"SHPT=POLYGON"</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  <span class="at">overwrite     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>  <span class="at">projectNaming =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>  )</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co"># The resulting spatialVector entity can be added to a EML dataset. Note also</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co"># in this example that we are passing additional layer options, which</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co"># ultimately feed to sf::st_write, necessary here to generate a multi-polygon</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co"># shapefile.</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-to-kml">output to kml<a class="anchor" aria-label="anchor" href="#output-to-kml"></a>
 </h4>
 <p>The workflow for writing to kml or GeoJSON is nearly identical to the workflow for writing to shapefile. Some differences include that we need (or, at least, should) have a <code>Name</code> field if writing to kml file that serves as a unique identifier for each data entity (added in the workflow below as an additional line in the call to <code>mutate</code>). Also, some parameters are different, such as unlike <code>create_vector_shape</code>, which requires the user to pass an EML-compliant coordinate reference system, since <code>create_vector</code> writes a new kml or GeoJSON file, the resulting CRS is <em>always</em> EPSG 4326 and thus hard-coded into the function.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co"># shapefile, we have complete flexibility over the shapefile name and</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="co"># manipulating the data - here we are starting with an existing shapefile named</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="co"># CORETT but will generate a shapefile with the name</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="co"># ejido_titles_points_of_decree </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>ejido_titles_points_of_decree &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>  <span class="dt">dsn   =</span> <span class="st">"path-to-directory/"</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  <span class="dt">layer =</span> <span class="st">"CORETT"</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>  ) <span class="op">|</span><span class="er">&gt;</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>formatting_or_data_manipuation...</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a><span class="co"># write attributes (and factors if relevant)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a><span class="kw">try</span>(<span class="kw">write_attributes</span>(ejido_titles_points_of_decree, <span class="dt">overwrite =</span> <span class="ot">FALSE</span>))</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a><span class="co"># generate a description for the data entity</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>ejido_titles_points_of_decree_desc &lt;-<span class="st"> "polygons of land regularized by the</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a><span class="st">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a><span class="st">consolidated into 87 unique regularization degrees of ejidos that became</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a><span class="st">privatized from 1987-2007; includes the area of each polygon, the date of</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a><span class="st">regularization, the name of the ejido, the delegation, and the 'plane number'</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a><span class="st">that could be used to find the original map file in the CORETT office; it only</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a><span class="st">includes expropriation for the delegations Xochimilco, Magdalena Contreras,</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a><span class="st">Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a><span class="st">Coyoacan, and Milpa Alta"</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a>ejido_titles_points_of_decree_SV &lt;-<span class="st"> </span>capemlGIS<span class="op">::</span><span class="kw">create_vector</span>(</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a>  <span class="dt">vector_name   =</span> ejido_titles_points_of_decree,</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>  <span class="dt">description   =</span> ejido_titles_points_of_decree_desc,</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>  <span class="dt">driver        =</span> <span class="st">"kml"</span>,</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>  <span class="dt">overwrite     =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a>  <span class="dt">projectNaming =</span> <span class="ot">TRUE</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a>  )</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a><span class="co"># The resulting spatialVector entity can be added to a EML dataset.</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># load spatial vector object; because create_vector_shape will generate a new</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># shapefile, we have complete flexibility over the shapefile name and</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># manipulating the data - here we are starting with an existing shapefile named</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># CORETT but will generate a shapefile with the name</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># ejido_titles_points_of_decree </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>ejido_titles_points_of_decree <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">dsn   =</span> <span class="st">"path-to-directory/"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="at">layer =</span> <span class="st">"CORETT"</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>formatting_or_data_manipuation...</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co"># write attributes (and factors if relevant)</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="fu">try</span>(<span class="fu">write_attributes</span>(ejido_titles_points_of_decree, <span class="at">overwrite =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># generate a description for the data entity</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>ejido_titles_points_of_decree_desc <span class="ot">&lt;-</span> <span class="st">"polygons of land regularized by the</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="st">National Agency, CORETT; polygons were georeferenced from 281 paper maps,</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="st">consolidated into 87 unique regularization degrees of ejidos that became</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="st">privatized from 1987-2007; includes the area of each polygon, the date of</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="st">regularization, the name of the ejido, the delegation, and the 'plane number'</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="st">that could be used to find the original map file in the CORETT office; it only</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="st">includes expropriation for the delegations Xochimilco, Magdalena Contreras,</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="st">Iztapalapa, Tlahuac, Gustavo Madero, Cuajimalpa, Alvaro Obregon, Tlalpan,</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="st">Coyoacan, and Milpa Alta"</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>ejido_titles_points_of_decree_SV <span class="ot">&lt;-</span> capemlGIS<span class="sc">::</span><span class="fu">create_vector</span>(</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>  <span class="at">vector_name   =</span> ejido_titles_points_of_decree,</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  <span class="at">description   =</span> ejido_titles_points_of_decree_desc,</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>  <span class="at">driver        =</span> <span class="st">"kml"</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>  <span class="at">overwrite     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>  <span class="at">projectNaming =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  )</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co"># The resulting spatialVector entity can be added to a EML dataset.</span></span></code></pre></div>
 </div>
 </div>
 </div>

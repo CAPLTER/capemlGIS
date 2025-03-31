@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">capemlGIS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,8 @@
 
 
 
-<script src="create_raster_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Generate a EML entity of type spatialRaster</h1>
@@ -74,31 +75,77 @@
 <h3 id="overview">overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h3>
 <p><em>Generate EML metadata of type spatialRaster.</em></p>
-<p>There are generally three types of and approaches to generating EML entities of type spatialRaster:</p>
+<p>There are generally three types of and approaches to generating EML
+entities of type spatialRaster:</p>
 <ol style="list-style-type: decimal">
-<li>The raster is a single band with a continuous variable (e.g., NDVI). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters.</li>
-<li>The raster is a multi-band raster (e.g., hyperspectral data). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters, and we generate a yaml file with the raster value categories and their meanings in a <code>*_attrs.yaml</code> file.</li>
-<li>The raster is a single band with a categorical variable (e.g., land cover). In this case, we pass the appropriate metadata for the meaning and units of the raster value in the function parameters, and we generate a yaml file with the raster value categories and their meanings using the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</li>
+<li>The raster is a single band with a continuous variable (e.g., NDVI).
+In this case, we pass the appropriate metadata for the meaning and units
+of the raster value in the function parameters.</li>
+<li>The raster is a multi-band raster (e.g., hyperspectral data). In
+this case, we pass the appropriate metadata for the meaning and units of
+the raster value in the function parameters, and we generate a yaml file
+with the raster value categories and their meanings in a
+<code>*_attrs.yaml</code> file.</li>
+<li>The raster is a single band with a categorical variable (e.g., land
+cover). In this case, we pass the appropriate metadata for the meaning
+and units of the raster value in the function parameters, and we
+generate a yaml file with the raster value categories and their meanings
+using the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</li>
 </ol>
-<p>The capeml package uses an older approach to identifying spatialRaster entities to be included in the dataset, which is by the name the entity with the extension <code>_SV</code>. As such, all spatialRaster entities should be named with that extension, and should not be included in a capeml workflow <code>data_objects.yaml</code> file.</p>
+<p>The capeml package uses an older approach to identifying
+spatialRaster entities to be included in the dataset, which is by the
+name the entity with the extension <code>_SV</code>. As such, all
+spatialRaster entities should be named with that extension, and should
+not be included in a capeml workflow <code>data_objects.yaml</code>
+file.</p>
 </div>
 <div class="section level3">
 <h3 id="spatial-projection">spatial projection<a class="anchor" aria-label="anchor" href="#spatial-projection"></a>
 </h3>
-<p>A projection is required for EML spatialRaster entities. This critical piece of metadata is provided by supplying the numeric epsg code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must value must be paired to an EML-compliant projection name (see list <a href="https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd" class="external-link">here</a>), which the package will attempt to match but stop if a match is not available. The package includes a limited number of epsg codes matched to EML-compliant projection names, mostly those commonly used by southwestern USA investigators. The function will stop if a match cannot be identified, and the user should contact the package administrator to add projections that are not included.</p>
+<p>A projection is required for EML spatialRaster entities. This
+critical piece of metadata is provided by supplying the numeric epsg
+code of the projection (e.g., 4326 for WGS 1984). Ultimately, this must
+value must be paired to an EML-compliant projection name (see list <a href="https://raw.githubusercontent.com/NCEAS/eml/main/xsd/eml-spatialReference.xsd" class="external-link">here</a>),
+which the package will attempt to match but stop if a match is not
+available. The package includes a limited number of epsg codes matched
+to EML-compliant projection names, mostly those commonly used by
+southwestern USA investigators. The function will stop if a match cannot
+be identified, and the user should contact the package administrator to
+add projections that are not included.</p>
 </div>
 <div class="section level3">
 <h3 id="harvested-raster-metadata">harvested raster metadata<a class="anchor" aria-label="anchor" href="#harvested-raster-metadata"></a>
 </h3>
-<p>In addition to the user-supplied metadata, the raster will be read into the R environment (with the <a href="https://cran.r-project.org/web/packages/raster/index.html" class="external-link">raster</a> package) from which additional metadata will be harvested, including: raster value number type (only for rasters &lt; 500 Mb), raster extents, number of raster bands, and cell size.</p>
-<p>The <code>horizontalAccuracy</code> and <code>verticalAcurracy</code> attributes are required by EML but, as these are generally not known, the string <code>METADATA_NOT_PROVIDED</code> is provided as content for those two attributes; the resulting EML should be hand-edited to adjust those values in cases where the accuracy data are known.</p>
-<p>Note that EML requires that geographic extents are provided as decimal degrees. Because it is often impractical or inadvisable to change the projection of rasters, a spatial coverage is not constructed if the projection of a raster is in units of meters.</p>
+<p>In addition to the user-supplied metadata, the raster will be read
+into the R environment (with the <a href="https://cran.r-project.org/web/packages/raster/index.html" class="external-link">raster</a>
+package) from which additional metadata will be harvested, including:
+raster value number type (only for rasters &lt; 500 Mb), raster extents,
+number of raster bands, and cell size.</p>
+<p>The <code>horizontalAccuracy</code> and <code>verticalAcurracy</code>
+attributes are required by EML but, as these are generally not known,
+the string <code>METADATA_NOT_PROVIDED</code> is provided as content for
+those two attributes; the resulting EML should be hand-edited to adjust
+those values in cases where the accuracy data are known.</p>
+<p>Note that EML requires that geographic extents are provided as
+decimal degrees. Because it is often impractical or inadvisable to
+change the projection of rasters, a spatial coverage is not constructed
+if the projection of a raster is in units of meters.</p>
 </div>
 <div class="section level3">
-<h3 id="example-case-1-single-band-with-a-continuous-variable-e-g--ndvi">example case 1: single band with a continuous variable (e.g., NDVI)<a class="anchor" aria-label="anchor" href="#example-case-1-single-band-with-a-continuous-variable-e-g--ndvi"></a>
+<h3 id="example-case-1-single-band-with-a-continuous-variable-e-g--ndvi">example case 1: single band with a continuous variable (e.g.,
+NDVI)<a class="anchor" aria-label="anchor" href="#example-case-1-single-band-with-a-continuous-variable-e-g--ndvi"></a>
 </h3>
-<p>In this case, we pass all the relevant metadata for the description of the raster, raster value, and raster units via the function parameters - there are not any other supporting metadata files.</p>
-<p>Note that the name of the spatialRaster entity (<code>NAIP_NDVI_CAP2021-0000000000-0000000000_SV</code>) has (1) the <code>_SV</code> extension, and (2) is rather cumbersome. The name is unfortunate in this case because, not only is it long, but the dashes and digits require that it be wrapped in back ticks. While naming the spatialRaster entity based on the raster file name is a best practice (especially when dealing with many rasters), this is not required and any name so long as it has the <code>_SV</code> extension will work.</p>
+<p>In this case, we pass all the relevant metadata for the description
+of the raster, raster value, and raster units via the function
+parameters - there are not any other supporting metadata files.</p>
+<p>Note that the name of the spatialRaster entity
+(<code>NAIP_NDVI_CAP2021-0000000000-0000000000_SV</code>) has (1) the
+<code>_SV</code> extension, and (2) is rather cumbersome. The name is
+unfortunate in this case because, not only is it long, but the dashes
+and digits require that it be wrapped in back ticks. While naming the
+spatialRaster entity based on the raster file name is a best practice
+(especially when dealing with many rasters), this is not required and
+any name so long as it has the <code>_SV</code> extension will work.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">`NAIP_NDVI_CAP2021-0000000000-0000000000_SV`</span> <span class="op">&lt;-</span> <span class="fu">capemlGIS</span><span class="fu">::</span><span class="fu"><a href="../reference/create_raster.html">create_raster</a></span><span class="op">(</span></span>
 <span>  raster_file              <span class="op">=</span> <span class="st">"NAIP_NDVI_CAP2021-0000000000-0000000000.TIF"</span>,</span>
@@ -111,73 +158,93 @@
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="example-case-2-the-raster-is-a-multi-band-raster-e-g--hyperspectral-data">example case 2: the raster is a multi-band raster (e.g., hyperspectral data)<a class="anchor" aria-label="anchor" href="#example-case-2-the-raster-is-a-multi-band-raster-e-g--hyperspectral-data"></a>
+<h3 id="example-case-2-the-raster-is-a-multi-band-raster-e-g--hyperspectral-data">example case 2: the raster is a multi-band raster (e.g.,
+hyperspectral data)<a class="anchor" aria-label="anchor" href="#example-case-2-the-raster-is-a-multi-band-raster-e-g--hyperspectral-data"></a>
 </h3>
-<p>In this case, the raster of MNDWI has 5 bands, one for the water index of each season and one for the entire year. As with a single-band raster, we pass some metadata (e.g., description, epsg) via the parameter functions but the details of each band are (or can be) articulated with a supporting metadata file. As with other data entity types, the metadata file should be named with the raster name and the <code>_attrs.yaml</code> extension (i.e., <code>MNDWI_multiseason_CAPLTER_1998_attrs.yaml</code> in the example).</p>
-<p>There is not currently a function to create the metadata file for multi-band rasters, so the user must create the file manually. The file should be a yaml file structure like this example:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ch">|</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  annual:</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    attributeName: annual</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (January 1st - December 31st)'</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>    propertyURI: ''</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>    propertyLabel: ''</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    valueURI: ''</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    valueLabel: ''</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    unit: 'UNITLESS'</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    numberType: real</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>    minimum: ''</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    maximum: ''</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>    columnClasses: numeric</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>  1_winter:</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>    attributeName: 1_winter</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (December 21st - March 19th)'</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    propertyURI: ''</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>    propertyLabel: ''</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>    valueURI: ''</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>    valueLabel: ''</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>    unit: 'UNITLESS'</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>    numberType: real</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>    minimum: ''</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>    maximum: ''</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>    columnClasses: numeric</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>  2_spring:</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>    attributeName: 2_spring</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (March 20th - June 20th)'</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>    propertyURI: ''</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>    propertyLabel: ''</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>    valueURI: ''</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>    valueLabel: ''</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>    unit: 'UNITLESS'</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>    numberType: real</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a>    minimum: ''</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a>    maximum: ''</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>    columnClasses: numeric</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a>  3_summer:</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true"></a>    attributeName: 3_summer</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (June 21st - September 21st)'</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true"></a>    propertyURI: ''</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true"></a>    propertyLabel: ''</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true"></a>    valueURI: ''</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true"></a>    valueLabel: ''</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true"></a>    unit: 'UNITLESS'</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true"></a>    numberType: real</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true"></a>    minimum: ''</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true"></a>    maximum: ''</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true"></a>    columnClasses: numeric</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true"></a>  4_fall:</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true"></a>    attributeName: 4_fall</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (September 22nd - December 20th)'</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true"></a>    propertyURI: ''</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true"></a>    propertyLabel: ''</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true"></a>    valueURI: ''</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true"></a>    valueLabel: ''</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true"></a>    unit: 'UNITLESS'</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true"></a>    numberType: real</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true"></a>    minimum: ''</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true"></a>    maximum: ''</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true"></a>    columnClasses: numeric</span></code></pre></div>
-<p>When we build the raster entity, the package will look for the metadata file and include the metadata as attribute details in the resulting EML. It is important to note that there is not any logic connecting the contents of the metadata file to the raster file, so the user must ensure that the metadata file is accurate and complete.</p>
-<p>In this example, we have commented out the raster_value_description and raster_value_units parameters as those metadata are provided separately for each band of the raster by via the <code>MNDWI_multiseason_CAPLTER_1998_attrs.yaml</code> file (the arguments would simply be ignored if we had not commented out those parameters).</p>
+<p>In this case, the raster of MNDWI has 5 bands, one for the water
+index of each season and one for the entire year. As with a single-band
+raster, we pass some metadata (e.g., description, epsg) via the
+parameter functions but the details of each band are (or can be)
+articulated with a supporting metadata file. As with other data entity
+types, the metadata file should be named with the raster name and the
+<code>_attrs.yaml</code> extension (i.e.,
+<code>MNDWI_multiseason_CAPLTER_1998_attrs.yaml</code> in the
+example).</p>
+<p>There is not currently a function to create the metadata file for
+multi-band rasters, so the user must create the file manually. The file
+should be a yaml file structure like this example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ch">|</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  annual:</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    attributeName: annual</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (January 1st - December 31st)'</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    propertyURI: ''</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    propertyLabel: ''</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    valueURI: ''</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    valueLabel: ''</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    unit: 'UNITLESS'</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    numberType: real</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    minimum: ''</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    maximum: ''</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    columnClasses: numeric</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  1_winter:</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    attributeName: 1_winter</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (December 21st - March 19th)'</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    propertyURI: ''</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    propertyLabel: ''</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>    valueURI: ''</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>    valueLabel: ''</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>    unit: 'UNITLESS'</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>    numberType: real</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>    minimum: ''</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>    maximum: ''</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>    columnClasses: numeric</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  2_spring:</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    attributeName: 2_spring</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (March 20th - June 20th)'</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    propertyURI: ''</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    propertyLabel: ''</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>    valueURI: ''</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>    valueLabel: ''</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>    unit: 'UNITLESS'</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>    numberType: real</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>    minimum: ''</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>    maximum: ''</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>    columnClasses: numeric</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  3_summer:</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>    attributeName: 3_summer</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (June 21st - September 21st)'</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>    propertyURI: ''</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>    propertyLabel: ''</span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>    valueURI: ''</span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>    valueLabel: ''</span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a>    unit: 'UNITLESS'</span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>    numberType: real</span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>    minimum: ''</span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>    maximum: ''</span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a>    columnClasses: numeric</span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a>  4_fall:</span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>    attributeName: 4_fall</span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>    attributeDefinition: 'Modified Normalized Difference Water Index (MNDWI) based on median-composite Landsat images from the entire calendar year (September 22nd - December 20th)'</span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a>    propertyURI: ''</span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>    propertyLabel: ''</span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>    valueURI: ''</span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>    valueLabel: ''</span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>    unit: 'UNITLESS'</span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>    numberType: real</span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>    minimum: ''</span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>    maximum: ''</span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>    columnClasses: numeric</span></code></pre></div>
+<p>When we build the raster entity, the package will look for the
+metadata file and include the metadata as attribute details in the
+resulting EML. It is important to note that there is not any logic
+connecting the contents of the metadata file to the raster file, so the
+user must ensure that the metadata file is accurate and complete.</p>
+<p>In this example, we have commented out the raster_value_description
+and raster_value_units parameters as those metadata are provided
+separately for each band of the raster by via the
+<code>MNDWI_multiseason_CAPLTER_1998_attrs.yaml</code> file (the
+arguments would simply be ignored if we had not commented out those
+parameters).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">MNDWI_multiseason_CAPLTER_1998_SV</span> <span class="op">&lt;-</span> <span class="fu">capemlGIS</span><span class="fu">::</span><span class="fu"><a href="../reference/create_raster.html">create_raster</a></span><span class="op">(</span></span>
 <span>  raster_file              <span class="op">=</span> <span class="st">"MNDWI_multiseason_CAPLTER_1998.tif"</span>,</span>
@@ -191,7 +258,18 @@
 <div class="section level4">
 <h4 id="batch-processing-multiple-rasters">batch processing multiple rasters<a class="anchor" aria-label="anchor" href="#batch-processing-multiple-rasters"></a>
 </h4>
-<p>This is a good opportunity to demonstrate how we can use these tools to process many rasters in a batch. In this example, we have a directory of rasters, each with a unique year in the filename. We will use the <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> function to get a list of the raster files in the directory, and then use the <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::walk()</a></code> function to iterate over the list of files and process each raster with the <code><a href="../reference/create_raster.html">create_raster()</a></code> function. Each spatialRaster entity will be assigned to the global environment with a name that includes the year. Given that this is the multi-spectral example (i.e., drawing on a metadata file for each raster), each raster should have a corresponding metadata file in the working directory with the appropriate naming convention, e.g.:</p>
+<p>This is a good opportunity to demonstrate how we can use these tools
+to process many rasters in a batch. In this example, we have a directory
+of rasters, each with a unique year in the filename. We will use the
+<code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> function to get a list of the raster files in
+the directory, and then use the <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::walk()</a></code> function to
+iterate over the list of files and process each raster with the
+<code><a href="../reference/create_raster.html">create_raster()</a></code> function. Each spatialRaster entity will be
+assigned to the global environment with a name that includes the year.
+Given that this is the multi-spectral example (i.e., drawing on a
+metadata file for each raster), each raster should have a corresponding
+metadata file in the working directory with the appropriate naming
+convention, e.g.:</p>
 <table class="table">
 <colgroup>
 <col width="44%">
@@ -220,29 +298,30 @@
 </tr>
 </tbody>
 </table>
-<p>A simple Bash script is a convenient way to generate a series of _attrs.yaml files from a template.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="co"># Input template file path</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="va">TEMPLATE_FILE=</span><span class="st">"./template.yaml"</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="co"># Destination folder (you can change this to where you want the files)</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="va">DEST_FOLDER=</span><span class="st">"./"</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="co"># Ensure the destination folder exists</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="fu">mkdir</span> -p <span class="st">"</span><span class="va">$DEST_FOLDER</span><span class="st">"</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="co"># Generate files for years 1998 to 2023</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a><span class="kw">for</span> <span class="ex">YEAR</span> in <span class="dt">{1998..2023}</span><span class="kw">;</span> <span class="kw">do</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>  <span class="co"># Create the filename based on the specified format</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>  <span class="va">OUTPUT_FILE=</span><span class="st">"</span><span class="va">${DEST_FOLDER}</span><span class="st">/MNDWI_multiseason_CAPLTER_</span><span class="va">${YEAR}</span><span class="st">_attrs.yaml"</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>  <span class="co"># Copy the template to the new file</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>  <span class="fu">cp</span> <span class="st">"</span><span class="va">$TEMPLATE_FILE</span><span class="st">"</span> <span class="st">"</span><span class="va">$OUTPUT_FILE</span><span class="st">"</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a><span class="kw">done</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">"Files have been generated in the '</span><span class="va">$DEST_FOLDER</span><span class="st">' folder."</span></span></code></pre></div>
+<p>A simple Bash script is a convenient way to generate a series of
+_attrs.yaml files from a template.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Input template file path</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="va">TEMPLATE_FILE</span><span class="op">=</span><span class="st">"./template.yaml"</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># Destination folder (you can change this to where you want the files)</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="va">DEST_FOLDER</span><span class="op">=</span><span class="st">"./"</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Ensure the destination folder exists</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$DEST_FOLDER</span><span class="st">"</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co"># Generate files for years 1998 to 2023</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="cf">for</span> YEAR <span class="kw">in</span> <span class="dt">{</span><span class="dv">1998</span><span class="dt">..</span><span class="dv">2023</span><span class="dt">}</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="co"># Create the filename based on the specified format</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="va">OUTPUT_FILE</span><span class="op">=</span><span class="st">"</span><span class="va">${DEST_FOLDER}</span><span class="st">/MNDWI_multiseason_CAPLTER_</span><span class="va">${YEAR}</span><span class="st">_attrs.yaml"</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="co"># Copy the template to the new file</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="fu">cp</span> <span class="st">"</span><span class="va">$TEMPLATE_FILE</span><span class="st">"</span> <span class="st">"</span><span class="va">$OUTPUT_FILE</span><span class="st">"</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Files have been generated in the '</span><span class="va">$DEST_FOLDER</span><span class="st">' folder."</span></span></code></pre></div>
 <p>…then process…</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">process_raster</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">filename</span><span class="op">)</span> <span class="op">{</span></span>
@@ -280,10 +359,13 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="example-case-3-the-raster-is-a-single-band-with-a-categorical-variable-e-g--land-cover">example case 3: the raster is a single band with a categorical variable (e.g., land cover)<a class="anchor" aria-label="anchor" href="#example-case-3-the-raster-is-a-single-band-with-a-categorical-variable-e-g--land-cover"></a>
+<h3 id="example-case-3-the-raster-is-a-single-band-with-a-categorical-variable-e-g--land-cover">example case 3: the raster is a single band with a categorical
+variable (e.g., land cover)<a class="anchor" aria-label="anchor" href="#example-case-3-the-raster-is-a-single-band-with-a-categorical-variable-e-g--land-cover"></a>
 </h3>
 <p><strong>THIS SECTION UNDER CONSTRUCTION !!!</strong></p>
-<p>If the raster values are categorical, generate a metadata file to catalog the unique raster value categories and their meaning using the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</p>
+<p>If the raster values are categorical, generate a metadata file to
+catalog the unique raster value categories and their meaning using the
+<code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function.</p>
 <p><em>Raster categorical values metadata example:</em></p>
 <table class="table">
 <thead><tr class="header">
@@ -337,9 +419,27 @@
 </tr>
 </tbody>
 </table>
-<p>In the above example, <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> will generate a yaml template file with the filename format of <code>raster_name_factors.yaml</code> with a field to provide a descriptor for each category. <code>create_spatialRaster()</code> will look for the appropriately named yaml file in the working directory and include the metadata as attribute details in the resulting EML.</p>
+<p>In the above example, <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> will
+generate a yaml template file with the filename format of
+<code>raster_name_factors.yaml</code> with a field to provide a
+descriptor for each category. <code>create_spatialRaster()</code> will
+look for the appropriately named yaml file in the working directory and
+include the metadata as attribute details in the resulting EML.</p>
 <p><em>calling the function</em></p>
-<p>Call the <code>create_spatialRaster()</code> function to generate the EML to describe the raster. Output of the function yields EML that can be incorporated into the metadata for a data set. In the example below, the raster values are NDVI, which are not categorical, so we have not created a <code>NAIP_NDVI_2015_factors.yaml</code> file with the <code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function. Rather, we have provided the unit for the NDVI measurement (“dimensionless”) passed to the <code>raster_value_units</code> argument. A description of the raster resource (passed to the <code>description</code> argument) is required, as is a geographic description (passed to the <code>geographic_description</code> argument). However, the geographic description argument is optional, and if not included, the function will use the project-level geographic description included in the requisite config.yaml file.</p>
+<p>Call the <code>create_spatialRaster()</code> function to generate the
+EML to describe the raster. Output of the function yields EML that can
+be incorporated into the metadata for a data set. In the example below,
+the raster values are NDVI, which are not categorical, so we have not
+created a <code>NAIP_NDVI_2015_factors.yaml</code> file with the
+<code><a href="../reference/write_raster_factors.html">write_raster_factors()</a></code> function. Rather, we have provided
+the unit for the NDVI measurement (“dimensionless”) passed to the
+<code>raster_value_units</code> argument. A description of the raster
+resource (passed to the <code>description</code> argument) is required,
+as is a geographic description (passed to the
+<code>geographic_description</code> argument). However, the geographic
+description argument is optional, and if not included, the function will
+use the project-level geographic description included in the requisite
+config.yaml file.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">raster_description</span> <span class="op">&lt;-</span> <span class="st">"NDVI for the central Arizona region derived from 2015 NAIP</span></span>
 <span><span class="st">imagery. NAIP NDVI data are presented as a series of tiles each representing</span></span>

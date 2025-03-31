@@ -83,7 +83,7 @@ NAIP_NDVI_2015_SV <- capemlGIS::create_raster(
    raster_file               = "path-to-file/NAIP_NDVI_2015.tiff",
    description               = rasterDesc,
    epsg                      = 4326,
-   raster_value_description  = "Normalized Difference Vegetation Index (NDVI)",
+   raster_value_description  = "Normalized Difference Vegetation Index",
    raster_value_units        = "UNITLESS",
    geographic_description    = "my_area",
    project_naming            = FALSE
