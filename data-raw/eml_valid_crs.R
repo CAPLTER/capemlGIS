@@ -27,7 +27,8 @@ dplyr::mutate(
     value == "NAD_1927_UTM_Zone_12N" ~ 26712,
     value == "GCS_WGS_1984" ~ 4326,
     value == "WGS_1984_UTM_Zone_12N" ~ 32612,
-    value == "NAD_1983_StatePlane_Arizona_Central_FIPS_0202_Feet" ~ 6404
+    value == "NAD_1983_StatePlane_Arizona_Central_FIPS_0202_Feet" ~ 6404,
+    value == "Sphere_Mercator" ~ 3857
   ) 
 ) |>
 dplyr::filter(!is.na(epsg))
