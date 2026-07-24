@@ -36,7 +36,7 @@ pak::pak("CAPLTER/capemlGIS")
 - [capeml](https://github.com/CAPLTER/capeml),
 which will be installed automatically via the `Remotes` field when using
 `pak`.
-- 
+- [raster](https://cran.r-project.org/web/packages/raster/index.html)
 
 ### getting started
 
