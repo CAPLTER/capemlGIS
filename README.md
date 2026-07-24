@@ -1,8 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file. -->
-
-<br>
-<br>
-
 ## capemlGIS: tools to generate EML metadata for spatial raster data
 
 ### overview
@@ -37,9 +32,11 @@ Install with [pak](https://pak.r-lib.org/):
 pak::pak("CAPLTER/capemlGIS")
 ```
 
-`capemlGIS` depends on [capeml](https://github.com/CAPLTER/capeml),
+`capemlGIS` depends on:
+- [capeml](https://github.com/CAPLTER/capeml),
 which will be installed automatically via the `Remotes` field when using
 `pak`.
+- 
 
 ### getting started
 
